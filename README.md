@@ -1,5 +1,16 @@
 谷歌浏览器（Chrome）自动化平台，通过输入指令或脚本(chrome bot script)自动执行操作Chrome，支持采样输出(页面html,监听Chrome信息等等),与Chrome交互由CDP协议实现
 
+
+- 最初的想法
+
+![最初的想法](_doc/ef1b8cdd-e942-482c-9b0c-fd2d01a468c4.jpg "最初的想法")
+
+- 最终的目标
+
+![最终的目标](_doc/a63349d6-7d19-4049-adfe-d32eb5f25665.jpg "最终的目标")
+
+
+
 ```
 _________
 |       |
