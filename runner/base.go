@@ -36,8 +36,8 @@ func Run() {
 		fmt.Printf("|_______| \\_chrome\n\n")
 		fmt.Printf("欢迎使用 ChromeBot v%s\n", VERSION)
 		fmt.Println("https://github.com/mangenotwork/ChromeBot")
-		fmt.Println("输入代码并按回车执行，按Ctrl+Z(Windows)退出")
-		fmt.Println("使用 'exit' 或 'quit' 命令退出程序")
+		fmt.Println("输入代码并按回车执行。")
+		fmt.Println("按Ctrl+C或者Ctrl+Z退出程序，也可以使用 'exit' 或 'quit' 命令退出程序。")
 		fmt.Println("===================================================================")
 
 		go runREPL(sigChan)
