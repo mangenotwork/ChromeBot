@@ -10,6 +10,21 @@
 ![最终的目标](_doc/a63349d6-7d19-4049-adfe-d32eb5f25665.jpg "最终的目标")
 
 
+# ChromeBot Script v0.1
+是基于ATS实现是DSL语言，主要用于ChromeBot执行自动化任务的脚本编写，脚本文件后缀为.cbs
+
+## 运行
+chromeBot.exe case.cbs
+
+文档 ： [ChromeBot Script 文档](_doc/DSL_v0.1.md)
+
+
+
+# 直接运行会进入ChromeBot REPL终端
+
+## 运行
+
+chromeBot.exe
 
 ```
 _________
