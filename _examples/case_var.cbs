@@ -1,0 +1,52 @@
+# 数值类型与基础运算
+var a = 1
+var b = 2
+a=a+1
+print(a+b)
+print(a*b+3)
+
+# 字符串类型
+var s1 = "hello"
+s1 = s1 + " word"
+print(s1)
+s1 = upper(s1) # 内置函数 upper() 将s1转为大写
+print(s1)
+print("escaped \"quote\" \\test \n\t 中文\"")
+
+# 布尔值类型与逻辑判断
+var b1 = true
+var b2 = false
+print(b1, " & ", b2)
+if b1 {
+    print("b1 是 true")
+} else {
+    print("b1 是 false")
+}
+if b2 {
+    print("b2 是 true")
+} else {
+    print("b2 是 false")
+}
+
+# 列表类型
+var l1 = [1, 2, 3]
+print(l1)
+var l2 = [1, 2 * 2, 3 + 3]
+print(l2)
+var l3 = ["a", "b", "c"]
+print(l3)
+print(l1[1])
+print(l1[0]+l1[1]+l1[2])
+print([[1, 2], [3, 4]][0][1])
+var l4 = l1 + l2
+print(l4)
+print(len(l4)) # 内置函数len() 获取长度
+
+# 字典类型(键值对类型)
+var d1 = {"one": 1, "two": 2}
+print(d1)
+var d2 = d1["one"]
+print(d2)
+print(d1["one"]+d1["two"])
+var d3 = {"nested": {"inner": 42}}
+print(d3["nested"]["inner"])
