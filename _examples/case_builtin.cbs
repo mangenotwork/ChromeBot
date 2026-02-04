@@ -43,3 +43,7 @@ print(upper("aa"))
 
 # repeat 将字符串进行重复, 第二个参数必须是整数
 print(repeat("aa", 2))
+
+# type_of 获取变量类型
+var d1 = {"one": 1, "two": 2}
+print(type_of(d1))

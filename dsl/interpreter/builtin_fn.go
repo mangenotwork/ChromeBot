@@ -2,24 +2,22 @@ package interpreter
 
 import (
 	"fmt"
-	"strings"
 )
 
 // 注册内置函数
 func (i *Interpreter) registerBuiltins() {
 
 	builtinFnMap := map[string]Function{
-		"print":  builtinPrint,  // print 打印函数
-		"int":    builtinInt,    // int 类型转换 数值字符串转换数值类型
-		"str":    builtinStr,    // str 类型转换 转换为字符串类型
-		"len":    builtinLen,    // len 获取传入类型的长度，arg是任意类型，返回长度
-		"keys":   builtinKeys,   // keys  获取字典的keys
-		"values": builtinValues, // values  获取字典的values
-		"items":  builtinItems,  // items  获取所有键值对（每个键值对是一个包含两个元素的列表）
-		"has":    builtinHas,    // has 字典或列表是否存在元素, arg第一个是字典或列表， 第二个是要找的元素
-		"delete": builtinDelete, // delete 删除字典或列表的指定元素, arg第一个是字典或列表， 第二个是要找的元素
-		"upper":  builtinUpper,  // upper 将参数转换为字符串并转为大写
-		"repeat": builtinRepeat, // repeat 将字符串进行重复, 第二个参数必须是整数
+		"print":   builtinPrint,  // print 打印函数
+		"int":     builtinInt,    // int 类型转换 数值字符串转换数值类型
+		"str":     builtinStr,    // str 类型转换 转换为字符串类型
+		"len":     builtinLen,    // len 获取传入类型的长度，arg是任意类型，返回长度
+		"keys":    builtinKeys,   // keys  获取字典的keys
+		"values":  builtinValues, // values  获取字典的values
+		"items":   builtinItems,  // items  获取所有键值对（每个键值对是一个包含两个元素的列表）
+		"has":     builtinHas,    // has 字典或列表是否存在元素, arg第一个是字典或列表， 第二个是要找的元素
+		"delete":  builtinDelete, // delete 删除字典或列表的指定元素, arg第一个是字典或列表， 第二个是要找的元素
+		"type_of": builtinTypeOf, // type_of 获取变量类型
 	}
 	for name, fn := range builtinFnMap {
 		i.global.SetFunc(name, fn)
@@ -172,22 +170,37 @@ func builtinDelete(args []Value) (Value, error) {
 	return nil, nil
 }
 
-func builtinUpper(args []Value) (Value, error) {
-	if len(args) == 0 {
-		return "", nil
+func builtinTypeOf(args []Value) (Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("type_of() 需要一个参数")
 	}
-	str := fmt.Sprintf("%v", args[0])
-	return strings.ToUpper(str), nil
-}
-
-func builtinRepeat(args []Value) (Value, error) {
-	if len(args) < 2 {
-		return "", fmt.Errorf("repeat 需要两个参数: 字符串和次数")
+	switch v := args[0].(type) {
+	case int64:
+		return "int", nil
+	case float64:
+		return "float", nil
+	case string:
+		return "string", nil
+	case bool:
+		return "bool", nil
+	case []Value: // 优先匹配 []Value（如果切片元素类型是 Value）
+		return "list", nil
+	case []interface{}: // 匹配通用 []interface{} 切片
+		return "list", nil
+	case map[Value]Value: // 优先匹配 map[Value]Value（如果Map的键值都是 Value）
+		return "dict", nil
+	case map[interface{}]interface{}: // 匹配通用 map[interface{}]interface{}
+		return "dict", nil
+	case DictType:
+		return "dict", nil
+	default:
+		switch fmt.Sprintf("%T", v) {
+		case "[]int", "[]string", "[]bool": // 常见基础类型切片
+			return "list", nil
+		case "map[string]interface{}", "map[int]interface{}": // 常见基础类型键Map
+			return "dict", nil
+		default:
+			return "unknown", nil
+		}
 	}
-	str := fmt.Sprintf("%v", args[0])
-	count, ok := args[1].(int64)
-	if !ok {
-		return "", fmt.Errorf("repeat 的第二个参数必须是整数")
-	}
-	return strings.Repeat(str, int(count)), nil
 }

@@ -146,6 +146,17 @@ while true {
 }
 ```
 
+
+### 链式调用
+
+支持将多个函数调用连接在一起，上一个函数的返回值自动作为下一个函数的参数
+
+```cbs
+var s = "test";
+var s1 = upper(s).repeat(2)
+print(s1)
+```
+
 ### 内置函数
 
 - print(arg1,arg2....) : 在终端输出打印
@@ -153,7 +164,7 @@ while true {
 print("hello", " ", "word")
 ```
 
-- int(arg) : 类型转换 数值字符串转换数值类型 
+- int(arg) : 类型转换 数值字符串转换数值类型
 ```
 var a = "11"
 var b = int(a)
@@ -167,7 +178,7 @@ var b = str(a)
 print(b)
 ```
 
-- len(arg): 获取传入类型的长度，arg是任意类型，返回长度 
+- len(arg): 获取传入类型的长度，arg是任意类型，返回长度
 ```cbs
 var list = [1, 2, 3, 4, 5]
 print(len(list))
@@ -205,6 +216,31 @@ delete(d2, "one")
 print(d2)
 ```
 
+- type_of 获取变量类型
+```cbs
+var d1 = {"one": 1, "two": 2}
+print(type_of(d1))
+```
+
+### 内置函数 - 数学方法 math
+
+- abs 计算绝对值
+```cbs
+abs(-1)
+```
+
+- max 计算最大值
+```cbs
+max(1,2)
+```
+
+- min 计算最小值
+```cbs
+min(1,2)
+```
+
+### 内置函数 - 字符串方法 str
+
 -  upper 将参数转换为字符串并转为大写
 ```cbs
 print("aa".upper())
@@ -215,14 +251,31 @@ print("aa".upper())
 print("aa".repeat())
 ```
 
-### 链式调用
-
-支持将多个函数调用连接在一起，上一个函数的返回值自动作为下一个函数的参数
-
+- lower 字符串转小写
 ```cbs
-var s = "test";
-var s1 = upper(s).repeat(2)
-print(s1)
+lower("aaaa")
+```
+
+- trim 取首字符
+```cbs
+trim("abc")
+```
+
+- split 字符分割
+```cbs
+split("a/b", "/")
+```
+
+### 内置函数 - 时间相关的方法 time
+
+- now 获取当前时间的时间戳
+```cbs
+now()
+```
+
+- sleep 休眠
+```cbs
+sleep(2)
 ```
 
 ### Chrome关键字
