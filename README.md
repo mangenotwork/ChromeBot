@@ -18,7 +18,10 @@ chromeBot.exe case.cbs
 
 文档 ： [ChromeBot Script 文档](_doc/DSL_v0.1.md)
 
+脚本示例
 
+- [打开浏览器并访问 https://github.com/mangenotwork/ChromeBot](_examples/case_chrome.cbs)
+- todo...
 
 # 直接运行会进入ChromeBot REPL终端
 
