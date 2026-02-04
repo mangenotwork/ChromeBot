@@ -1,0 +1,8 @@
+var data = {"one": 1, "two": 2}
+var pairs = items(data)
+var k = 0
+while k < len(pairs) {
+    var pair = pairs[k]
+    print("键:", pair[0], "值:", pair[1])
+    k = k + 1
+}

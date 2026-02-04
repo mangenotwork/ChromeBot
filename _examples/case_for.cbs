@@ -1,0 +1,7 @@
+var list = [1,2,3,4]
+var sum = 0
+for var i=0;i<len(list);i=i+1 {
+    print("item = ", list[i])
+    sum = sum + list[i]
+}
+print("sum = ", sum)

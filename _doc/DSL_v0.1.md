@@ -14,6 +14,7 @@ chromeBot.exe case.cbs
 5. 很多内置函数，编写脚本需参照文档找到需要的方法
 6. 注释为 # 或 //
 7. 支持函数链式调用，函数依次调用返回值会自动传递给下个函数
+8. 列表类型、字典类型（键值对类型）都是以下标取值
 
 
 ### 变量
@@ -147,13 +148,72 @@ while true {
 
 ### 内置函数
 
+- print(arg1,arg2....) : 在终端输出打印
+```cbs
+print("hello", " ", "word")
+```
+
+- int(arg) : 类型转换 数值字符串转换数值类型 
+```
+var a = "11"
+var b = int(a)
+print(b)
+```
+
+- str(arg) 类型转换 转换为字符串类型
+```cbs
+var a = 11
+var b = str(a)
+print(b)
+```
+
 - len(arg): 获取传入类型的长度，arg是任意类型，返回长度 
 ```cbs
 var list = [1, 2, 3, 4, 5]
 print(len(list))
 ```
 
-todo....
+- keys(arg)  获取字典的keys
+```cbs
+var d1 = {"one": 1, "two": 2}
+print(keys(d1))
+```
+
+- values(arg)  获取字典的values
+```cbs
+var d1 = {"one": 1, "two": 2}
+print(values(d1))
+```
+
+- items  获取所有键值对（每个键值对是一个包含两个元素的列表）
+```cbs
+var d1 = {"one": 1, "two": 2}
+print(items(d1))
+```
+
+- has 字典或列表是否存在元素, arg第一个是字典或列表， 第二个是要找的元素
+```cbs
+var d1 = {"one": 1, "two": 2}
+print(has(d1, "one"))
+print(has(d1, "aa"))
+```
+
+- delete 删除字典或列表的指定元素, arg第一个是字典或列表， 第二个是要找的元素
+```cbs
+var d2 = {"one": 1, "two": 2}
+delete(d2, "one")
+print(d2)
+```
+
+-  upper 将参数转换为字符串并转为大写
+```cbs
+print("aa".upper())
+```
+
+- repeat 将字符串进行重复, 第二个参数必须是整数
+```cbs
+print("aa".repeat())
+```
 
 ### 链式调用
 
