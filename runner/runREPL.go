@@ -28,7 +28,7 @@ func runREPL(sigChan chan os.Signal) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		fmt.Println(line)
+		//fmt.Println(line)
 
 		if shouldExit(line) {
 			fmt.Println("BayBay.")

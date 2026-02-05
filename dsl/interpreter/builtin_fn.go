@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"strings"
 )
 
 // 注册内置函数
@@ -34,7 +35,12 @@ func builtinPrint(args []Value) (Value, error) {
 		if i > 0 {
 			fmt.Print(" ")
 		}
-		fmt.Print(arg)
+		// 检查参数类型，如果是字典类型，特殊处理
+		if dict, ok := arg.(DictType); ok {
+			fmt.Print(dictToString(dict))
+		} else {
+			fmt.Print(arg)
+		}
 	}
 	fmt.Println()
 	// 为了支持链式调用，返回最后一个参数
@@ -43,6 +49,37 @@ func builtinPrint(args []Value) (Value, error) {
 		return args[len(args)-1], nil
 	}
 	return nil, nil
+}
+
+func dictToString(d DictType) string {
+	if d == nil {
+		return "dict[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteString("dict[")
+
+	first := true
+	for key, value := range d {
+		if !first {
+			sb.WriteString(", ")
+		}
+		// 处理key
+		sb.WriteString(fmt.Sprint(key))
+		sb.WriteString(":")
+
+		// 递归处理嵌套字典
+		if nestedDict, ok := value.(DictType); ok {
+			sb.WriteString(dictToString(nestedDict))
+		} else {
+			sb.WriteString(fmt.Sprint(value))
+		}
+
+		first = false
+	}
+
+	sb.WriteString("]")
+	return sb.String()
 }
 
 func builtinInt(args []Value) (Value, error) {
