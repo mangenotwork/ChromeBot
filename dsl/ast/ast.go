@@ -361,3 +361,49 @@ func (c *ChainCallExpr) String() string {
 	return strings.Join(calls, ".")
 }
 func (c *ChainCallExpr) exprNode() {}
+
+// SwitchStmt switch 语句
+type SwitchStmt struct {
+	StartPos Position
+	Expr     Expression    // switch 表达式
+	Cases    []*CaseClause // case 子句
+	Default  *BlockStmt    // default 子句，可选
+}
+
+func (s *SwitchStmt) Pos() Position { return s.StartPos }
+func (s *SwitchStmt) String() string {
+	str := fmt.Sprintf("switch %s {\n", s.Expr.String())
+	for _, c := range s.Cases {
+		str += fmt.Sprintf("  %s\n", c.String())
+	}
+	if s.Default != nil {
+		str += fmt.Sprintf("  default: %s\n", s.Default.String())
+	}
+	str += "}"
+	return str
+}
+func (s *SwitchStmt) stmtNode() {}
+
+// CaseClause case 子句
+type CaseClause struct {
+	StartPos Position
+	Values   []Expression // 可以有多个值（逗号分隔）
+	Body     *BlockStmt
+}
+
+func (c *CaseClause) Pos() Position { return c.StartPos }
+func (c *CaseClause) String() string {
+	values := make([]string, len(c.Values))
+	for i, v := range c.Values {
+		values[i] = v.String()
+	}
+	bodyStr := ""
+	if c.Body != nil && len(c.Body.Stmts) > 0 {
+		bodyStr = c.Body.String()
+		// 去掉外层的大括号
+		if strings.HasPrefix(bodyStr, "{") && strings.HasSuffix(bodyStr, "}") {
+			bodyStr = strings.TrimSpace(bodyStr[1 : len(bodyStr)-1])
+		}
+	}
+	return fmt.Sprintf("case %s: %s", strings.Join(values, ", "), bodyStr)
+}

@@ -584,6 +584,122 @@ func TestIfElifElseStatement(t *testing.T) {
 	}
 }
 
+func TestSwitchStatement(t *testing.T) {
+	input := `switch x { case 1: 1 }`
+	log.Println(" ===TestSwitchStatement")
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body 不包含 %d 条语句。得到=%d\n",
+			1, len(program.Statements))
+	}
+
+	// 检查 switch 语句
+	stmt, ok := program.Statements[0].(*ast.SwitchStmt)
+	if !ok {
+		t.Fatalf("program.Statements[0] 不是 ast.SwitchStmt。得到=%T",
+			program.Statements[0])
+	}
+
+	// 检查 switch 表达式
+	if !testIdentifier(t, stmt.Expr, "x") {
+		return
+	}
+
+	// 检查 case 数量
+	if len(stmt.Cases) != 1 {
+		t.Errorf("case 数量不是 1。得到=%d\n", len(stmt.Cases))
+	}
+
+	// 检查第一个 case
+	caseClause := stmt.Cases[0]
+	if len(caseClause.Values) != 1 {
+		t.Errorf("case 值数量不是 1。得到=%d\n", len(caseClause.Values))
+	}
+
+	// 检查 case 的值
+	if !testIntegerLiteral(t, caseClause.Values[0], 1) {
+		return
+	}
+
+	// 检查 case 的 body
+	if len(caseClause.Body.Stmts) != 1 {
+		t.Errorf("case body 语句数量不是 1。得到=%d\n", len(caseClause.Body.Stmts))
+	}
+
+	caseStmt, ok := caseClause.Body.Stmts[0].(*ast.ExpressionStmt)
+	if !ok {
+		t.Fatalf("case body 语句不是 ast.ExpressionStmt。得到=%T",
+			caseClause.Body.Stmts[0])
+	}
+
+	if !testIntegerLiteral(t, caseStmt.Expr, 1) {
+		return
+	}
+
+	// 检查没有 default
+	if stmt.Default != nil {
+		t.Errorf("期望没有 default，但得到了 default")
+	}
+}
+
+func TestSwitchStatementWithMultipleValues(t *testing.T) {
+	input := `switch x { case 1, 2: 12 case 3, 4, 5: 345 }`
+	log.Println(" ===TestSwitchStatementWithMultipleValues")
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body 不包含 %d 条语句。得到=%d\n",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.SwitchStmt)
+	if !ok {
+		t.Fatalf("program.Statements[0] 不是 ast.SwitchStmt。得到=%T",
+			program.Statements[0])
+	}
+
+	// 检查有 2 个 case
+	if len(stmt.Cases) != 2 {
+		t.Errorf("case 数量不是 2。得到=%d\n", len(stmt.Cases))
+	}
+
+	// 检查第一个 case 有 2 个值
+	firstCase := stmt.Cases[0]
+	if len(firstCase.Values) != 2 {
+		t.Errorf("第一个 case 值数量不是 2。得到=%d\n", len(firstCase.Values))
+	}
+	if !testIntegerLiteral(t, firstCase.Values[0], 1) {
+		return
+	}
+	if !testIntegerLiteral(t, firstCase.Values[1], 2) {
+		return
+	}
+
+	// 检查第二个 case 有 3 个值
+	secondCase := stmt.Cases[1]
+	if len(secondCase.Values) != 3 {
+		t.Errorf("第二个 case 值数量不是 3。得到=%d\n", len(secondCase.Values))
+	}
+	if !testIntegerLiteral(t, secondCase.Values[0], 3) {
+		return
+	}
+	if !testIntegerLiteral(t, secondCase.Values[1], 4) {
+		return
+	}
+	if !testIntegerLiteral(t, secondCase.Values[2], 5) {
+		return
+	}
+}
+
 func TestWhileStatement(t *testing.T) {
 	input := `while (x < 10) { x = x + 1 }`
 

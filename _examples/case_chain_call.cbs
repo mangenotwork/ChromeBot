@@ -1,0 +1,4 @@
+upper("hello").print()
+"abc".repeat(3).print()
+" hello ".upper().repeat(2).print()
+str(123).repeat(2).print()

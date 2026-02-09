@@ -93,7 +93,7 @@ func (i *Interpreter) Interpret(program *ast.Program) (Value, error) {
 	utils.Debug("执行AST ....")
 	for n, stmt := range program.Statements {
 		utils.Debug(n+1, " - Interpret ==> ", stmt)
-		_ = i.evaluateStmt(stmt, i.global, n+1) // 忽略返回值
+		_ = i.evaluateStmt(stmt, i.global, n+1)
 
 		if i.global.hasReturn {
 			return *i.global.returnVal, nil
@@ -118,6 +118,8 @@ func (i *Interpreter) evaluateStmt(stmt ast.Statement, ctx *Context, hang int) V
 		return i.evaluateBlockStmt(s, ctx, hang)
 	case *ast.IfStmt:
 		return i.evaluateIfStmt(s, ctx, hang)
+	case *ast.SwitchStmt:
+		return i.evaluateSwitchStmt(s, ctx, hang)
 	case *ast.WhileStmt:
 		return i.evaluateWhileStmt(s, ctx, hang)
 	case *ast.ReturnStmt:
@@ -707,4 +709,42 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 	}
 
 	return lastResult
+}
+
+func (i *Interpreter) evaluateSwitchStmt(stmt *ast.SwitchStmt, ctx *Context, hang int) Value {
+	// 计算 switch 表达式的值
+	switchValue := i.evaluateExpr(stmt.Expr, ctx, hang)
+	utils.Debug("evaluateSwitchStmt ==> ", stmt)
+
+	// 遍历所有 case
+	for _, caseClause := range stmt.Cases {
+		// 检查是否有匹配的 case
+		for _, caseValueExpr := range caseClause.Values {
+			caseValue := i.evaluateExpr(caseValueExpr, ctx, hang)
+
+			// 比较值是否相等
+			if i.equal(switchValue, caseValue) {
+
+				// 为 case 块创建新的上下文
+				caseCtx := NewContext(ctx)
+				result := i.evaluateBlockStmt(caseClause.Body, caseCtx, hang)
+
+				// 检查是否执行了 break
+				if caseCtx.hasBreak {
+					return result
+				}
+
+				// 如果没有 break，返回结果
+				return result
+			}
+		}
+	}
+
+	// 执行 default
+	if stmt.Default != nil {
+		defaultCtx := NewContext(ctx)
+		return i.evaluateBlockStmt(stmt.Default, defaultCtx, hang)
+	}
+
+	return nil
 }

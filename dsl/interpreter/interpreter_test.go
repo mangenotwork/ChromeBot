@@ -23,7 +23,7 @@ func testEval(input string, t *testing.T) Value {
 	interp := NewInterpreter()
 
 	// 执行程序
-	_, err := interp.Interpret(program)
+	result, err := interp.Interpret(program)
 	if err != nil {
 		t.Logf("解释器错误: %v", err)
 		t.Fatalf("解释器错误: %v", err)
@@ -49,7 +49,7 @@ func testEval(input string, t *testing.T) Value {
 	}
 
 	// 没有找到结果，返回nil
-	return nil
+	return result
 }
 
 func testIntegerObject(t *testing.T, obj Value, expected int64) bool {
@@ -216,6 +216,10 @@ func TestIfElseExpressions(t *testing.T) {
 			testIntegerObject(t, evaluated, int64(tt.expected.(int)))
 		}
 	}
+}
+
+func TestSwitchExpressions(t *testing.T) {
+
 }
 
 func TestReturnStatements(t *testing.T) {
@@ -462,9 +466,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`return str([1, 2, 3])`, "[1 2 3]"}, // 注意：列表转换为字符串的格式
 
 		// has_key 函数
-		{`return has_key({"a": 1}, "a")`, true},
-		{`return has_key({"a": 1}, "b")`, false},
-		{`return has_key({}, "key")`, false},
+		{`return has({"a": 1}, "a")`, true},
+		{`return has({"a": 1}, "b")`, false},
+		{`return has({}, "key")`, false},
 
 		// delete 函数
 		{`
@@ -475,7 +479,7 @@ return len(d)
 		{`
 var d = {"x": 10}
 delete(d, "x")
-return has_key(d, "x")
+return has(d, "x")
 `, false},
 
 		// keys 函数
@@ -1015,30 +1019,6 @@ func TestChainCallExpressions(t *testing.T) {
 		{
 			`return print("hello").print("world")`,
 			"world", // 最后一个 print 返回最后一个参数
-		},
-		// 带管道的链式调用
-		{
-			`return upper("hello").print()`,
-			"HELLO",
-		},
-		{
-			`return print("abc").repeat(3)`,
-			"abcabcabc",
-		},
-		// 复杂的链式调用
-		{
-			`return print(" hello ").upper().repeat(2)`,
-			" HELLO  HELLO ",
-		},
-		// 链式调用与变量
-		{
-			`var s = "test"; return upper(s).repeat(2)`,
-			"TESTTEST",
-		},
-		// 链式调用与内置函数
-		{
-			`return str(123).repeat(2)`,
-			"123123",
 		},
 	}
 

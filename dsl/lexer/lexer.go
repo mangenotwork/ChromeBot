@@ -64,6 +64,9 @@ const (
 	TokenIf       // if
 	TokenElse     // else
 	TokenElif     // elif
+	TokenSwitch   // switch
+	TokenCase     // case
+	TokenDefault  // default
 	TokenWhile    // while
 	TokenReturn   // return
 	TokenTrue     // true
@@ -114,6 +117,9 @@ var tokenTypeStrings = map[TokenType]string{
 	TokenIf:        "if",
 	TokenElse:      "else",
 	TokenElif:      "elif",
+	TokenSwitch:    "switch",
+	TokenCase:      "case",
+	TokenDefault:   "default",
 	TokenWhile:     "while",
 	TokenReturn:    "return",
 	TokenTrue:      "true",
@@ -202,28 +208,8 @@ func (l *Lexer) NextToken() Token {
 			tok.Type = TokenEQ
 			tok.Literal = "=="
 		} else {
-
-			//// 如果前面是标识符字符，则 = 应该属于标识符的一部分
-			//if l.position > 0 && (isLetter(rune(l.input[l.position-1])) || isDigit(rune(l.input[l.position-1])) ||
-			//	l.input[l.position-1] == '_' || l.input[l.position-1] == '"') {
-			//	// 回退一个字符，然后读取整个标识符
-			//	l.position--
-			//	l.readPosition--
-			//	l.column--
-			//	l.ch = rune(l.input[l.position])
-			//
-			//	// 读取整个标识符（包含 = 和后面的值）
-			//	tok.Literal = l.readIdentifier()
-			//	tok.Type = l.lookupIdent(tok.Literal)
-			//	return tok
-			//} else {
-			//	tok.Type = TokenAssign
-			//	tok.Literal = string(l.ch)
-			//}
-
 			tok.Type = TokenAssign
 			tok.Literal = string(l.ch)
-
 		}
 	case '+':
 		tok.Type = TokenPlus
@@ -545,6 +531,12 @@ func (l *Lexer) lookupIdent(ident string) TokenType {
 		return TokenElse
 	case "elif":
 		return TokenElif
+	case "switch": // 新增
+		return TokenSwitch
+	case "case": // 新增
+		return TokenCase
+	case "default": // 新增
+		return TokenDefault
 	case "while":
 		return TokenWhile
 	case "return":

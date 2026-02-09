@@ -139,6 +139,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseVarStatement()
 	case lexer.TokenIf:
 		return p.parseIfStatement()
+	case lexer.TokenSwitch:
+		return p.parseSwitchStatement()
 	case lexer.TokenWhile:
 		return p.parseWhileStatement()
 	case lexer.TokenReturn:
@@ -1642,9 +1644,191 @@ func (p *Parser) parseMethodCall(methodName string) ast.Expression {
 	return p.parseCall(methodIdent)
 }
 
-// 将表达式转换为调用表达式
-func (p *Parser) convertToCallExpr(expr ast.Expression) *ast.CallExpr {
-	// 对于简单情况，如果表达式是标识符，但还没有被处理
-	// 这里需要根据你的语法进行调整
-	return nil
+// parseSwitchStatement 解析 switch 语句
+func (p *Parser) parseSwitchStatement() *ast.SwitchStmt {
+	if !p.checkDepth() {
+		return nil
+	}
+
+	p.enter()
+	defer p.leave()
+
+	stmt := &ast.SwitchStmt{
+		StartPos: ast.Position{
+			Line:   p.curTok.Line,
+			Column: p.curTok.Column,
+		},
+		Cases: []*ast.CaseClause{},
+	}
+
+	p.expect(lexer.TokenSwitch, "switch语句")
+
+	// 解析 switch 表达式
+	stmt.Expr = p.parseExpression()
+	if stmt.Expr == nil {
+		return nil
+	}
+
+	// 跳过左大括号
+	if !p.expect(lexer.TokenLBrace, "switch语句需要 {") {
+		return nil
+	}
+
+	// 解析 case 和 default
+	for !p.curTokenIs(lexer.TokenRBrace) && !p.curTokenIs(lexer.TokenEOF) {
+		if p.curTokenIs(lexer.TokenCase) {
+			caseClause := p.parseCaseClause()
+			if caseClause == nil {
+				// 即使解析失败也继续，尝试恢复
+				utils.Debug("case子句解析失败")
+				// 尝试跳过直到下一个 case, default 或 }
+				p.skipToNextCaseOrDefault()
+				continue
+			}
+			stmt.Cases = append(stmt.Cases, caseClause)
+		} else if p.curTokenIs(lexer.TokenDefault) {
+			if stmt.Default != nil {
+				utils.Debug("switch语句只能有一个default子句")
+				return nil
+			}
+			stmt.Default = p.parseDefaultClause()
+			if stmt.Default == nil {
+				// 即使解析失败也继续
+				utils.Debug("default子句解析失败")
+				p.skipToNextCaseOrDefault()
+				continue
+			}
+		} else {
+			// 遇到意外的 token，尝试跳过
+			utils.Debug(fmt.Sprintf("在switch语句中期望 'case' 或 'default', 得到: %s", p.curTok.Literal))
+			p.nextToken()
+		}
+	}
+
+	// 跳过右大括号
+	if !p.expect(lexer.TokenRBrace, "switch语句需要 }") {
+		return nil
+	}
+
+	return stmt
+}
+
+// skipToNextCaseOrDefault 跳过 token 直到遇到 case, default 或 }
+func (p *Parser) skipToNextCaseOrDefault() {
+	for !p.curTokenIs(lexer.TokenCase) &&
+		!p.curTokenIs(lexer.TokenDefault) &&
+		!p.curTokenIs(lexer.TokenRBrace) &&
+		!p.curTokenIs(lexer.TokenEOF) {
+		p.nextToken()
+	}
+}
+
+// parseCaseClause 解析 case 子句
+func (p *Parser) parseCaseClause() *ast.CaseClause {
+	caseClause := &ast.CaseClause{
+		StartPos: ast.Position{
+			Line:   p.curTok.Line,
+			Column: p.curTok.Column,
+		},
+		Values: []ast.Expression{},
+	}
+
+	p.expect(lexer.TokenCase, "case子句")
+
+	// 解析第一个值
+	firstValue := p.parseExpression()
+	if firstValue == nil {
+		return nil
+	}
+	caseClause.Values = append(caseClause.Values, firstValue)
+
+	// 解析逗号分隔的其他值
+	for p.curTokenIs(lexer.TokenComma) {
+		p.nextToken() // 跳过逗号
+		value := p.parseExpression()
+		if value == nil {
+			return nil
+		}
+		caseClause.Values = append(caseClause.Values, value)
+	}
+
+	// 期待冒号
+	if !p.expect(lexer.TokenColon, "case子句需要 :") {
+		return nil
+	}
+
+	// 解析 case 块
+	caseClause.Body = p.parseStatementBlock()
+	if caseClause.Body == nil {
+		// 创建空块而不是返回 nil
+		caseClause.Body = &ast.BlockStmt{
+			Stmts: []ast.Statement{},
+		}
+	}
+
+	return caseClause
+}
+
+// parseStatementBlock 解析语句块（没有大括号）
+func (p *Parser) parseStatementBlock() *ast.BlockStmt {
+	block := &ast.BlockStmt{
+		StartPos: ast.Position{
+			Line:   p.curTok.Line,
+			Column: p.curTok.Column,
+		},
+		Stmts: []ast.Statement{},
+	}
+
+	// 解析语句直到遇到 case, default, } 或遇到与起始行相同缩进的 token
+	for !p.curTokenIs(lexer.TokenCase) &&
+		!p.curTokenIs(lexer.TokenDefault) &&
+		!p.curTokenIs(lexer.TokenRBrace) &&
+		!p.curTokenIs(lexer.TokenEOF) {
+
+		// 检查是否应该结束（遇到 switch 块结束）
+		if p.curTokenIs(lexer.TokenEOF) {
+			break
+		}
+
+		// 尝试解析一个语句
+		stmt := p.parseStatement()
+		if stmt == nil {
+			// 如果解析失败，可能遇到了不期望的 token
+			// 跳过它并继续
+			p.nextToken()
+			continue
+		}
+
+		block.Stmts = append(block.Stmts, stmt)
+
+		// 如果语句是 return, break, continue 等控制流语句，可能后面就没有了
+		switch stmt.(type) {
+		case *ast.ReturnStmt, *ast.BreakStmt, *ast.ContinueStmt:
+			// 控制流语句通常是块的结束
+			return block
+		}
+	}
+
+	return block
+}
+
+// parseDefaultClause 解析 default 子句
+func (p *Parser) parseDefaultClause() *ast.BlockStmt {
+	p.expect(lexer.TokenDefault, "default子句")
+
+	// 期待冒号
+	if !p.expect(lexer.TokenColon, "default子句需要 :") {
+		return nil
+	}
+
+	// 解析 default 块
+	block := p.parseStatementBlock()
+	if block == nil {
+		// 创建空块而不是返回 nil
+		block = &ast.BlockStmt{
+			Stmts: []ast.Statement{},
+		}
+	}
+
+	return block
 }
