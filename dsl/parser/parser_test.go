@@ -4,6 +4,7 @@ import (
 	"ChromeBot/dsl/ast"
 	"ChromeBot/dsl/lexer"
 	"fmt"
+	"log"
 	"testing"
 )
 
@@ -488,6 +489,97 @@ func TestIfElseStatement(t *testing.T) {
 	}
 
 	if !testIdentifier(t, elseStmt.Expr, "y") {
+		return
+	}
+}
+
+func TestIfElifElseStatement(t *testing.T) {
+	input := `if (x < 10) { 1 } elif (x < 20) { 2 } else { 3 }`
+	log.Println(" ===TestIfElifElseStatement")
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body 不包含 %d 条语句。得到=%d\n",
+			1, len(program.Statements))
+	}
+
+	// 检查 if 语句
+	stmt, ok := program.Statements[0].(*ast.IfStmt)
+	if !ok {
+		t.Fatalf("program.Statements[0] 不是 ast.IfStmt。得到=%T",
+			program.Statements[0])
+	}
+
+	// 检查 if 的条件
+	if !testInfixExpression(t, stmt.Condition, "x", "<", 10) {
+		return
+	}
+
+	// 检查 if 的 then 块
+	if len(stmt.Then.Stmts) != 1 {
+		t.Errorf("if 的 then 块不是 1 条语句。得到=%d\n",
+			len(stmt.Then.Stmts))
+	}
+
+	thenStmt, ok := stmt.Then.Stmts[0].(*ast.ExpressionStmt)
+
+	if !ok {
+		t.Fatalf("if 的 then 块语句不是 ast.ExpressionStmt。得到=%T",
+			stmt.Then.Stmts[0])
+	}
+	if !testIntegerLiteral(t, thenStmt.Expr, 1) {
+		return
+	}
+
+	// 检查 elif 部分
+	elifStmt, ok := stmt.Else.(*ast.IfStmt)
+	if !ok {
+		t.Fatalf("stmt.Else 不是 ast.IfStmt (应该是 elif)。得到=%T", stmt.Else)
+	}
+
+	// 检查 elif 的条件
+	if !testInfixExpression(t, elifStmt.Condition, "x", "<", 20) {
+		return
+	}
+
+	// 检查 elif 的 then 块
+	if len(elifStmt.Then.Stmts) != 1 {
+		t.Errorf("elif 的 then 块不是 1 条语句。得到=%d\n",
+			len(elifStmt.Then.Stmts))
+	}
+
+	elifThenStmt, ok := elifStmt.Then.Stmts[0].(*ast.ExpressionStmt)
+	if !ok {
+		t.Fatalf("elif 的 then 块语句不是 ast.ExpressionStmt。得到=%T",
+			elifStmt.Then.Stmts[0])
+	}
+
+	if !testIntegerLiteral(t, elifThenStmt.Expr, 2) {
+		return
+	}
+
+	// 检查 else 部分
+	elseBlock, ok := elifStmt.Else.(*ast.BlockStmt)
+	if !ok {
+		t.Fatalf("elif 的 else 部分不是 ast.BlockStmt。得到=%T", elifStmt.Else)
+	}
+
+	if len(elseBlock.Stmts) != 1 {
+		t.Errorf("else 块不是 1 条语句。得到=%d\n",
+			len(elseBlock.Stmts))
+	}
+
+	elseStmt, ok := elseBlock.Stmts[0].(*ast.ExpressionStmt)
+	if !ok {
+		t.Fatalf("else 块语句不是 ast.ExpressionStmt。得到=%T",
+			elseBlock.Stmts[0])
+	}
+
+	if !testIntegerLiteral(t, elseStmt.Expr, 3) {
 		return
 	}
 }
