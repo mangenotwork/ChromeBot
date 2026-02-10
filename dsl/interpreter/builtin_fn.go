@@ -181,14 +181,25 @@ func builtinHas(args []Value) (Value, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("has_key() 需要两个参数: dict, key")
 	}
-	dict, ok := args[0].(DictType)
-	if !ok {
-		return nil, fmt.Errorf("has_key() 第一个参数必须是字典，得到: %T", args[0])
+
+	var exists Value
+
+	switch args[0].(type) {
+	case DictType:
+		dict := args[0].(DictType)
+		_, exists = dict[args[1]]
+	case []Value:
+		exists = false
+		for _, v := range args[0].([]Value) {
+			if v == args[1] {
+				exists = true
+			}
+		}
+	default:
+		return nil, fmt.Errorf("has_key() 第一个参数必须是字典或者是列表，得到: %T", args[0])
+
 	}
 
-	// todo List类型也要支持
-
-	_, exists := dict[args[1]]
 	return exists, nil
 }
 
