@@ -44,6 +44,8 @@ const (
 	TokenAnd      // &&
 	TokenOr       // ||
 	TokenNot      // !
+	TokenInc      // ++
+	TokenDec      // --
 
 	// 分隔符
 
@@ -94,6 +96,8 @@ var tokenTypeStrings = map[TokenType]string{
 	TokenAsterisk:  "*",
 	TokenSlash:     "/",
 	TokenMod:       "%",
+	TokenInc:       "++",
+	TokenDec:       "--",
 	TokenEQ:        "==",
 	TokenNE:        "!=",
 	TokenLT:        "<",
@@ -212,11 +216,23 @@ func (l *Lexer) NextToken() Token {
 			tok.Literal = string(l.ch)
 		}
 	case '+':
-		tok.Type = TokenPlus
-		tok.Literal = string(l.ch)
+		if l.peekChar() == '+' {
+			l.readChar()
+			tok.Type = TokenInc
+			tok.Literal = "++"
+		} else {
+			tok.Type = TokenPlus
+			tok.Literal = string(l.ch)
+		}
 	case '-':
-		tok.Type = TokenMinus
-		tok.Literal = string(l.ch)
+		if l.peekChar() == '-' {
+			l.readChar()
+			tok.Type = TokenDec
+			tok.Literal = "--"
+		} else {
+			tok.Type = TokenMinus
+			tok.Literal = string(l.ch)
+		}
 	case '*':
 		tok.Type = TokenAsterisk
 		tok.Literal = string(l.ch)
