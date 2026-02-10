@@ -76,6 +76,7 @@ const (
 	TokenBreak    // break
 	TokenContinue // continue
 	TokenFor      // for
+	TokenIn       // in
 
 	// 交互的关键字
 
@@ -131,6 +132,7 @@ var tokenTypeStrings = map[TokenType]string{
 	TokenBreak:     "break",
 	TokenContinue:  "continue",
 	TokenFor:       "for",
+	TokenIn:        "in",
 	TokenChrome:    "chrome",
 }
 
@@ -567,6 +569,8 @@ func (l *Lexer) lookupIdent(ident string) TokenType {
 		return TokenContinue
 	case "for":
 		return TokenFor
+	case "in":
+		return TokenIn
 	case "chrome":
 		return TokenChrome
 	default:

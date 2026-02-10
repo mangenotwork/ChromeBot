@@ -1,0 +1,56 @@
+var data = {"one": 1, "two": 2}
+
+for key, value in data {
+   print("1键:", key, "值:", value)
+}
+
+for key in data {
+    print("2键:", key, "值:", data[key])
+}
+
+while key in data {
+   print("3键:", key, "值:", data[key])
+}
+
+while key, value in data {
+   print("4键:", key, "值:", value)
+}
+
+// 深度循环（嵌套列表）
+var matrix = [[1, 2], [3, 4], [5, 6]]
+while row in matrix {
+    while elem in row {
+        print("元素:", elem)
+    }
+}
+
+for row in matrix {
+    for elem in row {
+        print("for 元素:", elem)
+    }
+}
+
+var nested = {
+    "a": {"x": 1, "y": 2},
+    "b": {"x": 3, "y": 4}
+}
+for outerKey in nested {
+    for innerKey in nested[outerKey] {
+        print("外层键:", outerKey, "内层键:", innerKey, "值:", nested[outerKey][innerKey])
+    }
+}
+
+var list = [1, 2, 3]
+for i in list {
+    if i == 2 {
+        break
+    }
+    print("索引:", i, "值:", list[i-1])
+}
+
+for i in list {
+    if i == 2 {
+        continue
+    }
+    print("2 索引:", i, "值:", list[i-1])
+}
