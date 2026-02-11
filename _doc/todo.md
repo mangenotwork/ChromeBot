@@ -17,9 +17,9 @@
 - [ok] DSL v0.1, 基础语法
 - [ok] DSL v0.1, 测试语法，更多的示例
 - [ok] DSL v0.1, 语法文档
-- [] 改测试的bug和优化
-- [] bug和优化验收
-- [] 更新文档  支持了 elif, switch, for in, while in, 自增自减
+- [ok] 改测试的bug和优化
+- [ok] bug和优化验收
+- [ok] 更新文档  支持了 elif, switch, for in, while in, 自增自减
 
 ## 里程碑
 1. 第一阶段实现 DSL 实现脚本编写操作浏览器自动化任务

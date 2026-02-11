@@ -9,12 +9,14 @@ chromeBot.exe case.cbs
 ### SDL语法设计
 1. 注重脚本实现过程专注于流程精准表达目的为目标，语法要追求简单，操作多以命令式语法，省去了函数式编程和面向对象编程
 2. 由于主要编写执行自动化的脚本，设计极简，只有数值类型、字符串类型、布尔类型、列表类型、字典类型（键值对类型）
-3. 支持逻辑判断(if else), 支持循环 (for  while), 由于已经有if了所以省去了switch case
+3. 支持逻辑判断(if else elif), 支持循环(for  while), 支持分支(switch case), 支持运算
 4. chrome的操作关键字，用这些关键字命令式语法编写脚本来操作浏览器
 5. 很多内置函数，编写脚本需参照文档找到需要的方法
 6. 注释为 # 或 //
 7. 支持函数链式调用，函数依次调用返回值会自动传递给下个函数
 8. 列表类型、字典类型（键值对类型）都是以下标取值
+9. 支持for in, while in 遍历列表或字典
+10. 
 
 
 ### 变量
@@ -23,6 +25,7 @@ chromeBot.exe case.cbs
 
 ```cbs
 var a = 1
+b = 1
 ```
 
 #### 数值类型
@@ -82,6 +85,10 @@ config.headers       #  { "User-Agent": "ChromeBot" }
 config["timeout"]    #  30
 ```
 
+### 运算
+
++ - * / % ++ --
+
 ### 逻辑判断
 
 支持 if、else if、else 结构，条件表达式结果为布尔类型
@@ -90,7 +97,7 @@ config["timeout"]    #  30
 var score = 85
 if score >= 90 {
     print("优秀")
-} else if score >= 60 {
+} elif score >= 60 {
     print("及格")
 } else {
     print("不及格")
