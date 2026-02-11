@@ -13,6 +13,9 @@ import (
 )
 
 func runREPL(sigChan chan os.Signal) {
+
+	interpreter.IsREPL = true
+
 	scanner := bufio.NewScanner(os.Stdin)
 	// 创建解释器
 	interp := interpreter.NewInterpreter()
@@ -117,8 +120,12 @@ func executeCode(input string, interp *interpreter.Interpreter) {
 	p := parser.New(l)
 	program := p.ParseProgram()
 
-	if len(p.Errors()) > 0 {
-		printErrors("解析错误", p.Errors())
+	errs := p.CleanErrors()
+	if len(errs) > 0 {
+		fmt.Println("解析错误:")
+		for _, err := range errs {
+			fmt.Println("  " + err)
+		}
 		return
 	}
 

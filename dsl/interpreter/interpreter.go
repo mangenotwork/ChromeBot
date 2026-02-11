@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var IsREPL = false
+
 // Value 值接口
 type Value interface{}
 
@@ -141,8 +143,10 @@ func (i *Interpreter) evaluateStmt(stmt ast.Statement, ctx *Context, hang int) V
 	case *ast.WhileInStmt:
 		return i.evaluateWhileInStmt(s, ctx, hang)
 	default:
-		fmt.Println("[Crash]len:", hang, " | ", fmt.Errorf("不支持的语句类型: %T", stmt))
-		os.Exit(0)
+		fmt.Println("[ERROR] len:", hang, " | ", fmt.Errorf("不支持的语句类型: %T", stmt))
+		if !IsREPL {
+			os.Exit(0)
+		}
 	}
 	return nil
 }
@@ -172,8 +176,10 @@ func (i *Interpreter) evaluateExpr(expr ast.Expression, ctx *Context, hang int) 
 		if val, ok := ctx.GetVar(e.Name); ok {
 			return val
 		}
-		fmt.Println("[Crash]len:", hang, " | ", fmt.Errorf("未定义的变量: %s", e.Name))
-		os.Exit(0)
+		fmt.Println("[ERROR] len:", hang, " | ", fmt.Errorf("未定义的变量: %s", e.Name))
+		if !IsREPL {
+			os.Exit(0)
+		}
 
 	case *ast.BinaryExpr:
 		utils.Debug("evaluateExpr ast.BinaryExpr ==> ", e)
@@ -208,8 +214,10 @@ func (i *Interpreter) evaluateExpr(expr ast.Expression, ctx *Context, hang int) 
 		return i.evaluateChainCall(e, ctx, hang)
 
 	default:
-		fmt.Println("[Crash]len:", hang, " | ", fmt.Errorf("不支持的表达式类型: %T", expr))
-		os.Exit(0)
+		fmt.Println("[ERROR] len:", hang, " | ", fmt.Errorf("不支持的表达式类型: %T", expr))
+		if !IsREPL {
+			os.Exit(0)
+		}
 
 	}
 	return nil

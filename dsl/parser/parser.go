@@ -31,7 +31,7 @@ const maxParseDepth = 1000
 
 func (p *Parser) checkDepth() bool {
 	if p.depth > maxParseDepth {
-		p.errors = append(p.errors, "解析递归深度超过限制")
+		p.addError("解析递归深度超过限制")
 		return false
 	}
 	return true
@@ -64,19 +64,23 @@ func (p *Parser) expect(t lexer.TokenType, msg ...string) bool {
 	}
 
 	// 构建错误消息
-	errorMsg := fmt.Sprintf("第%d行第%d列: 期望 %s, 得到 %s",
-		p.curTok.Line, p.curTok.Column, t, p.curTok.Type)
-
+	errorMsg := fmt.Sprintf("期望 %s", t)
 	if len(msg) > 0 {
-		errorMsg += " (" + msg[0] + ")"
+		errorMsg = msg[0]
 	}
 
-	p.errors = append(p.errors, errorMsg)
+	p.addError("%s，得到 %s (%s)", errorMsg, p.curTok.Type, p.curTok.Literal)
 	return false
 }
 
 func (p *Parser) Errors() []string {
 	return p.errors
+}
+
+func (p *Parser) addError(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	fullMsg := fmt.Sprintf("第%d行第%d列: %s", p.curTok.Line, p.curTok.Column, msg)
+	p.errors = append(p.errors, fullMsg)
 }
 
 // Cleanup 清理解析器资源
@@ -98,12 +102,21 @@ func (p *Parser) ParseProgram() *ast.Program {
 	}
 
 	for !p.curTokenIs(lexer.TokenEOF) {
-		utils.Debug("p.curTok == ", p.curTok)
 		stmt := p.parseStatement()
 		if stmt != nil {
 			program.Statements = append(program.Statements, stmt)
 		} else {
-			p.recoverFromError() // 如果失败，继续往下，目的是把所有错误都要检查到
+			// 如果解析失败，收集错误并尝试恢复
+			if len(p.errors) == 0 {
+				p.addError("语句解析失败")
+			}
+			// 如果解析失败，恢复
+			//p.recoverFromError()
+		}
+
+		// 如果错误太多，提前停止
+		if len(p.errors) > 5 {
+			break
 		}
 	}
 
@@ -112,17 +125,60 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 // recoverFromError 从解析错误中恢复
 func (p *Parser) recoverFromError() {
-	// 跳过当前token，直到找到语句结束标记
-	for !p.curTokenIs(lexer.TokenEOF) &&
-		!p.curTokenIs(lexer.TokenSemicolon) &&
-		!p.curTokenIs(lexer.TokenRBrace) &&
-		!p.curTokenIs(lexer.TokenLBrace) {
+	// 记录开始恢复的位置
+	startLine := p.curTok.Line
+	startColumn := p.curTok.Column
+
+	// 跳过当前token，直到找到语句边界
+	for !p.curTokenIs(lexer.TokenEOF) {
+		// 语句边界标记
+		if p.curTokenIs(lexer.TokenSemicolon) ||
+			p.curTokenIs(lexer.TokenRBrace) ||
+			p.curTokenIs(lexer.TokenLBrace) ||
+			p.curTokenIs(lexer.TokenIf) ||
+			p.curTokenIs(lexer.TokenWhile) ||
+			p.curTokenIs(lexer.TokenFor) ||
+			p.curTokenIs(lexer.TokenReturn) ||
+			p.curTokenIs(lexer.TokenVar) {
+
+			// 找到了语句边界，停止恢复
+			utils.Debug("错误恢复: 在 %d:%d 找到语句边界 %s", p.curTok.Line, p.curTok.Column, p.curTok.Type)
+			break
+		}
+
 		p.nextToken()
 	}
 
-	if p.curTokenIs(lexer.TokenSemicolon) {
-		p.nextToken()
+	// 如果跳过了很多token，添加一个信息
+	if p.curTok.Line > startLine || (p.curTok.Line == startLine && p.curTok.Column > startColumn+10) {
+		utils.Debug("错误恢复: 从 %d:%d 跳到 %d:%d", startLine, startColumn, p.curTok.Line, p.curTok.Column)
 	}
+}
+
+// CleanErrors 清理和过滤错误信息
+func (p *Parser) CleanErrors() []string {
+
+	if len(p.errors) == 0 {
+		return p.errors
+	}
+
+	seen := make(map[string]bool)
+	cleaned := make([]string, 0, len(p.errors))
+
+	for _, err := range p.errors {
+		if !seen[err] {
+			seen[err] = true
+			cleaned = append(cleaned, err)
+		}
+	}
+
+	// 如果错误太多，只保留前5个
+	if len(cleaned) > 5 {
+		cleaned = cleaned[:5]
+		cleaned = append(cleaned, "... 还有更多错误")
+	}
+
+	return cleaned
 }
 
 func (p *Parser) parseStatement() ast.Statement {
@@ -230,8 +286,7 @@ func (p *Parser) parseSimpleStatement() ast.Statement {
 			return stmt
 
 		default:
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 赋值目标必须是标识符或下标表达式", line, column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 赋值目标必须是标识符或下标表达式", line, column))
 			return nil
 		}
 	}
@@ -271,8 +326,7 @@ func (p *Parser) parseVarStatement() *ast.VarDecl {
 	p.expect(lexer.TokenVar, "变量声明") // 跳过 var
 
 	if !p.curTokenIs(lexer.TokenIdent) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 期望标识符", p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: 期望标识符", p.curTok.Line, p.curTok.Column))
 		return nil
 	}
 
@@ -293,8 +347,7 @@ func (p *Parser) parseVarStatement() *ast.VarDecl {
 			stmt.Type = p.curTok.Literal
 			p.nextToken()
 		} else {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 期望类型标识符", p.curTok.Line, p.curTok.Column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 期望类型标识符", p.curTok.Line, p.curTok.Column))
 		}
 	} else {
 		stmt.Type = "auto"
@@ -338,15 +391,23 @@ func (p *Parser) parseIfOrElifStatement(isElif bool) *ast.IfStmt {
 		p.expect(lexer.TokenIf, "if语句")
 	}
 
+	// 检查是否有条件表达式
+	if p.curTokenIs(lexer.TokenLBrace) {
+		p.addError("if语句缺少条件表达式")
+		return nil
+	}
+
 	// 解析条件表达式
 	stmt.Condition = p.parseExpression()
 	if stmt.Condition == nil {
+		p.addError("if语句条件表达式解析失败")
 		return nil
 	}
 
 	// 解析 then 块
 	stmt.Then = p.parseBlockStatement()
 	if stmt.Then == nil {
+		p.addError("if语句需要代码块")
 		return nil
 	}
 
@@ -407,8 +468,6 @@ func (p *Parser) parseBreakStatement() *ast.BreakStmt {
 	if !p.checkDepth() {
 		return nil
 	}
-
-	utils.Debug("parseBreakStatement = ", p.curTok)
 
 	p.enter()
 	defer p.leave()
@@ -501,7 +560,7 @@ func (p *Parser) parseForStatement() *ast.ForStmt {
 	} else {
 		expr := p.parseExpression()
 		if expr == nil {
-			p.errors = append(p.errors, "for语句解析错误")
+			p.addError("for语句解析错误")
 			return nil
 		}
 		// 检查下一个 token
@@ -516,7 +575,7 @@ func (p *Parser) parseForStatement() *ast.ForStmt {
 			p.nextToken() // 跳过分号
 			return p.parseForRemaining(stmt)
 		} else {
-			p.errors = append(p.errors, fmt.Sprintf("for语句语法错误，期望 '{' 或 ';'，得到: %s", p.curTok.Literal))
+			p.addError(fmt.Sprintf("for语句语法错误，期望 '{' 或 ';'，得到: %s", p.curTok.Literal))
 			return nil
 		}
 	}
@@ -525,13 +584,12 @@ func (p *Parser) parseForStatement() *ast.ForStmt {
 // 解析 for 循环的剩余部分（条件和后置）
 func (p *Parser) parseForRemaining(stmt *ast.ForStmt) *ast.ForStmt {
 	// 解析条件部分
-	if p.curTokenIs(lexer.TokenSemicolon) {
-		// 没有条件
+	if p.curTokenIs(lexer.TokenSemicolon) { // 没有条件
 		p.nextToken() // 跳过分号
 	} else {
 		stmt.Cond = p.parseExpression()
 		if stmt.Cond == nil {
-			p.errors = append(p.errors, "for语句条件解析错误")
+			p.addError("for语句条件解析错误")
 			return nil
 		}
 
@@ -544,7 +602,7 @@ func (p *Parser) parseForRemaining(stmt *ast.ForStmt) *ast.ForStmt {
 	if !p.curTokenIs(lexer.TokenLBrace) {
 		stmt.Post = p.parsePostStatement()
 		if stmt.Post == nil {
-			p.errors = append(p.errors, "for语句后置部分解析错误")
+			p.addError("for语句后置部分解析错误")
 			return nil
 		}
 	}
@@ -675,13 +733,20 @@ func (p *Parser) parseExpression() ast.Expression {
 
 	expr := p.parseLogicalOr()
 	if expr == nil {
-		// 解析失败，尝试跳过当前token
-		utils.Debug("parseExpression: 解析失败，跳过token: %v", p.curTok)
-		p.nextToken()
+		// 尝试给出更具体的错误信息
+		switch p.curTok.Type {
+		case lexer.TokenRBrace, lexer.TokenRParen, lexer.TokenRBracket:
+			p.addError("表达式不完整")
+		case lexer.TokenSemicolon:
+			p.addError("表达式不能以分号开始")
+		case lexer.TokenEOF:
+			p.addError("表达式不完整，文件已结束")
+		default:
+			p.addError("无法解析表达式，遇到: %s (%s)",
+				p.curTok.Type, p.curTok.Literal)
+		}
 		return nil
 	}
-
-	utils.Debug("parseExpression: 解析结果: %T(%v)", expr, expr)
 	return expr
 }
 
@@ -730,21 +795,19 @@ func (p *Parser) parseLogicalAnd() ast.Expression {
 
 	p.enter()
 	defer p.leave()
-	utils.Debug("parseLogicalAnd = ", p.curTok)
+
 	expr := p.parseEquality()
 	if expr == nil {
 		return nil
 	}
 
 	for p.curTokenIs(lexer.TokenAnd) {
-
 		op := p.curTok.Literal
 		p.nextToken()
 		right := p.parseEquality()
 		if right == nil {
 			return expr
 		}
-
 		expr = &ast.BinaryExpr{
 			StartPos: ast.Position{
 				Line:   p.curTok.Line,
@@ -755,7 +818,6 @@ func (p *Parser) parseLogicalAnd() ast.Expression {
 			Right: right,
 		}
 	}
-
 	return expr
 }
 
@@ -766,14 +828,13 @@ func (p *Parser) parseEquality() ast.Expression {
 
 	p.enter()
 	defer p.leave()
-	utils.Debug("parseEquality = ", p.curTok)
+
 	expr := p.parseComparison()
 	if expr == nil {
 		return nil
 	}
 
 	for p.curTokenIs(lexer.TokenEQ) || p.curTokenIs(lexer.TokenNE) {
-
 		op := p.curTok.Literal
 		p.nextToken()
 		right := p.parseComparison()
@@ -802,7 +863,7 @@ func (p *Parser) parseComparison() ast.Expression {
 
 	p.enter()
 	defer p.leave()
-	utils.Debug("parseComparison = ", p.curTok)
+
 	expr := p.parseTerm()
 	if expr == nil {
 		return nil
@@ -810,7 +871,6 @@ func (p *Parser) parseComparison() ast.Expression {
 
 	for p.curTokenIs(lexer.TokenLT) || p.curTokenIs(lexer.TokenLE) ||
 		p.curTokenIs(lexer.TokenGT) || p.curTokenIs(lexer.TokenGE) {
-
 		op := p.curTok.Literal
 		p.nextToken()
 		right := p.parseTerm()
@@ -967,11 +1027,7 @@ func (p *Parser) parsePrimary() ast.Expression {
 	case lexer.TokenLBrace: // 字典字面量
 		return p.parseDictLiteral()
 	default:
-
-		errStr := fmt.Sprintf("第%d行第%d列: 期望表达式，得到: %s",
-			p.curTok.Line, p.curTok.Column, p.curTok.Type)
-		utils.Debug(errStr)
-		p.errors = append(p.errors, errStr)
+		p.addError("期望表达式，得到: %s (%s)", p.curTok.Type, p.curTok.Literal)
 		return nil
 	}
 }
@@ -1025,9 +1081,7 @@ func (p *Parser) parseInteger() ast.Expression {
 
 	value, err := strconv.ParseInt(p.curTok.Literal, 10, 64)
 	if err != nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 无法解析整数: %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Literal))
+		p.addError(fmt.Sprintf("第%d行第%d列: 无法解析整数: %s", p.curTok.Line, p.curTok.Column, p.curTok.Literal))
 		return nil
 	}
 
@@ -1054,9 +1108,7 @@ func (p *Parser) parseFloat() ast.Expression {
 	// 将字符串转换为float64
 	value, err := strconv.ParseFloat(p.curTok.Literal, 64)
 	if err != nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 无法解析浮点数: %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Literal))
+		p.addError(fmt.Sprintf("第%d行第%d列: 无法解析浮点数: %s", p.curTok.Line, p.curTok.Column, p.curTok.Literal))
 		return nil
 	}
 
@@ -1152,7 +1204,7 @@ func (p *Parser) parseListLiteral() *ast.List {
 				list.Elements = append(list.Elements, element)
 			} else {
 				// 元素解析失败
-				p.errors = append(p.errors, "列表元素解析失败")
+				p.addError("列表元素解析失败")
 				return nil
 			}
 
@@ -1167,7 +1219,7 @@ func (p *Parser) parseListLiteral() *ast.List {
 	}
 
 	// 期望右括号
-	if !p.expect(lexer.TokenRBracket, "列表字面量后") {
+	if !p.expect(lexer.TokenRBracket, "列表字面量后期望是]") {
 		return nil
 	}
 
@@ -1256,8 +1308,7 @@ func (p *Parser) parseCall(left ast.Expression) ast.Expression {
 	// 检查左边是否是标识符
 	ident, ok := left.(*ast.Identifier)
 	if !ok {
-		utils.Debug("parseCall: 左边不是标识符: %T", left)
-		p.errors = append(p.errors, "函数调用必须是标识符")
+		p.addError("函数调用必须是标识符")
 		return nil
 	}
 
@@ -1321,9 +1372,7 @@ func (p *Parser) parseIndex(left ast.Expression) ast.Expression {
 	// 解析索引表达式
 	index := p.parseExpression()
 	if index == nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 下标表达式解析失败",
-				p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: 下标表达式解析失败", p.curTok.Line, p.curTok.Column))
 
 		// 尝试恢复：跳过直到遇到 ] 或文件结束
 		for p.curTok.Type != lexer.TokenRBracket && p.curTok.Type != lexer.TokenEOF {
@@ -1342,9 +1391,7 @@ func (p *Parser) parseIndex(left ast.Expression) ast.Expression {
 
 	// 期望 ]
 	if !p.curTokenIs(lexer.TokenRBracket) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 下标表达式后期望]，得到 %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Type))
+		p.addError(fmt.Sprintf("第%d行第%d列: 下标表达式后期望]，得到 %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 
 		// 尝试恢复：跳过直到遇到 ] 或文件结束
 		for p.curTok.Type != lexer.TokenRBracket && p.curTok.Type != lexer.TokenEOF {
@@ -1409,18 +1456,14 @@ func (p *Parser) parseDictLiteral() *ast.Dict {
 		// 解析键
 		key := p.parseExpression()
 		if key == nil {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 字典键解析失败",
-					p.curTok.Line, p.curTok.Column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 字典键解析失败", p.curTok.Line, p.curTok.Column))
 			return nil
 		}
 
 		// 检查键类型：不允许布尔值作为键
 		switch key.String() {
 		case "true:", "false:":
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 布尔值不能作为字典键",
-					p.curTok.Line, p.curTok.Column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 布尔值不能作为字典键", p.curTok.Line, p.curTok.Column))
 			return nil
 		}
 
@@ -1428,18 +1471,14 @@ func (p *Parser) parseDictLiteral() *ast.Dict {
 
 		// 期望冒号
 		if !p.expect(lexer.TokenColon, "字典键后期望冒号") {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 字典键后期望冒号，得到 %s",
-					currentLine, currentColumn, p.curTok.Type))
+			p.addError(fmt.Sprintf("第%d行第%d列: 字典键后期望冒号，得到 %s", currentLine, currentColumn, p.curTok.Type))
 			return nil
 		}
 
 		// 解析值
 		value := p.parseExpression()
 		if value == nil {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 字典值解析失败",
-					p.curTok.Line, p.curTok.Column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 字典值解析失败", p.curTok.Line, p.curTok.Column))
 			return nil
 		}
 
@@ -1456,9 +1495,7 @@ func (p *Parser) parseDictLiteral() *ast.Dict {
 
 		// 如果逗号后立即遇到 }，这是语法错误
 		if p.curTokenIs(lexer.TokenRBrace) {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 字典中多余的逗号",
-					p.curTok.Line, p.curTok.Column))
+			p.addError(fmt.Sprintf("第%d行第%d列: 字典中多余的逗号", p.curTok.Line, p.curTok.Column))
 			return nil
 		}
 	}
@@ -1527,7 +1564,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 
 		// 解析方法名
 		if !p.curTokenIs(lexer.TokenIdent) {
-			p.errors = append(p.errors, "期望方法名")
+			p.addError("期望方法名")
 			return nil
 		}
 
@@ -1548,7 +1585,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 
 		// 检查是否有括号
 		if !p.curTokenIs(lexer.TokenLParen) {
-			p.errors = append(p.errors, "期望 '(' 开始方法调用")
+			p.addError("期望 '(' 开始方法调用")
 			return nil
 		}
 
@@ -1564,7 +1601,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 			chain.Calls = append(chain.Calls, callExpr)
 			utils.Debug("parseChainCall: 添加方法调用: %s", callExpr.Function.Name)
 		} else {
-			p.errors = append(p.errors, "链式调用中的元素必须是函数调用")
+			p.addError("链式调用中的元素必须是函数调用")
 			return nil
 		}
 
@@ -1629,7 +1666,7 @@ func (p *Parser) createFirstChainCall(expr ast.Expression) *ast.CallExpr {
 func (p *Parser) parseMethodCall(methodName string) ast.Expression {
 	// 期望当前位置是左括号
 	if !p.curTokenIs(lexer.TokenLParen) {
-		p.errors = append(p.errors, "期望 '(' 开始方法调用")
+		p.addError("期望 '(' 开始方法调用")
 		return nil
 	}
 
@@ -1868,14 +1905,10 @@ func (p *Parser) parsePostfixExpr(left ast.Expression) ast.Expression {
 		}
 	case *ast.Integer, *ast.Float:
 		// 数字字面量不允许自增自减
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 自增自减操作不能用于数字字面量",
-				opLine, opColumn))
+		p.addError(fmt.Sprintf("第%d行第%d列: 自增自减操作不能用于数字字面量", opLine, opColumn))
 		return nil
 	default:
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 自增自减操作只支持变量、下标表达式或数字字面量，得到: %T",
-				opLine, opColumn, left))
+		p.addError(fmt.Sprintf("第%d行第%d列: 自增自减操作只支持变量、下标表达式或数字字面量，得到: %T", opLine, opColumn, left))
 		return nil
 	}
 }
@@ -1905,9 +1938,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 
 	// 解析第一个变量名
 	if !p.curTokenIs(lexer.TokenIdent) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 期望标识符作为循环变量，得到: %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Type))
+		p.addError(fmt.Sprintf("第%d行第%d列: 期望标识符作为循环变量，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 		return nil
 	}
 
@@ -1930,9 +1961,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 		utils.Debug("parseForInStatement: 跳过逗号后，当前token = %v", p.curTok)
 
 		if !p.curTokenIs(lexer.TokenIdent) {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 期望第二个标识符作为循环变量，得到: %s",
-					p.curTok.Line, p.curTok.Column, p.curTok.Type))
+			p.addError(fmt.Sprintf("第%d行第%d列: 期望第二个标识符作为循环变量，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 			return nil
 		}
 
@@ -1952,9 +1981,8 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 
 	// 期望 in
 	if !p.curTokenIs(lexer.TokenIn) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: for...in语句需要'in'关键字，得到: %s (字面量: %s)",
-				p.curTok.Line, p.curTok.Column, p.curTok.Type, p.curTok.Literal))
+		p.addError(fmt.Sprintf("第%d行第%d列: for...in语句需要'in'关键字，得到: %s (字面量: %s)",
+			p.curTok.Line, p.curTok.Column, p.curTok.Type, p.curTok.Literal))
 		return nil
 	}
 
@@ -1964,9 +1992,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 	// 解析容器表达式
 	stmt.Container = p.parseExpression()
 	if stmt.Container == nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: for...in语句需要容器表达式",
-				p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: for...in语句需要容器表达式", p.curTok.Line, p.curTok.Column))
 		return nil
 	}
 
@@ -1976,9 +2002,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 	// 解析循环体
 	stmt.Body = p.parseBlockStatement()
 	if stmt.Body == nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: for...in语句需要循环体",
-				p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: for...in语句需要循环体", p.curTok.Line, p.curTok.Column))
 		return nil
 	}
 
@@ -2008,9 +2032,7 @@ func (p *Parser) parseWhileInStatement() *ast.WhileInStmt {
 
 	// 解析第一个变量名
 	if !p.curTokenIs(lexer.TokenIdent) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: 期望标识符作为循环变量，得到: %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Type))
+		p.addError(fmt.Sprintf("第%d行第%d列: 期望标识符作为循环变量，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 		return nil
 	}
 
@@ -2030,9 +2052,7 @@ func (p *Parser) parseWhileInStatement() *ast.WhileInStmt {
 		p.nextToken() // 跳过逗号
 
 		if !p.curTokenIs(lexer.TokenIdent) {
-			p.errors = append(p.errors,
-				fmt.Sprintf("第%d行第%d列: 期望第二个标识符作为循环变量，得到: %s",
-					p.curTok.Line, p.curTok.Column, p.curTok.Type))
+			p.addError(fmt.Sprintf("第%d行第%d列: 期望第二个标识符作为循环变量，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 			return nil
 		}
 
@@ -2050,9 +2070,7 @@ func (p *Parser) parseWhileInStatement() *ast.WhileInStmt {
 
 	// 期望 in
 	if !p.curTokenIs(lexer.TokenIn) {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: while...in语句需要'in'关键字，得到: %s",
-				p.curTok.Line, p.curTok.Column, p.curTok.Type))
+		p.addError(fmt.Sprintf("第%d行第%d列: while...in语句需要'in'关键字，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
 		return nil
 	}
 
@@ -2061,18 +2079,14 @@ func (p *Parser) parseWhileInStatement() *ast.WhileInStmt {
 	// 解析容器表达式
 	stmt.Container = p.parseExpression()
 	if stmt.Container == nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: while...in语句需要容器表达式",
-				p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: while...in语句需要容器表达式", p.curTok.Line, p.curTok.Column))
 		return nil
 	}
 
 	// 解析循环体
 	stmt.Body = p.parseBlockStatement()
 	if stmt.Body == nil {
-		p.errors = append(p.errors,
-			fmt.Sprintf("第%d行第%d列: while...in语句需要循环体",
-				p.curTok.Line, p.curTok.Column))
+		p.addError(fmt.Sprintf("第%d行第%d列: while...in语句需要循环体", p.curTok.Line, p.curTok.Column))
 		return nil
 	}
 

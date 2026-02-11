@@ -16,9 +16,10 @@ func runScript(source string) {
 	p := parser.New(l)
 	program := p.ParseProgram()
 
-	if len(p.Errors()) > 0 {
+	errs := p.CleanErrors()
+	if len(errs) > 0 {
 		fmt.Println("解析错误:")
-		for _, err := range p.Errors() {
+		for _, err := range errs {
 			fmt.Println("  " + err)
 		}
 		return
