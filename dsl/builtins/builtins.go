@@ -24,4 +24,7 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 
 	// 注册 chrome
 	registerChrome(interp)
+
+	// 注册 http
+	registerHttp(interp)
 }

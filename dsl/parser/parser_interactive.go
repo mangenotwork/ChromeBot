@@ -120,3 +120,60 @@ func (p *Parser) readChromeArgs() []string {
 
 	return args
 }
+
+// http 语法解析 http arg1 arg2=123 ...
+func (p *Parser) parseHttpStatement() *ast.HttpStmt {
+	if !p.checkDepth() {
+		return nil
+	}
+
+	p.enter()
+	defer p.leave()
+
+	utils.Debug("======= parseHttpStatement 开始 =======")
+	utils.Debug("当前token: %v", p.curTok)
+
+	// 保存起始位置
+	startPos := ast.Position{
+		Line:   p.curTok.Line,
+		Column: p.curTok.Column,
+	}
+
+	// 跳过 http 关键字
+	p.nextToken()
+	utils.Debug("跳过http后: %v", p.curTok)
+
+	var args []ast.Expression
+	startLine := p.curTok.Line
+
+	for p.curTok.Line == startLine && !p.curTokenIs(lexer.TokenEOF) {
+		utils.Debug("解析参数，当前token: %v", p.curTok)
+
+		// 构建参数字符串
+		argStr := p.readChromeArgs()
+		if len(argStr) != 0 {
+			for _, arg := range argStr {
+				args = append(args, &ast.String{
+					StartPos: ast.Position{
+						Line:   p.curTok.Line,
+						Column: p.curTok.Column,
+					},
+					Value: arg,
+				})
+			}
+
+		}
+
+		// 跳过逗号
+		if p.curTokenIs(lexer.TokenComma) {
+			p.nextToken()
+		}
+	}
+
+	utils.Debug("parseHttpStatement: 完成，共 %d 个参数", len(args))
+
+	return &ast.HttpStmt{
+		StartPos: startPos,
+		Args:     args,
+	}
+}

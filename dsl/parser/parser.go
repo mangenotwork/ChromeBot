@@ -211,6 +211,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseWhileOrWhileIn()
 	case lexer.TokenChrome:
 		return p.parseChromeStatement()
+	case lexer.TokenHttp:
+		return p.parseHttpStatement()
 	default:
 		return p.parseSimpleStatement()
 	}

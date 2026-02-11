@@ -142,6 +142,8 @@ func (i *Interpreter) evaluateStmt(stmt ast.Statement, ctx *Context, hang int) V
 		return i.evaluateForInStmt(s, ctx, hang)
 	case *ast.WhileInStmt:
 		return i.evaluateWhileInStmt(s, ctx, hang)
+	case *ast.HttpStmt:
+		return i.evaluateHttpStmt(s, ctx, hang)
 	default:
 		fmt.Println("[ERROR] len:", hang, " | ", fmt.Errorf("不支持的语句类型: %T", stmt))
 		if !IsREPL {
@@ -149,6 +151,13 @@ func (i *Interpreter) evaluateStmt(stmt ast.Statement, ctx *Context, hang int) V
 		}
 	}
 	return nil
+}
+
+func (i *Interpreter) ErrorShow(hang int, errMsg string) {
+	fmt.Println("[ERROR] len:", hang, " | ", errMsg)
+	if !IsREPL {
+		os.Exit(0)
+	}
 }
 
 func (i *Interpreter) evaluateExpr(expr ast.Expression, ctx *Context, hang int) Value {

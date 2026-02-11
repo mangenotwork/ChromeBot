@@ -22,3 +22,19 @@ func (c *ChromeStmt) String() string {
 	return fmt.Sprintf("chrome %s ", strings.Join(args, " "))
 }
 func (c *ChromeStmt) stmtNode() {}
+
+// HttpStmt http 关键字,http相关操作
+type HttpStmt struct {
+	StartPos Position
+	Args     []Expression
+}
+
+func (c *HttpStmt) Pos() Position { return c.StartPos }
+func (c *HttpStmt) String() string {
+	args := make([]string, len(c.Args))
+	for i, arg := range c.Args {
+		args[i] = arg.String()
+	}
+	return fmt.Sprintf("http %s ", strings.Join(args, " "))
+}
+func (c *HttpStmt) stmtNode() {}

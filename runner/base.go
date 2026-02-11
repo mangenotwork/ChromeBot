@@ -18,7 +18,7 @@ const (
 
 func Run() {
 
-	//utils.IsDebug = true
+	utils.IsDebug = true
 
 	if len(os.Args) < 2 {
 		fmt.Printf("_________\n")
