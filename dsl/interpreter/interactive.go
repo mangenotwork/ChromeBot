@@ -55,6 +55,12 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 		return nil
 	}
 
+	isUrl := false
+
+	argMap := make(map[string]Value)
+
+	argMap["method"] = oneArg
+
 	for idx, arg := range args {
 		if idx == 0 {
 			continue
@@ -64,39 +70,37 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 		switch e := arg.(type) {
 		case string:
 			sl := strings.Split(e, "=")
-			if len(sl) > 0 {
-				switch sl[0] {
-				case "url": // 解析url参数取值为变量
-					if len(sl) < 2 {
-						i.ErrorShow(hang, "http请求url没设置值")
-						return nil
-					}
-					newVal, has := ctx.GetVar(sl[1])
-					if has {
-						args[idx] = &ast.String{
-							Value: "url=" + newVal.(string),
-						}
-					}
+			if len(sl) > 0 && (sl[0] == "url" || sl[0] == "body" || sl[0] == "header" || sl[0] == "ctype" ||
+				sl[0] == "cookie" || sl[0] == "timeout" || sl[0] == "proxy" || sl[0] == "stress") {
+				if sl[0] == "url" {
+					isUrl = true
 				}
-
-				// 解析body参数
-
-				// 解析header参数
-
-				// 解析contentType参数
-
-				// Cookie
-
-				// TimeOut
-
-				// ProxyUrl
-
+				if len(sl) < 2 {
+					i.ErrorShow(hang, fmt.Sprintf("http操作%s参数没设置值", sl[0]))
+					return nil
+				}
+				newVal, has := ctx.GetVar(sl[1])
+				if has {
+					argMap[sl[0]] = newVal
+				} else {
+					argMap[sl[0]] = sl[1]
+				}
 			}
-
 		}
 	}
 
-	result, err := fn(args)
+	if !isUrl {
+		i.ErrorShow(hang, "http操作必须指定url参数")
+		return nil
+	}
+
+	utils.Debug("argMap = ", argMap)
+
+	inArg := []Value{
+		argMap,
+	}
+
+	result, err := fn(inArg)
 	if err != nil {
 		i.errors = append(i.errors, fmt.Errorf("http调用错误: %v", err))
 		return nil

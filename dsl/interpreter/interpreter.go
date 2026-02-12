@@ -3,8 +3,10 @@ package interpreter
 import (
 	"ChromeBot/dsl/ast"
 	"ChromeBot/utils"
+	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 var IsREPL = false
@@ -14,6 +16,69 @@ type Value interface{}
 
 // DictType 字典类型
 type DictType map[Value]Value
+
+// 将 DictType 转换为可序列化的 map[string]interface{}
+func dictToSerializableMap(dt DictType) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	// 遍历 DictType 的每一个键值对
+	for key, value := range dt {
+		// 1. 处理 key：转为字符串
+		strKey := convertValueToString(key)
+
+		// 2. 处理 value：递归转换嵌套的 DictType
+		strValue := convertValueToSerializable(value)
+
+		result[strKey] = strValue
+	}
+
+	return result
+}
+
+// 辅助函数：将任意 Value 类型转为字符串（作为 map key）
+func convertValueToString(v Value) string {
+	switch val := v.(type) {
+	case string:
+		return val
+	case int:
+		return strconv.Itoa(val)
+	case int64:
+		return strconv.FormatInt(val, 10)
+	case float64:
+		return strconv.FormatFloat(val, 'f', -1, 64)
+	case bool:
+		return strconv.FormatBool(val)
+	default:
+		// 其他类型（如 nil、结构体），转为 fmt 格式化字符串
+		return fmt.Sprintf("%v", val)
+	}
+}
+
+// 辅助函数：递归处理 Value，将嵌套的 DictType 也转为 map
+func convertValueToSerializable(v Value) interface{} {
+	// 如果值是 DictType，递归转换
+	if dt, ok := v.(DictType); ok {
+		return dictToSerializableMap(dt)
+	}
+	// 如果值是切片/数组，遍历处理其中的元素
+	if slice, ok := v.([]Value); ok {
+		result := make([]interface{}, len(slice))
+		for i, item := range slice {
+			result[i] = convertValueToSerializable(item)
+		}
+		return result
+	}
+	// 其他原生类型直接返回
+	return v
+}
+
+// 为 DictType 实现 json.Marshaler 接口（可选，更优雅）
+func (dt DictType) MarshalJSON() ([]byte, error) {
+	// 转换为可序列化的 map
+	serializableMap := dictToSerializableMap(dt)
+	// 调用原生 map 的序列化方法
+	return json.MarshalIndent(serializableMap, "", "  ")
+}
 
 // Function 函数定义
 type Function func(args []Value) (Value, error)
