@@ -225,6 +225,13 @@ func (i *Interpreter) ErrorShow(hang int, errMsg string) {
 	}
 }
 
+func (i *Interpreter) ErrorMessage(errMsg string) {
+	fmt.Println("[ERROR]", errMsg)
+	if !IsREPL {
+		os.Exit(0)
+	}
+}
+
 func (i *Interpreter) evaluateExpr(expr ast.Expression, ctx *Context, hang int) Value {
 	utils.Debug("evaluateExpr ==> ", expr)
 	switch e := expr.(type) {

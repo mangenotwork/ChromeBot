@@ -69,9 +69,9 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 		utils.Debug(fmt.Sprintf("%T", arg))
 		switch e := arg.(type) {
 		case string:
-			sl := strings.Split(e, "=")
+			sl := strings.SplitN(e, "=", 2)
 			if len(sl) > 0 && (sl[0] == "url" || sl[0] == "body" || sl[0] == "header" || sl[0] == "ctype" ||
-				sl[0] == "cookie" || sl[0] == "timeout" || sl[0] == "proxy" || sl[0] == "stress") {
+				sl[0] == "cookie" || sl[0] == "timeout" || sl[0] == "proxy" || sl[0] == "stress" || sl[0] == "save") {
 				if sl[0] == "url" {
 					isUrl = true
 				}
@@ -85,6 +85,10 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 				} else {
 					argMap[sl[0]] = sl[1]
 				}
+			}
+
+			if sl[0] == "to" {
+				argMap[sl[0]] = sl[1]
 			}
 		}
 	}
