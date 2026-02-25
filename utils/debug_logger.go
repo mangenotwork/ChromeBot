@@ -13,3 +13,9 @@ func Debug(v ...interface{}) {
 	}
 
 }
+
+func Debugf(format string, v ...interface{}) {
+	if IsDebug {
+		log.Printf("[DEBUG]"+format, v...)
+	}
+}

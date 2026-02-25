@@ -1,0 +1,22 @@
+http get url="www.baidu.com"
+
+
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}"
+
+var b1 = {
+    "id": "2b65775d-d68b-485a-af17-99f13ceb167a"
+}
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b1
+
+var b2 = ["aaaa", "bbbb"]
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b2
+
+var h1="{\"id\":1}"
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h1
+
+var h2= {
+    "id":1
+}
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h2
+
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" header="{\"id\":1}" ctype="application/json" cookie="language=zh-CN" timeout=5 proxy="127.0.0.1:9080"

@@ -17,9 +17,19 @@ type HttpReq struct {
 	Timeout gt.ReqTimeOut
 	Proxy   gt.ProxyUrl
 	Stress  int
+	Save    string
 }
 
-func (req *HttpReq) Do() {
+type HttpResult struct {
+	Code    int
+	Body    []byte
+	Header  gt.Header
+	Cookie  gt.Cookie
+	ReqTime string // 请求的时间
+	Error   error
+}
+
+func (req *HttpReq) Do() *HttpResult {
 	arg := make([]interface{}, 0)
 	if req.Header != nil && len(req.Header) > 0 {
 		arg = append(arg, req.Header)
@@ -82,6 +92,13 @@ func (req *HttpReq) Do() {
 	if ctx != nil {
 		fmt.Println("返回code ", ctx.StateCode)
 		fmt.Println("返回body ", string(ctx.RespBody))
+		return &HttpResult{
+			Code: ctx.StateCode,
+			Body: ctx.RespBody,
+		}
 	}
 
+	return &HttpResult{
+		Code: 0, // 0为错误
+	}
 }
