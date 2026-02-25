@@ -1,6 +1,8 @@
 package interpreter
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"strings"
 )
@@ -19,6 +21,7 @@ func (i *Interpreter) registerBuiltins() {
 		"has":     builtinHas,    // has 字典或列表是否存在元素, arg第一个是字典或列表， 第二个是要找的元素
 		"delete":  builtinDelete, // delete 删除字典或列表的指定元素, arg第一个是字典或列表， 第二个是要找的元素
 		"type_of": builtinTypeOf, // type_of 获取变量类型
+		"copy":    builtinCopy,   // copy 深拷贝变量
 	}
 	for name, fn := range builtinFnMap {
 		i.global.SetFunc(name, fn)
@@ -251,4 +254,17 @@ func builtinTypeOf(args []Value) (Value, error) {
 			return "unknown", nil
 		}
 	}
+}
+
+func builtinCopy(args []Value) (Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("copy(arg,arg) 需要两个参数")
+	}
+
+	var buf bytes.Buffer
+	if err := gob.NewEncoder(&buf).Encode(args[0]); err != nil {
+		return nil, nil
+	}
+	_ = gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(args[1])
+	return nil, nil
 }
