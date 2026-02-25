@@ -88,6 +88,10 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 			}
 
 			if sl[0] == "to" {
+				if len(sl) < 2 {
+					i.ErrorShow(hang, fmt.Sprintf("http操作%s参数没设置值", sl[0]))
+					return nil
+				}
 				argMap[sl[0]] = sl[1]
 			}
 		}

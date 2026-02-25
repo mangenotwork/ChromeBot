@@ -223,7 +223,15 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if to, ok := argMap["to"]; ok {
 			utils.Debug("http请求结果保存到变量: ", to)
-			interp.Global().SetVar(to.(string), "http resp")
+			rseDict := make(interpreter.DictType)
+			rseDict["code"] = rse.Code
+			rseDict["body"] = string(rse.Body)
+			rseDict["header"] = gt.Any2String(rse.Header)
+			rseDict["req_time"] = rse.ReqTime
+			if rse.Error != nil {
+				rseDict["err"] = rse.Error.Error()
+			}
+			interp.Global().SetVar(to.(string), rseDict)
 		}
 
 		return nil, nil

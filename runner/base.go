@@ -3,6 +3,7 @@ package runner
 import (
 	"ChromeBot/utils"
 	"fmt"
+	gt "github.com/mangenotwork/gathertool"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -18,7 +19,8 @@ const (
 
 func Run() {
 
-	utils.IsDebug = true
+	utils.IsDebug = false
+	gt.CloseLog()
 
 	if len(os.Args) < 2 {
 		fmt.Printf("_________\n")

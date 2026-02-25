@@ -5,6 +5,10 @@
 - [] DSL v0.1, 继续完善语法文档
 
 #### v0.0.4
+- [] host 宿主机的相关方法 增加 host 关键字
+  1. host name
+  2. host ip
+  3. host info
 - [] 并发请求 
 - [] http代理
 - [] websocket客户端
@@ -22,17 +26,13 @@
 - [] 更新文档
 
 #### v0.0.2
-- [] http请求方法 增加 http 关键字
+- [ok] http请求方法 增加 http 关键字
   1. http参数解析
   2. http请求的功能
   3. 请求后返回值的存储
   4. 关闭gt的日志
-- [] host 宿主机的相关方法 增加 host 关键字
-  1. host name
-  2. host ip
-  3. host info
-- [] 正则方法
 - [] 字符处理方法
+- [] 正则方法
 - [] 时间相关方法
 - [] save相关方法 增加 output 关键字
 - [] 测试内置函数，语法层面的

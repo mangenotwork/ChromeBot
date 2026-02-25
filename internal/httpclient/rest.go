@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"ChromeBot/utils"
 	"fmt"
 	gt "github.com/mangenotwork/gathertool"
 )
@@ -23,8 +24,8 @@ type HttpReq struct {
 type HttpResult struct {
 	Code    int
 	Body    []byte
-	Header  gt.Header
-	Cookie  gt.Cookie
+	Header  string
+	Cookie  string
 	ReqTime string // 请求的时间
 	Error   error
 }
@@ -87,18 +88,25 @@ func (req *HttpReq) Do() *HttpResult {
 	}
 
 	if err != nil {
-		fmt.Println("[ERROR]请求失败err = ", err)
+		utils.Debug("[ERROR]请求失败err = ", err)
+		return &HttpResult{
+			Code:  0, // 0为错误
+			Error: err,
+		}
 	}
 	if ctx != nil {
-		fmt.Println("返回code ", ctx.StateCode)
-		fmt.Println("返回body ", string(ctx.RespBody))
+		utils.Debug("返回code ", ctx.StateCode)
+		utils.Debug("返回body ", string(ctx.RespBody))
 		return &HttpResult{
-			Code: ctx.StateCode,
-			Body: ctx.RespBody,
+			Code:    ctx.StateCode,
+			Body:    ctx.RespBody,
+			ReqTime: ctx.Ms.String(),
+			Header:  gt.Any2String(ctx.Resp.Header),
 		}
 	}
 
 	return &HttpResult{
-		Code: 0, // 0为错误
+		Code:  0, // 0为错误
+		Error: fmt.Errorf("没有请求成功"),
 	}
 }
