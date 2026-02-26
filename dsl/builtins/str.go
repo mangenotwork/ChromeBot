@@ -4,6 +4,11 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"fmt"
 	gt "github.com/mangenotwork/gathertool"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/traditionalchinese"
+	"golang.org/x/text/transform"
 	"strings"
 )
 
@@ -24,6 +29,16 @@ var strFn = map[string]interpreter.Function{
 	"UrlBase64Decode": strUrlBase64Decode, // UrlBase64Decode 函数 url进行base64解码
 	"MD5":             strMD5,             // MD5 函数 将字符串进行md5
 	"MD516":           strMD516,           // MD516 函数 将字符串进行md5，返回16位
+	"GBKToUTF8":       strGBKToUTF8,       // GBKToUTF8 函数 将GBK编码的字符串转换为utf-8编码
+	"UTF8ToGBK":       strUTF8ToGBK,       // UTF8ToGBK 函数 将utf-8编码的字符串转换为GBK编码
+	"UTF8ToGB2312":    strUTF8ToGB2312,    // UTF8ToGB2312 函数 将UTF-8转换为GB2312
+	"GB2312ToUTF8":    strGB2312ToUTF8,    // GB2312ToUTF8 函数 将GB2312转换为UTF-8
+	"UTF8ToGB18030":   strUTF8ToGB18030,   // UTF8ToGB18030 函数 将UTF-8转换为GB18030
+	"GB18030ToUTF8":   strGB18030ToUTF8,   // GB18030ToUTF8 函数 将GB18030转换为UTF-8
+	"UTF8ToBIG5":      strUTF8ToBIG5,      // UTF8ToBIG5 函数 将UTF-8转换为BIG5
+	"BIG5ToUTF8":      strBIG5ToUTF8,      // BIG5ToUTF8 函数 将BIG5转换为UTF-8
+	"UTF8ToLatin1":    strUTF8ToLatin1,    // UTF8ToLatin1 函数 将UTF-8转换为ISO-8859-1（Latin1）
+	"Latin1ToUTF8":    strLatin1ToUTF8,    // Latin1ToUTF8 函数 将ISO-8859-1转换为UTF-8
 }
 
 func strUpper(args []interpreter.Value) (interpreter.Value, error) {
@@ -205,4 +220,140 @@ func strMD516(args []interpreter.Value) (interpreter.Value, error) {
 		return nil, fmt.Errorf("MD516(str) 需要字符串参数")
 	}
 	return gt.Get16MD5Encode(s), nil
+}
+
+// encodeString 将字符串从UTF-8编码转换为指定目标编码
+func encodeString(str string, enc encoding.Encoding) string {
+	if str == "" {
+		return ""
+	}
+	encoder := enc.NewEncoder()
+	result, _, err := transform.String(encoder, str)
+	if err != nil {
+		return str // 转换失败返回原字符串
+	}
+	return result
+}
+
+// decodeString 将指定编码的字符串转换为UTF-8编码
+func decodeString(str string, enc encoding.Encoding) string {
+	if str == "" {
+		return ""
+	}
+	decoder := enc.NewDecoder()
+	result, _, err := transform.String(decoder, str)
+	if err != nil {
+		return str // 转换失败返回原字符串
+	}
+	return result
+}
+
+func strGBKToUTF8(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("GBKToUTF8(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("GBKToUTF8(str) 需要字符串参数")
+	}
+	return decodeString(s, simplifiedchinese.GBK), nil
+}
+
+func strUTF8ToGBK(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("UTF8ToGBK(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("UTF8ToGBK(str) 需要字符串参数")
+	}
+	return encodeString(s, simplifiedchinese.GBK), nil
+}
+
+func strUTF8ToGB2312(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("UTF8ToGB2312(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("UTF8ToGB2312(str) 需要字符串参数")
+	}
+	return encodeString(s, simplifiedchinese.HZGB2312), nil
+}
+
+func strGB2312ToUTF8(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("GB2312ToUTF8(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("GB2312ToUTF8(str) 需要字符串参数")
+	}
+	return decodeString(s, simplifiedchinese.HZGB2312), nil
+}
+
+func strUTF8ToGB18030(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("UTF8ToGB18030(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("UTF8ToGB18030(str) 需要字符串参数")
+	}
+	return encodeString(s, simplifiedchinese.GB18030), nil
+}
+
+func strGB18030ToUTF8(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("GB18030ToUTF8(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("GB18030ToUTF8(str) 需要字符串参数")
+	}
+	return decodeString(s, simplifiedchinese.GB18030), nil
+}
+
+func strUTF8ToBIG5(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("UTF8ToBIG5(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("UTF8ToBIG5(str) 需要字符串参数")
+	}
+	return encodeString(s, traditionalchinese.Big5), nil
+}
+
+func strBIG5ToUTF8(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("BIG5ToUTF8(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("BIG5ToUTF8(str) 需要字符串参数")
+	}
+	return decodeString(s, traditionalchinese.Big5), nil
+}
+
+func strUTF8ToLatin1(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("UTF8ToLatin1(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("UTF8ToLatin1(str) 需要字符串参数")
+	}
+	return encodeString(s, charmap.ISO8859_1), nil
+}
+
+func strLatin1ToUTF8(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("Latin1ToUTF8(str) 需要一个参数")
+	}
+	s, ok := args[0].(string)
+	if !ok {
+		return nil, fmt.Errorf("Latin1ToUTF8(str) 需要字符串参数")
+	}
+	return decodeString(s, charmap.ISO8859_1), nil
 }
