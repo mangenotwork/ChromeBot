@@ -325,7 +325,7 @@ func (l *Lexer) NextToken() Token {
 	case ']':
 		tok.Type = TokenRBracket
 		tok.Literal = string(l.ch)
-	case '"', '\'':
+	case '"', '\'', '`':
 		tok.Type = TokenString
 		tok.Literal = l.readString()
 	case '.':
@@ -388,7 +388,7 @@ func (l *Lexer) readIdentifier() string {
 		// 允许的字符：字母、数字、下划线、等号、点、冒号、减号
 		if isLetter(l.ch) || isDigit(l.ch) || l.ch == '_' {
 			l.readChar()
-		} else if l.ch == '"' || l.ch == '\'' {
+		} else if l.ch == '"' || l.ch == '\'' || l.ch == '`' {
 			l.readChar() // 读取引号
 			for l.ch != '"' && l.ch != '\'' && l.ch != 0 {
 				if l.ch == '\\' {
@@ -401,7 +401,7 @@ func (l *Lexer) readIdentifier() string {
 				}
 			}
 			// 跳过结束引号
-			if l.ch == '"' {
+			if l.ch == '"' || l.ch == '`' {
 				l.readChar()
 			}
 		} else {
@@ -481,7 +481,7 @@ func (l *Lexer) readString() string {
 			break
 		}
 
-		if l.ch == '"' || l.ch == '\'' {
+		if l.ch == '"' || l.ch == '\'' || l.ch == '`' {
 			break
 		}
 
@@ -493,7 +493,7 @@ func (l *Lexer) readString() string {
 
 	}
 
-	if l.ch == '"' || l.ch == '\'' {
+	if l.ch == '"' || l.ch == '\'' || l.ch == '`' {
 		// 正常结束，有右引号
 		str := l.input[position:l.position]
 		return unescapeString(str)
@@ -515,7 +515,7 @@ func unescapeString(s string) string {
 			switch s[i] {
 			case '\\':
 				result.WriteByte('\\')
-			case '"', '\'':
+			case '"', '\'', '`':
 				result.WriteByte('"')
 			case 'n':
 				result.WriteByte('\n')

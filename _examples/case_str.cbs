@@ -1,0 +1,7 @@
+var a = Reg("<a>1</a>23<a>4</a>", "(?is:<a.*?</a>)")
+print(Reg("<a>1</a>23<a>4</a>", `(?is:<a.*?</a>)`))
+
+print(Reg2("<a>1</a>23<a>4</a>", `(?is:<a.*?</a>)`))
+
+print(RegHtml("<a>1</a>23<a>4</a>", "a"))
+print(RegHtmlText("<a>1</a>23<a>4</a>", "a"))

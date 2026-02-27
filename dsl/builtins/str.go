@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// 字符串相关的内置方法
+// 字符串相关的内置方法，字符串的正则方法
 var strFn = map[string]interpreter.Function{
 	"upper":           strUpper,           // upper 将参数转换为字符串并转为大写
 	"repeat":          strRepeat,          // repeat 将字符串进行重复, 第二个参数必须是整数
@@ -39,6 +39,12 @@ var strFn = map[string]interpreter.Function{
 	"BIG5ToUTF8":      strBIG5ToUTF8,      // BIG5ToUTF8 函数 将BIG5转换为UTF-8
 	"UTF8ToLatin1":    strUTF8ToLatin1,    // UTF8ToLatin1 函数 将UTF-8转换为ISO-8859-1（Latin1）
 	"Latin1ToUTF8":    strLatin1ToUTF8,    // Latin1ToUTF8 函数 将ISO-8859-1转换为UTF-8
+	"Reg":             strReg,             // Reg 函数 字符串正则 第一个参数是字符串，第二个参数是正则串
+	"RegHtml":         strRegHtml,         // RegHtml 函数 用正则提取html 第一个参数是html字符串，第二个是标签
+	"RegHtmlText":     strRegHtmlText,     // RegHtmlText 函数 用正则提取html只匹配标签内的文本部分 第一个参数是html字符串，第二个是标签名
+	"RegFn":           strRegFn,           // RegFn 函数 内置了很多用正则提取的常用场景方法 第一个参数是字符串，第二个是方法名
+	"RegDel":          strRegDel,          // RegDel 函数 常见的删除方法支持html删除指定标签内容 第一个参数是字符串，第二个是方法名或标签名
+	"RegHas":          strRegHas,          // RegHas 函数 使用正则判断是否存在某内容 第一个参数是字符串，第二个是方法名
 }
 
 func strUpper(args []interpreter.Value) (interpreter.Value, error) {
@@ -356,4 +362,316 @@ func strLatin1ToUTF8(args []interpreter.Value) (interpreter.Value, error) {
 		return nil, fmt.Errorf("Latin1ToUTF8(str) 需要字符串参数")
 	}
 	return decodeString(s, charmap.ISO8859_1), nil
+}
+
+func strReg(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("Reg(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("Reg(str,str) 第一个参数要求是字符串 ")
+	}
+	regStr, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("Reg(str,str) 第二个参数要求是字符串 ")
+	}
+	res := make([]interpreter.Value, 0)
+	list := gt.RegFindAll(regStr, str)
+
+	for _, v := range list {
+		for _, vItem := range v {
+			res = append(res, vItem)
+		}
+	}
+	return res, nil
+}
+
+var labelFunc = map[string]func(str string, property ...string) []string{
+	"a":           gt.RegHtmlA,
+	"title":       gt.RegHtmlTitle,
+	"keywords":    gt.RegHtmlKeyword,
+	"description": gt.RegHtmlDescription,
+	"tr":          gt.RegHtmlTr,
+	"input":       gt.RegHtmlInput,
+	"td":          gt.RegHtmlTd,
+	"p":           gt.RegHtmlP,
+	"span":        gt.RegHtmlSpan,
+	"src":         gt.RegHtmlSrc,
+	"href":        gt.RegHtmlHref,
+	"h1":          gt.RegHtmlH1,
+	"h2":          gt.RegHtmlH2,
+	"h3":          gt.RegHtmlH3,
+	"h4":          gt.RegHtmlH4,
+	"h5":          gt.RegHtmlH5,
+	"h6":          gt.RegHtmlH6,
+	"tbody":       gt.RegHtmlTbody,
+	"video":       gt.RegHtmlVideo,
+	"canvas":      gt.RegHtmlCanvas,
+	"code":        gt.RegHtmlCode,
+	"img":         gt.RegHtmlImg,
+	"ul":          gt.RegHtmlUl,
+	"li":          gt.RegHtmlLi,
+	"meta":        gt.RegHtmlMeta,
+	"select":      gt.RegHtmlSelect,
+	"table":       gt.RegHtmlTable,
+	"button":      gt.RegHtmlButton,
+	"tableOnly":   gt.RegHtmlTableOnly,
+	"div":         gt.RegHtmlDiv,
+	"option":      gt.RegHtmlOption,
+}
+
+func strRegHtml(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("RegHtml(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("RegHtml(str,str) 第一个参数要求是字符串 ")
+	}
+	label, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("RegHtml(str,str) 第二个参数要求是字符串 ")
+	}
+	fn, ok3 := labelFunc[label]
+	if !ok3 {
+		return nil, fmt.Errorf("RegHtml(str,str) 暂时不支持%s该标签的正则 ", label)
+	}
+	res := make([]interpreter.Value, 0)
+	list := fn(str)
+	for _, v := range list {
+		res = append(res, v)
+	}
+	return res, nil
+}
+
+var labelTextFunc = map[string]func(str string, property ...string) []string{
+	"a":           gt.RegHtmlATxt,
+	"title":       gt.RegHtmlTitleTxt,
+	"keywords":    gt.RegHtmlKeywordTxt,
+	"description": gt.RegHtmlDescriptionTxt,
+	"tr":          gt.RegHtmlTrTxt,
+	"td":          gt.RegHtmlTdTxt,
+	"p":           gt.RegHtmlPTxt,
+	"span":        gt.RegHtmlSpanTxt,
+	"src":         gt.RegHtmlSrcTxt,
+	"href":        gt.RegHtmlHrefTxt,
+	"h1":          gt.RegHtmlH1Txt,
+	"h2":          gt.RegHtmlH2Txt,
+	"h3":          gt.RegHtmlH3Txt,
+	"h4":          gt.RegHtmlH4Txt,
+	"h5":          gt.RegHtmlH5Txt,
+	"h6":          gt.RegHtmlH6Txt,
+	"code":        gt.RegHtmlCodeTxt,
+	"ul":          gt.RegHtmlUlTxt,
+	"li":          gt.RegHtmlLiTxt,
+	"select":      gt.RegHtmlSelectTxt,
+	"table":       gt.RegHtmlTableTxt,
+	"button":      gt.RegHtmlButtonTxt,
+	"div":         gt.RegHtmlDivTxt,
+	"option":      gt.RegHtmlOptionTxt,
+	"value":       gt.RegValue,
+}
+
+func strRegHtmlText(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 第一个参数要求是字符串 ")
+	}
+	label, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 第二个参数要求是字符串 ")
+	}
+	fn, ok3 := labelTextFunc[label]
+	if !ok3 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 暂时不支持%s该标签的正则 ", label)
+	}
+	res := make([]interpreter.Value, 0)
+	list := fn(str)
+	for _, v := range list {
+		res = append(res, v)
+	}
+	return res, nil
+}
+
+var labelDelFunc = map[string]func(str string, property ...string) string{
+	"html":   func(str string, property ...string) string { return gt.RegDelHtml(str) },
+	"number": func(str string, property ...string) string { return gt.RegDelNumber(str) },
+	"a":      func(str string, property ...string) string { return gt.RegDelHtmlA(str) },
+	"title":  func(str string, property ...string) string { return gt.RegDelHtmlTitle(str) },
+	"tr":     func(str string, property ...string) string { return gt.RegDelHtmlTr(str) },
+	"input":  gt.RegDelHtmlInput,
+	"td":     gt.RegDelHtmlTd,
+	"p":      gt.RegDelHtmlP,
+	"span":   gt.RegDelHtmlSpan,
+	"src":    gt.RegDelHtmlSrc,
+	"href":   gt.RegDelHtmlHref,
+	"video":  gt.RegDelHtmlVideo,
+	"canvas": gt.RegDelHtmlCanvas,
+	"code":   gt.RegDelHtmlCode,
+	"img":    gt.RegDelHtmlImg,
+	"ul":     gt.RegDelHtmlUl,
+	"li":     gt.RegDelHtmlLi,
+	"meta":   gt.RegDelHtmlMeta,
+	"select": gt.RegDelHtmlSelect,
+	"table":  gt.RegDelHtmlTable,
+	"button": gt.RegDelHtmlButton,
+	"h1":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "1", property...) },
+	"h2":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "2", property...) },
+	"h3":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "3", property...) },
+	"h4":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "4", property...) },
+	"h5":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "5", property...) },
+	"h6":     func(str string, property ...string) string { return gt.RegDelHtmlH(str, "6", property...) },
+	"tbody":  gt.RegDelHtmlTbody,
+}
+
+func strRegDel(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("RegDel(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("RegDel(str,str) 第一个参数要求是字符串 ")
+	}
+	label, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("RegDel(str,str) 第二个参数要求是字符串 ")
+	}
+	fn, ok3 := labelDelFunc[label]
+	if !ok3 {
+		return nil, fmt.Errorf("RegDel(str,str) 暂时不支持%s该标签的正则 ", label)
+	}
+	res := make([]interpreter.Value, 0)
+	list := fn(str)
+	for _, v := range list {
+		res = append(res, v)
+	}
+	return res, nil
+}
+
+var labelHasFunc = map[string]func(str string, number int) bool{
+	"IsNumber":        func(str string, number int) bool { return gt.IsNumber(str) },
+	"IsNumber2Len":    gt.IsNumber2Len,
+	"IsNumber2Heard":  gt.IsNumber2Heard,
+	"IsFloat":         func(str string, number int) bool { return gt.IsFloat(str) },
+	"IsFloat2Len":     gt.IsFloat2Len,
+	"IsEngAll":        func(str string, number int) bool { return gt.IsEngAll(str) },
+	"IsEngLen":        gt.IsEngLen,
+	"IsEngNumber":     func(str string, number int) bool { return gt.IsEngNumber(str) },
+	"IsLeastNumber":   gt.IsLeastNumber,
+	"IsLeastCapital":  gt.IsLeastCapital,
+	"IsLeastLower":    gt.IsLeastLower,
+	"IsLeastSpecial":  gt.IsLeastSpecial,
+	"HaveNumber":      func(str string, number int) bool { return gt.HaveNumber(str) },
+	"HaveSpecial":     func(str string, number int) bool { return gt.HaveSpecial(str) },
+	"IsEmail":         func(str string, number int) bool { return gt.IsEmail(str) },
+	"IsDomain":        func(str string, number int) bool { return gt.IsDomain(str) },
+	"IsURL":           func(str string, number int) bool { return gt.IsURL(str) },
+	"IsPhone":         func(str string, number int) bool { return gt.IsPhone(str) },
+	"IsLandline":      func(str string, number int) bool { return gt.IsLandline(str) },
+	"AccountRational": func(str string, number int) bool { return gt.AccountRational(str) },
+	"IsXMLFile":       func(str string, number int) bool { return gt.IsXMLFile(str) },
+	"IsUUID3":         func(str string, number int) bool { return gt.IsUUID3(str) },
+	"IsUUID4":         func(str string, number int) bool { return gt.IsUUID4(str) },
+	"IsUUID5":         func(str string, number int) bool { return gt.IsUUID5(str) },
+	"IsRGB":           func(str string, number int) bool { return gt.IsRGB(str) },
+	"IsFullWidth":     func(str string, number int) bool { return gt.IsFullWidth(str) },
+	"IsHalfWidth":     func(str string, number int) bool { return gt.IsHalfWidth(str) },
+	"IsBase64":        func(str string, number int) bool { return gt.IsBase64(str) },
+	"IsLatitude":      func(str string, number int) bool { return gt.IsLatitude(str) },
+	"IsLongitude":     func(str string, number int) bool { return gt.IsLongitude(str) },
+	"IsDNSName":       func(str string, number int) bool { return gt.IsDNSName(str) },
+	"IsIPv4":          func(str string, number int) bool { return gt.IsWindowsPath(str) },
+	"IsWindowsPath":   func(str string, number int) bool { return gt.IsWindowsPath(str) },
+	"IsUnixPath":      func(str string, number int) bool { return gt.IsUnixPath(str) },
+}
+
+func strRegHas(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("RegHas(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("RegHas(str,str) 第一个参数要求是字符串 ")
+	}
+	label, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("RegHas(str,str) 第二个参数要求是字符串 ")
+	}
+	fn, ok3 := labelHasFunc[label]
+	if !ok3 {
+		return nil, fmt.Errorf("RegHas(str,str) 暂时没有%s这个方法", label)
+	}
+	number, ok4 := args[2].(int)
+	res := false
+	if ok4 {
+		res = fn(str, number)
+	} else {
+		res = fn(str, 1) // 默认1
+	}
+	return res, nil
+}
+
+var labelFnFunc = map[string]func(str string, property ...string) []string{
+	"RegTime":         gt.RegTime,
+	"RegLink":         gt.RegLink,
+	"RegEmail":        gt.RegEmail,
+	"RegIPv4":         gt.RegIPv4,
+	"RegIPv6":         gt.RegIPv6,
+	"RegIP":           gt.RegIP,
+	"RegMD5Hex":       gt.RegMD5Hex,
+	"RegSHA1Hex":      gt.RegSHA1Hex,
+	"RegSHA256Hex":    gt.RegSHA256Hex,
+	"RegGUID":         gt.RegGUID,
+	"RegMACAddress":   gt.RegMACAddress,
+	"RegEmail2":       gt.RegEmail2,
+	"RegUUID3":        gt.RegUUID3,
+	"RegUUID4":        gt.RegUUID4,
+	"RegUUID5":        gt.RegUUID5,
+	"RegUUID":         gt.RegUUID,
+	"RegInt":          gt.RegInt,
+	"RegFloat":        gt.RegFloat,
+	"RegRGBColor":     gt.RegRGBColor,
+	"RegFullWidth":    gt.RegFullWidth,
+	"RegHalfWidth":    gt.RegHalfWidth,
+	"RegBase64":       gt.RegBase64,
+	"RegLatitude":     gt.RegLatitude,
+	"RegLongitude":    gt.RegLongitude,
+	"RegDNSName":      gt.RegDNSName,
+	"RegFullURL":      gt.RegFullURL,
+	"RegURLSchema":    gt.RegURLSchema,
+	"RegURLUsername":  gt.RegURLUsername,
+	"RegURLPath":      gt.RegURLPath,
+	"RegURLPort":      gt.RegURLPort,
+	"RegURLIP":        gt.RegURLIP,
+	"RegURLSubdomain": gt.RegURLSubdomain,
+	"RegWinPath":      gt.RegWinPath,
+	"RegUnixPath":     gt.RegUnixPath,
+}
+
+func strRegFn(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 需要2个参数 ")
+	}
+	str, ok1 := args[0].(string)
+	if !ok1 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 第一个参数要求是字符串 ")
+	}
+	label, ok2 := args[1].(string)
+	if !ok2 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 第二个参数要求是字符串 ")
+	}
+	fn, ok3 := labelFnFunc[label]
+	if !ok3 {
+		return nil, fmt.Errorf("RegHtmlText(str,str) 暂时没有%s这个方法", label)
+	}
+	res := make([]interpreter.Value, 0)
+	list := fn(str)
+	for _, v := range list {
+		res = append(res, v)
+	}
+	return res, nil
 }
