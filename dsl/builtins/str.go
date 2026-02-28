@@ -19,6 +19,8 @@ var strFn = map[string]interpreter.Function{
 	"lower":           strLower,           // lower 字符串转小写
 	"trim":            strTrim,            // trim 取首字符
 	"split":           strSplit,           // split 字符分割
+	"replace":         strReplace,         // replace 字符串替换
+	"replaceN":        strReplaceN,        // replaceN 字符串替换 指定替换几个
 	"CleanWhitespace": strCleanWhitespace, // CleanWhitespace 函数 清理字符串回车，换行符号，还有前后空格
 	"StrDeleteSpace":  strDeleteSpace,     // StrDeleteSpace 函数 删除字符串前后的空格
 	"UnicodeDecode":   strUnicodeDecode,   // UnicodeDec 函数 字符串进行unicode编码
@@ -103,6 +105,38 @@ func strSplit(args []interpreter.Value) (interpreter.Value, error) {
 	for i, part := range parts {
 		result[i] = part
 	}
+	return result, nil
+}
+
+func strReplace(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("replace() 需要3个参数")
+	}
+	s1, ok1 := args[0].(string)
+	s2, ok2 := args[1].(string)
+	s3, ok3 := args[2].(string)
+	if !ok1 || !ok2 || !ok3 {
+		return nil, fmt.Errorf("replace() 需要字符串参数")
+	}
+	result := strings.ReplaceAll(s1, s2, s3)
+	return result, nil
+}
+
+func strReplaceN(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 4 {
+		return nil, fmt.Errorf("replaceN() 需要4个参数")
+	}
+	s1, ok1 := args[0].(string)
+	s2, ok2 := args[1].(string)
+	s3, ok3 := args[2].(string)
+	if !ok1 || !ok2 || !ok3 {
+		return nil, fmt.Errorf("replaceN() 前三个参数需要字符串")
+	}
+	n, err := getInt(args[3])
+	if err != nil {
+		return nil, fmt.Errorf("replaceN()最后一个参数%s", err.Error())
+	}
+	result := strings.Replace(s1, s2, s3, n)
 	return result, nil
 }
 
@@ -605,13 +639,16 @@ func strRegHas(args []interpreter.Value) (interpreter.Value, error) {
 	if !ok3 {
 		return nil, fmt.Errorf("RegHas(str,str) 暂时没有%s这个方法", label)
 	}
-	number, ok4 := args[2].(int)
 	res := false
-	if ok4 {
-		res = fn(str, number)
-	} else {
-		res = fn(str, 1) // 默认1
+	if len(args) == 3 {
+		number, ok4 := args[2].(int)
+		if ok4 {
+			res = fn(str, number)
+			return res, nil
+		}
 	}
+
+	res = fn(str, 1) // 默认1
 	return res, nil
 }
 

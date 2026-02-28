@@ -1,7 +1,103 @@
+#  upper 将参数转换为字符串并转为大写
+print(upper("hello"))
+
+# repeat 将字符串进行重复, 第二个参数必须是整数
+print(repeat("hello", 2))
+
+# lower 字符串转小写
+print("lower 字符串转小写 -> ", lower("HELLO"))
+
+# trim 取首字符
+print("trim 取首字符 -> ", trim("hello"))
+
+# split 字符分割
+print("split 字符分割 -> ", split("hello@word", "@"))
+
+# replace 字符串替换
+print("replace 字符串替换 -> ", replace("hello@word", "@", " "))
+
+# replaceN 字符串替换 指定替换几个
+print("replaceN 字符串替换 指定替换几个 -> ", replaceN("hello@word@", "@", " ", 1))
+
+# CleanWhitespace 函数 清理字符串回车，换行符号，还有前后空格
+print("CleanWhitespace 函数 清理字符串回车，换行符号，还有前后空格 -> ", CleanWhitespace("\n hello "))
+
+# StrDeleteSpace 函数 删除字符串前后的空格
+print("StrDeleteSpace 函数 删除字符串前后的空格 -> ", StrDeleteSpace("  hello "))
+
+# UnicodeDec 函数 字符串进行unicode编码
+print("UnicodeDec 函数 字符串进行unicode编码 -> ", UnicodeDec("hello"))
+
+# UnescapeUnicode 函数 字符串进行unicode解码
+print("UnescapeUnicode 函数 字符串进行unicode编码 -> ", UnescapeUnicode("hello"))
+
+# Base64Encode 函数 字符串进行base64编码
+print("Base64Encode 函数 字符串进行base64编码 -> ", Base64Encode("hello"))
+
+# Base64Decode 函数 字符串进行base64解码
+print("Base64Decode 函数 字符串进行base64解码 -> ", Base64Decode("aGVsbG8="))
+
+# UrlBase64Encode 函数 url进行base64编码
+print("UrlBase64Encode 函数 url进行base64编码 -> ", UrlBase64Encode("www.baidu.com?t=123"))
+
+# UrlBase64Decode 函数 url进行base64解码
+print("UrlBase64Decode 函数 url进行base64解码 -> ", UrlBase64Decode("d3d3LmJhaWR1LmNvbT90PTEyMw=="))
+
+# MD5 函数 将字符串进行md5
+print("MD5 函数 将字符串进行md5 -> ", MD5("hello"))
+
+# MD516 函数 将字符串进行md5，返回16位
+print("MD516 函数 将字符串进行md5，返回16位 -> ", MD516("hello"))
+
+# GBKToUTF8 函数 将GBK编码的字符串转换为utf-8编码
+print("GBKToUTF8 函数 将GBK编码的字符串转换为utf-8编码 -> ", GBKToUTF8("hello"))
+
+# UTF8ToGBK 函数 将utf-8编码的字符串转换为GBK编码
+print("UTF8ToGBK 函数 将utf-8编码的字符串转换为GBK编码 -> ", UTF8ToGBK("hello"))
+
+# UTF8ToGB2312 函数 将UTF-8转换为GB2312
+print("UTF8ToGB2312 函数 将UTF-8转换为GB2312 -> ", UTF8ToGB2312("hello"))
+
+# GB2312ToUTF8 函数 将GB2312转换为UTF-8
+print("GB2312ToUTF8 函数 将GB2312转换为UTF-8 -> ", GB2312ToUTF8("hello"))
+
+# UTF8ToGB18030 函数 将UTF-8转换为GB18030
+print("UTF8ToGB18030 函数 将UTF-8转换为GB18030 -> ", UTF8ToGB18030("hello"))
+
+# GB18030ToUTF8 函数 将GB18030转换为UTF-8
+print("GB18030ToUTF8 函数 将GB18030转换为UTF-8 -> ", GB18030ToUTF8("hello"))
+
+# UTF8ToBIG5 函数 将UTF-8转换为BIG5
+print("UTF8ToBIG5 函数 将UTF-8转换为BIG5 -> ", UTF8ToBIG5("hello"))
+
+# BIG5ToUTF8 函数 将BIG5转换为UTF-8
+print("BIG5ToUTF8 函数 将BIG5转换为UTF-8 -> ", BIG5ToUTF8("hello"))
+
+# UTF8ToLatin1 函数 将UTF-8转换为ISO-8859-1（Latin1）
+print("UTF8ToLatin1 函数 将UTF-8转换为ISO-8859-1（Latin1） -> ", UTF8ToLatin1("hello"))
+
+# Latin1ToUTF8 函数 将ISO-8859-1转换为UTF-8
+print("Latin1ToUTF8 函数 将ISO-8859-1转换为UTF-8 -> ", Latin1ToUTF8("hello"))
+
+# Reg 函数 字符串正则 第一个参数是字符串，第二个参数是正则串
 var a = Reg("<a>1</a>23<a>4</a>", "(?is:<a.*?</a>)")
-print(Reg("<a>1</a>23<a>4</a>", `(?is:<a.*?</a>)`))
+print("Reg ->", Reg("<a>1</a>23<a>4</a>", `(?is:<a.*?</a>)`))
 
-print(Reg2("<a>1</a>23<a>4</a>", `(?is:<a.*?</a>)`))
+# RegHtml 函数 用正则提取html 第一个参数是html字符串，第二个是标签
+print("RegHtml ->", RegHtml("<a>1</a>23<a>4</a>", "a"))
 
-print(RegHtml("<a>1</a>23<a>4</a>", "a"))
-print(RegHtmlText("<a>1</a>23<a>4</a>", "a"))
+# RegHtmlText 函数 用正则提取html只匹配标签内的文本部分 第一个参数是html字符串，第二个是标签名
+print("RegHtmlText ->", RegHtmlText("<a>1</a>23<a>4</a>", "a"))
+
+# RegFn 函数 内置了很多用正则提取的常用场景方法 第一个参数是字符串，第二个是方法名
+print("RegFn ->", RegFn("aaa127.0.0.1aa", "RegIPv4"))
+
+# RegDel 函数 常见的删除方法支持html删除指定标签内容 第一个参数是字符串，第二个是方法名或标签名
+print("RegDel ->", RegDel("<a>1</a>23<a>4</a>", "a"))
+
+# RegHas 函数 使用正则判断是否存在某内容 第一个参数是字符串，第二个是方法名
+print("RegHas ->", RegHas("123", "IsNumber"))
+
+
+
+

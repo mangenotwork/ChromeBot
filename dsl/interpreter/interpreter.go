@@ -408,6 +408,7 @@ func (i *Interpreter) evaluateCallExpr(expr *ast.CallExpr, ctx *Context, hang in
 
 	result, err := fn(args)
 	if err != nil {
+		fmt.Printf("[Error] line: %d call %s function error: %v \n", expr.StartPos.Line, expr.Function.Name, err)
 		i.errors = append(i.errors, fmt.Errorf("函数调用错误 %s: %v", expr.Function.Name, err))
 		return nil
 	}
