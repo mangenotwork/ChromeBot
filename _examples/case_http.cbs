@@ -22,3 +22,7 @@ http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" header="{\"id\":1}" ctype="application/json" cookie="language=zh-CN" timeout=5 proxy="127.0.0.1:9080"
 
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" to=rse
+
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" save="D:\share.txt"
+
+http get url="https://resource.ecosmos.vip/AD/ad_h5.png?t=1772181855" save="D:\ad_h5.png"
