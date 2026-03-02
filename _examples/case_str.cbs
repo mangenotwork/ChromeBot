@@ -14,7 +14,7 @@ print("trim 取首字符 -> ", trim("hello"))
 print("split 字符分割 -> ", split("hello@word", "@"))
 
 # replace 字符串替换
-print("replace 字符串替换 -> ", replace("hello@word", "@", " "))
+print("replace 字符串替换 -> ",replace("hello@word", "@", " "))
 
 # replaceN 字符串替换 指定替换几个
 print("replaceN 字符串替换 指定替换几个 -> ", replaceN("hello@word@", "@", " ", 1))

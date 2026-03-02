@@ -13,23 +13,23 @@ import (
 // 时间相关的内置方法
 var timeFn = map[string]interpreter.Function{
 	"now":                 timeNow,                 // now 获取当前时间的时间戳
-	"sleep":               timeSleep,               // sleep 休眠
-	"Timestamp":           timeNow,                 // timestamp 时间戳
-	"TimestampMilli":      timeNowMilli,            // timestamp 时间戳 milliseconds
-	"date":                timeDate,                // 获取日期
-	"TimestampToDate":     timeTimestampToDate,     // 时间戳转日期
-	"TimestampToDateAT":   timeTimestampToDateAT,   // 指定时间格式  YYYYMMDD YYYY-MM-DD YYYYMMDDHHmmss YYYY-MM-DD HH:mm:ss MMdd HHmmss
-	"BeginDayUnix":        timeBeginDayUnix,        // 获取当天0点的时间戳
-	"EndDayUnix":          timeEndDayUnix,          // 获取当天24点的时间戳
-	"MinuteAgo":           timeMinuteAgo,           // 获取多少分钟前的时间戳
-	"HourAgo":             timeHourAgo,             // 获取多少小时前的时间戳
-	"DayAgo":              timeDayAgo,              // 获取多少天前的时间戳
-	"DayDiffAtUnix":       timeDayDiffAtUnix,       // 两个时间戳的插值
-	"DayDiff":             timeDayDiff,             // 两个时间字符串的日期差, 返回的是天 格式是 YYYY-MM-DD HH:mm:ss
-	"NowToEnd":            timeNowToEnd,            // 计算当前时间到这天结束还有多久,单位秒
-	"IsToday":             timeIsToday,             // 判断时间戳是否是今天，返回今天的时分秒
-	"Timestamp2Week":      timeTimestamp2Week,      // 传入的时间戳是周几
-	"Timestamp2WeekXinQi": timeTimestamp2WeekXinQi, // 传入的时间戳是星期几
+	"sleep":               timeSleep,               // sleep 休眠 一个参数 单位ms
+	"Timestamp":           timeNow,                 // Timestamp 时间戳
+	"TimestampMilli":      timeNowMilli,            // TimestampMilli 时间戳 milliseconds
+	"date":                timeDate,                // date 获取日期
+	"TimestampToDate":     timeTimestampToDate,     // TimestampToDate 时间戳转日期  一个参数（时间戳）
+	"TimestampToDateAT":   timeTimestampToDateAT,   // TimestampToDateAT 指定时间格式 第一个参数(时间戳) 第二个参数时间格式 YYYYMMDD YYYY-MM-DD YYYYMMDDHHmmss YYYY-MM-DD HH:mm:ss MMdd HHmmss
+	"BeginDayUnix":        timeBeginDayUnix,        // BeginDayUnix 获取当天0点的时间戳
+	"EndDayUnix":          timeEndDayUnix,          // EndDayUnix 获取当天24点的时间戳
+	"MinuteAgo":           timeMinuteAgo,           // MinuteAgo 获取多少分钟前的时间戳  一个参数
+	"HourAgo":             timeHourAgo,             // HourAgo 获取多少小时前的时间戳  一个参数
+	"DayAgo":              timeDayAgo,              // DayAgo 获取多少天前的时间戳  一个参数
+	"DayDiffAtUnix":       timeDayDiffAtUnix,       // DayDiffAtUnix 两个时间戳的插值  两个参数都是时间戳
+	"DayDiff":             timeDayDiff,             // DayDiff 两个时间字符串的日期差, 返回的是天 两个参数都是时间字符串，格式是 YYYY-MM-DD HH:mm:ss
+	"NowToEnd":            timeNowToEnd,            // NowToEnd 计算当前时间到这天结束还有多久,单位秒
+	"IsToday":             timeIsToday,             // IsToday 判断时间戳是否是今天，返回今天的时分秒  一个参数（时间戳）
+	"Timestamp2Week":      timeTimestamp2Week,      // Timestamp2Week 传入的时间戳是周几  一个参数（时间戳）
+	"Timestamp2WeekXinQi": timeTimestamp2WeekXinQi, // Timestamp2WeekXinQi 传入的时间戳是星期几  一个参数（时间戳）
 }
 
 func timeNow(args []interpreter.Value) (interpreter.Value, error) {
@@ -280,6 +280,11 @@ func timeDayDiffAtUnix(args []interpreter.Value) (interpreter.Value, error) {
 	if err != nil {
 		return nil, fmt.Errorf("DayDiffAtUnix(int, int) %s", err.Error())
 	}
+
+	fmt.Println("ms1 : ", ms1)
+	fmt.Println("ms2 : ", ms2)
+	fmt.Println(gt.DayDiffAtUnix(ms1, ms2))
+
 	return gt.DayDiffAtUnix(ms1, ms2), nil
 }
 
@@ -295,6 +300,9 @@ func timeDayDiff(args []interpreter.Value) (interpreter.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("DayDiff(str, str) 参数要求是字符串 ")
 	}
+	fmt.Println("s1 : ", s1)
+	fmt.Println("s2 : ", s2)
+	fmt.Println(gt.DayDiff(s1, s2))
 	return gt.DayDiff(s1, s2), nil
 }
 

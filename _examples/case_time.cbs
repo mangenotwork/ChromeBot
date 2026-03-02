@@ -1,0 +1,55 @@
+// now 获取当前时间的时间戳
+print("now -> ", now())
+
+// sleep 休眠
+sleep(50)
+
+// Timestamp 时间戳
+print("Timestamp -> ", Timestamp())
+
+// TimestampMilli 时间戳 milliseconds
+print("TimestampMilli -> ", TimestampMilli())
+
+// date 获取日期
+print("date -> ", date())
+
+var timestampVal = Timestamp()
+
+// TimestampToDate 时间戳转日期  一个参数（时间戳）
+print("TimestampToDate -> ", TimestampToDate(timestampVal))
+
+// TimestampToDateAT 指定时间格式 第一个参数(时间戳) 第二个参数时间格式 YYYYMMDD YYYY-MM-DD YYYYMMDDHHmmss YYYY-MM-DD HH:mm:ss MMdd HHmmss
+print("TimestampToDateAT -> ", TimestampToDateAT(timestampVal, "YYYYMMDDHHmmss"))
+
+// BeginDayUnix 获取当天0点的时间戳
+print("BeginDayUnix -> ", BeginDayUnix())
+
+// EndDayUnix 获取当天24点的时间戳
+print("EndDayUnix -> ", EndDayUnix())
+
+// MinuteAgo 获取多少分钟前的时间戳  一个参数
+print("MinuteAgo -> ", MinuteAgo(4))
+
+// HourAgo 获取多少小时前的时间戳  一个参数
+print("HourAgo -> ", HourAgo(4))
+
+// DayAgo 获取多少天前的时间戳  一个参数
+print("DayAgo -> ", DayAgo(4))
+
+// DayDiffAtUnix 两个时间戳的插值  两个参数都是时间戳
+print("DayDiffAtUnix -> ", DayDiffAtUnix(timestampVal, MinuteAgo(4)))
+
+// DayDiff 两个时间字符串的日期差, 返回的是天 两个参数都是时间字符串，格式是 YYYY-MM-DD HH:mm:ss
+print("DayDiff -> ", DayDiff(TimestampToDate(timestampVal), TimestampToDate(MinuteAgo(4))))
+
+// NowToEnd 计算当前时间到这天结束还有多久,单位秒
+print("NowToEnd -> ", NowToEnd())
+
+// IsToday 判断时间戳是否是今天，返回今天的时分秒  一个参数（时间戳）
+print("IsToday -> ", IsToday(timestampVal))
+
+// Timestamp2Week 传入的时间戳是周几  一个参数（时间戳）
+print("Timestamp2Week -> ", Timestamp2Week(timestampVal))
+
+// Timestamp2WeekXinQi 传入的时间戳是星期几  一个参数（时间戳）
+print("Timestamp2WeekXinQi -> ", Timestamp2WeekXinQi(timestampVal))

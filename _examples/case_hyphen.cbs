@@ -1,0 +1,4 @@
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" \
+body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" \
+to=rse
+print(rse)
