@@ -506,58 +506,145 @@ RegHas("123", "IsNumber")
 now()
 ```
 
-- sleep 休眠
+- sleep 休眠 单位ms
 ```cbs
 sleep(2)
 ```
 
+-  Timestamp 时间戳
 ```cbs
-
+Timestamp()
 ```
 
+- TimestampMilli 时间戳 milliseconds
 ```cbs
-
+TimestampMilli()
 ```
 
+- date 获取日期
 ```cbs
-
+date()
 ```
 
+- TimestampToDate 时间戳转日期  一个参数（时间戳）
 ```cbs
-
+TimestampToDate(Timestamp())
 ```
 
+- TimestampToDateAT 指定时间格式 第一个参数(时间戳) 第二个参数时间格式 YYYYMMDD YYYY-MM-DD YYYYMMDDHHmmss YYYY-MM-DD HH:mm:ss MMdd HHmmss
 ```cbs
-
+TimestampToDateAT(Timestamp(), "YYYYMMDDHHmmss")
 ```
 
+- BeginDayUnix 获取当天0点的时间戳
 ```cbs
-
+BeginDayUnix()
 ```
 
+- EndDayUnix 获取当天24点的时间戳
 ```cbs
-
+EndDayUnix()
 ```
 
+- MinuteAgo 获取多少分钟前的时间戳  一个参数
 ```cbs
-
+MinuteAgo(4)
 ```
 
+- HourAgo 获取多少小时前的时间戳  一个参数
 ```cbs
-
+DayAgo(4)
 ```
 
+- DayDiffAtUnix 两个时间戳的插值  两个参数都是时间戳
 ```cbs
-
+DayDiffAtUnix(Timestamp(), MinuteAgo(4))
 ```
 
+- DayDiff 两个时间字符串的日期差, 返回的是天 两个参数都是时间字符串，格式是 YYYY-MM-DD HH:mm:ss
 ```cbs
+DayDiff(TimestampToDate(Timestamp()), TimestampToDate(MinuteAgo(4)))
+```
 
+- NowToEnd 计算当前时间到这天结束还有多久,单位秒
+```cbs
+NowToEnd()
+```
+
+- IsToday 判断时间戳是否是今天，返回今天的时分秒  一个参数（时间戳）
+```cbs
+IsToday(Timestamp())
+```
+
+- Timestamp2Week 传入的时间戳是周几  一个参数（时间戳）
+```cbs
+Timestamp2Week(Timestamp())
+```
+
+- Timestamp2WeekXinQi 传入的时间戳是星期几  一个参数（时间戳）
+```cbs
+Timestamp2WeekXinQi(Timestamp())
 ```
 
 ### http关键字
-```cbs
 
+http的请求，命令式语法，支持所有类型的请求，能将返回接口保存到变量，也能保存到本地文件；
+额外支持并发请求，用于压力测试场景
+
+参数说明
+method ：请求方式 get post put delete options head patch
+url : 请求的url,要求类型是str
+body ： 请求的body,要求类型者是str或是List和字典（根据ctype解析为from-data，json这些）
+header ： 请求的header,要求类型是字典或者是json str
+ctype ： 请求的 是 header key 为 Content-Type, 要求类型是str
+cookie ：请求的cookie 是 header key 为 Cookie, 要求类型者是str(k=v;)或是List和字典（会解析为 k=v;） list是 ["k1=v1", "k2=v2"...]
+timeout ：设置请求的超时时间单位为毫秒, 要求类型是数值
+proxy ：设置请求的代理，目前只支持 http/https代理, 要求类型是str
+stress ：压力请求，并发请求设置的数量，要求类型是数值
+save : 指定将响应内容存储，要求类型是str,本地文件路径
+to : 将请求的返回存入到指定变量-如果变量未声明这里会自动声明变量
+save : 将请求的返回存入到指定文件
+
+下面是相关例子
+
+```cbs
+// 简单的get请求
+http get url="www.baidu.com"
+
+// 简单的post请求
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}"
+
+// 请求参数变量
+var b1 = {
+    "id": "2b65775d-d68b-485a-af17-99f13ceb167a"
+}
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b1
+
+// 请求参数变量未List
+var b2 = ["aaaa", "bbbb"]
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b2
+
+// 带请求头
+var h1="{\"id\":1}"
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h1
+
+// 请求头参数
+var h2= {
+    "id":1
+}
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h2
+
+// 带很多参数的请求
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" header="{\"id\":1}" ctype="application/json" cookie="language=zh-CN" timeout=5 proxy="127.0.0.1:9080"
+
+// 将请求接口存储到变量
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" to=rse
+
+// 将请求参数存储到本地文件
+http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" save="D:\share.txt"
+
+// 下载图片
+http get url="https://resource.ecosmos.vip/AD/ad_h5.png?t=1772181855" save="D:\ad_h5.png"
 ```
 
 ### Chrome关键字
