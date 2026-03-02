@@ -1,28 +1,37 @@
+// 简单的get请求
 http get url="www.baidu.com"
 
-
+// 简单的post请求
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}"
 
+// 请求参数变量
 var b1 = {
     "id": "2b65775d-d68b-485a-af17-99f13ceb167a"
 }
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b1
 
+// 请求参数变量未List
 var b2 = ["aaaa", "bbbb"]
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body=b2
 
+// 带请求头
 var h1="{\"id\":1}"
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h1
 
+// 请求头参数
 var h2= {
     "id":1
 }
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" header=h2
 
+// 带很多参数的请求
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" header="{\"id\":1}" ctype="application/json" cookie="language=zh-CN" timeout=5 proxy="127.0.0.1:9080"
 
+// 将请求接口存储到变量
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" to=rse
 
+// 将请求参数存储到本地文件
 http post url="https://api.ecosmos.cc/webapi/industrial/company2/share" body="{\"id\": \"2b65775d-d68b-485a-af17-99f13ceb167a\"}" save="D:\share.txt"
 
+// 下载图片
 http get url="https://resource.ecosmos.vip/AD/ad_h5.png?t=1772181855" save="D:\ad_h5.png"

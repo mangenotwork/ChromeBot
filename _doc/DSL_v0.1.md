@@ -591,19 +591,20 @@ Timestamp2WeekXinQi(Timestamp())
 http的请求，命令式语法，支持所有类型的请求，能将返回接口保存到变量，也能保存到本地文件；
 额外支持并发请求，用于压力测试场景
 
-参数说明
-method ：请求方式 get post put delete options head patch
-url : 请求的url,要求类型是str
-body ： 请求的body,要求类型者是str或是List和字典（根据ctype解析为from-data，json这些）
-header ： 请求的header,要求类型是字典或者是json str
-ctype ： 请求的 是 header key 为 Content-Type, 要求类型是str
-cookie ：请求的cookie 是 header key 为 Cookie, 要求类型者是str(k=v;)或是List和字典（会解析为 k=v;） list是 ["k1=v1", "k2=v2"...]
-timeout ：设置请求的超时时间单位为毫秒, 要求类型是数值
-proxy ：设置请求的代理，目前只支持 http/https代理, 要求类型是str
-stress ：压力请求，并发请求设置的数量，要求类型是数值
-save : 指定将响应内容存储，要求类型是str,本地文件路径
-to : 将请求的返回存入到指定变量-如果变量未声明这里会自动声明变量
-save : 将请求的返回存入到指定文件
+参数说明：
+
+- method ：请求方式 get post put delete options head patch
+- url : 请求的url,要求类型是str
+- body ： 请求的body,要求类型者是str或是List和字典（根据ctype解析为from-data，json这些）
+- header ： 请求的header,要求类型是字典或者是json str
+- ctype ： 请求的 是 header key 为 Content-Type, 要求类型是str
+- cookie ：请求的cookie 是 header key 为 Cookie, 要求类型者是str(k=v;)或是List和字典（会解析为 k=v;） list是 ["k1=v1", "k2=v2"...]
+- timeout ：设置请求的超时时间单位为毫秒, 要求类型是数值
+- proxy ：设置请求的代理，目前只支持 http/https代理, 要求类型是str
+- stress ：压力请求，并发请求设置的数量，要求类型是数值
+- save : 指定将响应内容存储，要求类型是str,本地文件路径
+- to : 将请求的返回存入到指定变量-如果变量未声明这里会自动声明变量
+- save : 将请求的返回存入到指定文件
 
 下面是相关例子
 
