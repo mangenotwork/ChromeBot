@@ -1,0 +1,8 @@
+// 例子1 ：简单访问百度进行查询操作
+chrome init userpath="D:/chromeTest/"  // 打开浏览器
+chrome req="www.baidu.com" // 访问
+chrome input=(`//*[@id="chat-textarea"]`,"mange") // 输入
+chrome click=`//*[@id="chat-submit-button"]` // 点击确定
+chrome to=res // 默认等待页面变换 将当前页面的html存储到变量 res
+print(res) // 输出
+chrome close  // 关闭浏览器

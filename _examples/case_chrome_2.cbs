@@ -1,0 +1,6 @@
+var a= 123
+chrome click=`//*[@id="chat-submit-button"]`
+chrome click="//*[@id=\"chat-submit-button\"]"
+print(a)
+chrome click="//*[@id='chat-submit-button']"
+chrome click=`//*[@id='chat-submit-button']`

@@ -12,14 +12,14 @@ import (
 )
 
 const (
-	VERSION    = "0.0.1"
+	VERSION    = "0.0.3"
 	PROMPT     = ">>> "
 	PROMPTCont = "... "
 )
 
 func Run() {
 
-	utils.IsDebug = false
+	utils.IsDebug = true
 	gt.CloseLog()
 
 	if len(os.Args) < 2 {

@@ -5,10 +5,14 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/dsl/lexer"
 	"ChromeBot/dsl/parser"
+	"ChromeBot/utils"
 	"fmt"
 )
 
 func runScript(source string) {
+
+	source = utils.EscapeQuotesInBackticks(source)
+	
 	// 词法分析
 	l := lexer.New(source)
 

@@ -5,6 +5,7 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/dsl/lexer"
 	"ChromeBot/dsl/parser"
+	"ChromeBot/utils"
 	"bufio"
 	"fmt"
 	"os"
@@ -32,6 +33,8 @@ func runREPL(sigChan chan os.Signal) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		//fmt.Println(line)
+
+		line = utils.EscapeQuotesInBackticks(line)
 
 		if shouldExit(line) {
 			fmt.Println("BayBay.")

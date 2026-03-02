@@ -1,1 +1,40 @@
-chrome init prot=123 proty="127.0.0.1"
+init : 初始化打开浏览器，如果已经打开后续语句再出现init会忽略
+close : 关闭浏览器
+size : 设置浏览器窗口大小与init参数一起用,值为: 宽*高 （900*600） <值类型是字符串>
+proxy : 设置浏览器代理与init参数一起用 <值类型是字符串>
+userpath : 设置浏览器在本机的隔离目录与init参数一起用,对应浏览器的--user-data-dir，建议隔离 <值类型是字符串>
+table : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；selected：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
+req :  请求网址， 值为网址 <值类型是字符串>
+（ dom : 获取当前页面html的dom树 - 改为函数 ）
+click : 点击操作，值为xpath <值类型是字符串>
+xpath : 当前选中的xpath, 输入的时候用
+input : 输入操作，输入内容  <值类型是字符串>
+check : 检查操作，检查页面是否存在指定xpath  <值类型是字符串>
+wait : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
+scroll : 滚动操作，滚动页面  正数往下，负数往上 <值类型是数值类型>
+screenshot : 截图操作，浏览器截图操作  值为保存位置  <值类型是字符串>
+to : 将当前操作的页面html返回存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
+save : 将将当前操作的页面html存入到指定文件  <值类型是字符串>
+
+chrome 1 @ abc 2*2 ?? "aaa" [1,2] {"a":1} init close size="900*600" proxy="proxy" userpath="D:" table="get" req="www.baidu.com" click="aaaaa" xpath="xpath" input="bbb" check="check" wait=10 scroll=10 screenshot="D:1" to=a save="save"
+
+chrome init close size="900*600" proxy="proxy" userpath="D:" table="get"
+chrome close size="900*600" proxy="proxy"
+chrome table="get" req="www.baidu.com"
+chrome req="www.baidu.com" table="get"
+chrome req="www.baidu.com"
+chrome click="aaaaa" xpath="xpath"
+chrome input="bbb"  xpath="xpath"
+chrome  xpath="xpath" input="bbb"
+chrome check="check"
+chrome wait=10
+chrome scroll=10
+chrome screenshot="D:1"
+chrome to=a
+chrome save="save"
+
+
+chrome click=`//*[@id="chat-submit-button"]`
+chrome click="//*[@id=\"chat-submit-button\"]"
+chrome click="//*[@id='chat-submit-button']"
+chrome click=`//*[@id='chat-submit-button']`
