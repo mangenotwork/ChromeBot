@@ -38,3 +38,9 @@ chrome click=`//*[@id="chat-submit-button"]`
 chrome click="//*[@id=\"chat-submit-button\"]"
 chrome click="//*[@id='chat-submit-button']"
 chrome click=`//*[@id='chat-submit-button']`
+
+
+
+// 列子1
+chrome init
+chrome close

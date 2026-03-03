@@ -1,7 +1,9 @@
 package builtins
 
 import (
+	"ChromeBot/browser"
 	"ChromeBot/dsl/interpreter"
+	"fmt"
 	"log"
 	"strings"
 )
@@ -69,7 +71,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if _, ok := argMap["init"]; ok {
 			op = &chromeOperation{
 				opType: opInit,
-				arg:    make([]interpreter.Value, 0),
+				arg:    make(map[string]interpreter.Value),
 				//level:  executionPriority[opInit],
 			}
 			opNumber++
@@ -78,7 +80,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if _, ok := argMap["close"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opClose,
-				arg:    make([]interpreter.Value, 0),
+				arg:    make(map[string]interpreter.Value),
 				//level:  executionPriority[opClose],
 			}
 			opNumber++
@@ -86,26 +88,26 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["size"]; ok {
 			if op != nil && op.opType == opInit {
-				op.arg = append(op.arg, "size=", val)
+				op.arg["size"] = val
 			}
 		}
 
 		if val, ok := argMap["proxy"]; ok {
 			if op != nil && op.opType == opInit {
-				op.arg = append(op.arg, "proxy=", val)
+				op.arg["proxy"] = val
 			}
 		}
 
 		if val, ok := argMap["userpath"]; ok {
 			if op != nil && op.opType == opInit {
-				op.arg = append(op.arg, "userpath="+val)
+				op.arg["userpath"] = val
 			}
 		}
 
 		if val, ok := argMap["table"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opTable,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opTable],
 			}
 			opNumber++
@@ -114,7 +116,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["req"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opReq,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opReq],
 			}
 			opNumber++
@@ -123,7 +125,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["click"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opClick,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opClick],
 			}
 			opNumber++
@@ -132,7 +134,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["input"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opInput,
-				arg:    []interpreter.Value{"input=" + val},
+				arg:    map[string]interpreter.Value{"input": val},
 				//level:  executionPriority[opInput],
 			}
 			opNumber++
@@ -140,14 +142,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["xpath"]; ok {
 			if op != nil && op.opType == opInput {
-				op.arg = append(op.arg, "xpath="+val)
+				op.arg["xpath"] = val
 			}
 		}
 
 		if val, ok := argMap["check"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opCheck,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opCheck],
 			}
 			opNumber++
@@ -156,7 +158,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["wait"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opWait,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opWait],
 			}
 			opNumber++
@@ -165,7 +167,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["scroll"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opScroll,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opScroll],
 			}
 			opNumber++
@@ -174,7 +176,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["screenshot"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opScreenshot,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opScreenshot],
 			}
 			opNumber++
@@ -183,7 +185,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["to"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opTo,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opTo],
 			}
 			opNumber++
@@ -192,13 +194,66 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["save"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opSave,
-				arg:    []interpreter.Value{val},
+				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opSave],
 			}
 			opNumber++
 		}
 
 		log.Printf("执行 : %v", op)
+
+		switch op.opType {
+		case opInit:
+			fmt.Println("初始化浏览器...")
+			windowSize, proxy, userPath := "", "", ""
+			if val, ok := op.arg["size"]; ok {
+				windowSize = val.(string)
+			}
+			if val, ok := op.arg["proxy"]; ok {
+				proxy = val.(string)
+			}
+			if val, ok := op.arg["userpath"]; ok {
+				userPath = val.(string)
+			}
+			err := browser.ChromeInit(windowSize, proxy, userPath)
+			if err != nil {
+				fmt.Println("[ERR]", err.Error())
+			}
+
+		case opClose:
+			fmt.Println("关闭浏览器...")
+			chromeObj := browser.GetChromeInstance()
+
+			fmt.Println("pid =", chromeObj.GetPID())
+
+			err := chromeObj.Close()
+			if err != nil {
+				fmt.Println("[ERR]", err.Error())
+			}
+
+		case opTable:
+			fmt.Println("table操作...")
+		case opReq:
+			fmt.Println("请求操作...")
+		case opClick:
+			fmt.Println("点击操作...")
+		case opInput:
+			fmt.Println("输入操作...")
+		case opCheck:
+			fmt.Println("检查操作...")
+		case opWait:
+			fmt.Println("等待操作...")
+		case opScroll:
+			fmt.Println("滚动操作...")
+		case opScreenshot:
+			fmt.Println("截图操作...")
+		case opTo:
+			fmt.Println("将当前页面的html赋值到变量操作...")
+		case opSave:
+			fmt.Println("将当前页面的html保存到本地...")
+		}
+
+		// todo 全局浏览器对象，打开或关闭
 
 		return nil, nil
 	})
@@ -249,7 +304,7 @@ var (
 //}
 
 type chromeOperation struct {
-	opType chromeOPType        // 操作的类型
-	arg    []interpreter.Value // 操作的参数
+	opType chromeOPType                 // 操作的类型
+	arg    map[string]interpreter.Value // 操作的参数
 	//level  executionPriorityLevel // 操作等级
 }
