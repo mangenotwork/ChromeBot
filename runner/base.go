@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"ChromeBot/browser"
 	"ChromeBot/utils"
 	"fmt"
 	gt "github.com/mangenotwork/gathertool"
@@ -19,7 +20,7 @@ const (
 
 func Run() {
 
-	utils.IsDebug = true
+	utils.IsDebug = false
 	gt.CloseLog()
 
 	if len(os.Args) < 2 {
@@ -54,6 +55,11 @@ func Run() {
 			fmt.Println("这是 kill 命令触发的终止信号")
 		}
 
+		chromeObj := browser.GetChromeInstance()
+		if chromeObj != nil {
+			_ = chromeObj.Close()
+		}
+
 		// 此处可以添加你的清理逻辑，例如关闭文件、断开网络连接等
 		// ...
 		//defer close(done)
@@ -80,6 +86,13 @@ func Run() {
 		utils.Debug(source)
 
 		runScript(string(source))
+
+		// todo 最后清理浏览器, 是否要这样设计
+		//chromeObj := browser.GetChromeInstance()
+		//if chromeObj != nil {
+		//	_ = chromeObj.Close()
+		//}
+
 	}
 
 }

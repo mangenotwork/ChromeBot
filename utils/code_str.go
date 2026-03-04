@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"regexp"
 	"strings"
 )
@@ -26,7 +25,7 @@ func EscapeQuotesInBackticks(input string) string {
 	for i, line := range lines {
 		trimmedLine := strings.TrimLeft(line, " \t")
 		if trimmedLine == "" || !strings.HasPrefix(trimmedLine, "chrome") {
-			log.Println("没 chrome 不需要处理 -> ", line)
+			Debug("没 chrome 不需要处理 -> ", line)
 			processedLines[i] = line
 			continue
 		}
@@ -52,7 +51,7 @@ func EscapeQuotesInBackticks(input string) string {
 
 	// 步骤3：还原换行结构
 	result := strings.Join(processedLines, "\n")
-	log.Println("处理完成，总行数：", len(processedLines))
-	log.Println("result：", result)
+	Debug("处理完成，总行数：", len(processedLines))
+	Debug("result：", result)
 	return result
 }

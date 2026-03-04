@@ -3,8 +3,8 @@ package builtins
 import (
 	"ChromeBot/browser"
 	"ChromeBot/dsl/interpreter"
+	"ChromeBot/utils"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -45,15 +45,15 @@ chrome close  // 关闭浏览器
 */
 func registerChrome(interp *interpreter.Interpreter) {
 	interp.Global().SetFunc("chrome", func(args []interpreter.Value) (interpreter.Value, error) {
-		log.Println("执行 chrome 的操作，参数是 ", args, len(args))
+		utils.Debug("执行 chrome 的操作，参数是 ", args, len(args))
 
 		argMap := make(map[string]string)
 		for i, v := range args {
-			log.Printf("参数 %d %v %T\n", i, v, v)
+			utils.Debugf("参数 %d %v %T\n", i, v, v)
 			switch v.(type) {
 			case string:
 				vList := strings.SplitN(v.(string), "=", 2)
-				log.Println("vList = ", vList, len(vList))
+				utils.Debug("vList = ", vList, len(vList))
 				if len(vList) == 1 {
 					argMap[vList[0]] = ""
 				} else if len(vList) == 2 {
@@ -63,7 +63,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		}
 
-		log.Println("argMap:", argMap)
+		utils.Debug("argMap:", argMap)
 
 		op := &chromeOperation{}
 		opNumber := 0
@@ -200,11 +200,11 @@ func registerChrome(interp *interpreter.Interpreter) {
 			opNumber++
 		}
 
-		log.Printf("执行 : %v", op)
+		utils.Debugf("执行 : %v", op)
 
 		switch op.opType {
 		case opInit:
-			fmt.Println("初始化浏览器...")
+			fmt.Println("[Chrome]初始化浏览器...")
 			windowSize, proxy, userPath := "", "", ""
 			if val, ok := op.arg["size"]; ok {
 				windowSize = val.(string)
@@ -221,11 +221,8 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 		case opClose:
-			fmt.Println("关闭浏览器...")
+			fmt.Println("[Chrome]关闭浏览器...")
 			chromeObj := browser.GetChromeInstance()
-
-			fmt.Println("pid =", chromeObj.GetPID())
-
 			err := chromeObj.Close()
 			if err != nil {
 				fmt.Println("[ERR]", err.Error())

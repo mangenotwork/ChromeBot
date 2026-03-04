@@ -41,6 +41,6 @@ chrome click=`//*[@id='chat-submit-button']`
 
 
 
-// 列子1
+// 例子1
 chrome init
 chrome close

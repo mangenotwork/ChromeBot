@@ -1,11 +1,14 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	"errors"
 	"fmt"
 	"golang.org/x/net/websocket"
 	"golang.org/x/sys/windows"
-	"log"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -39,22 +42,21 @@ func GetChromeInstance() *ChromeProcess {
 	return chromeInstance
 }
 
-func IsChromeInitialized() bool {
-	mu.RLock()
-	defer mu.RUnlock()
-	return isInitialized
-}
-
 // ChromeInit 初始化Chrome单例
 func ChromeInit(windowSize, proxy, userPath string) error {
 
-	mu.RLock()
 	if isInitialized && chromeInstance != nil {
-		mu.RUnlock()
-		log.Printf("Chrome已初始化 | 端口：%d | PID：%d ", chromeInstance.PID, chromeInstance.Port)
-		return nil
+		isRun, _ := isProcessRunning(chromeInstance.PID)
+		if isRun {
+			utils.Debugf("Chrome已初始化 | 端口：%d | PID：%d ", chromeInstance.Port, chromeInstance.PID)
+			fmt.Println("[Chrome]已初始化")
+			return nil
+		} else {
+			chromeInstance = nil
+			isInitialized = false
+			once = sync.Once{} // 重置once，允许重新初始化
+		}
 	}
-	mu.RUnlock()
 
 	var initErr error
 	once.Do(func() {
@@ -95,7 +97,7 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 		isInitialized = true // 标记：初始化完成
 		mu.Unlock()
 
-		log.Printf("Chrome始化成功 | 端口：%d | PID：%d ", port, pid)
+		utils.Debugf("Chrome始化成功 | 端口：%d | PID：%d ", port, pid)
 	})
 
 	return initErr
@@ -104,7 +106,7 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 func getAvailablePort() int {
 	listener, err := net.Listen("tcp", "0.0.0.0:0") // 关键：绑定0.0.0.0确保外部可访问
 	if err != nil {
-		log.Printf("创建监听器失败: %s", err.Error())
+		utils.Debugf("创建监听器失败: %s", err.Error())
 		return 0
 	}
 	addr := listener.Addr().(*net.TCPAddr)
@@ -112,6 +114,8 @@ func getAvailablePort() int {
 }
 
 func startChromeProcess(windowSize, proxy, userPath string, port int) (int, error) {
+
+	userPath = fmt.Sprintf("./ChromeBot/profiles/default") // 谷歌目录下  \Google\Chrome\Application\
 
 	chromePath, err := FindChrome()
 	if err != nil {
@@ -143,10 +147,15 @@ func startChromeProcess(windowSize, proxy, userPath string, port int) (int, erro
 		return 0, err
 	}
 
-	time.Sleep(2 * time.Second) // 强制休息2秒
+	pid := cmd.Process.Pid
 
-	// 返回进程PID
-	return cmd.Process.Pid, nil
+	for i := 0; i < 40; i++ {
+		if ok, _ := isProcessRunning(pid); ok {
+			break
+		}
+		time.Sleep(40 * time.Millisecond)
+	}
+	return pid, nil
 }
 
 // connectChromeWS 连接Chrome DevTools WebSocket
@@ -183,8 +192,14 @@ func (c *ChromeProcess) Close() error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if !isInitialized || chromeInstance != nil {
-		log.Printf("Chrome未初始化")
+	if !isInitialized || chromeInstance == nil {
+		fmt.Println("[Chrome]未初始化")
+		return nil
+	}
+
+	isRun, _ := isProcessRunning(c.PID)
+	if !isRun {
+		fmt.Println("[Chrome]未初始化")
 		return nil
 	}
 
@@ -194,11 +209,12 @@ func (c *ChromeProcess) Close() error {
 		c.WSConn = nil
 	}
 
-	log.Println("c.PID = ", c.PID)
+	utils.Debug("c.PID = ", c.PID)
 
 	// 2. 杀死Chrome进程
 	if c.PID != 0 {
 		if err := SafeKillProcess(c.PID); err != nil {
+			utils.Debug("[ERR]关闭进程错误:", err.Error())
 			return err
 		}
 	}
@@ -208,7 +224,7 @@ func (c *ChromeProcess) Close() error {
 	isInitialized = false
 	once = sync.Once{} // 重置once，允许重新初始化
 
-	log.Printf("Chrome实例已关闭 | PID：%d", c.PID)
+	fmt.Printf("[Chrome]浏览器进程已关闭 | PID：%d \n", c.PID)
 	return nil
 }
 
@@ -217,24 +233,38 @@ func SafeKillProcess(pid int) error {
 
 	for i := 0; i < maxRetries; i++ {
 		// 先尝试 Windows API
-		if err := killProcessByPID(pid); err == nil {
-			return nil
+		if err := killProcessByPID(pid); err != nil {
+			utils.Debug("Windows API err : ", err.Error())
 		}
 
 		// 再尝试 taskkill
-		log.Println("exce taskkill")
+		utils.Debug("exce taskkill")
 		cmd := exec.Command("taskkill", "/F", "/T", "/PID", strconv.Itoa(pid))
-		if err := cmd.Run(); err == nil {
-			return nil
+		if err := cmd.Run(); err != nil {
+			utils.Debug("taskkill执行失败")
 		}
 
-		// 检查进程是否已结束
-		if runing, _ := isProcessRunning(pid); !runing {
-			return nil
+		output, err := cmd.CombinedOutput() // 同时捕获stdout/stderr
+		if err != nil {
+			gbkOutput, decodeErr := gbkToUtf8(output)
+			if decodeErr != nil {
+				// 解码失败则用原始字符串（避免二次错误）
+				gbkOutput = strings.TrimSpace(string(output))
+			}
+			utils.Debugf("taskkill执行失败 | PID：%d | 退出码：%v | 错误详情：%s", pid, err, gbkOutput)
 		}
 
 		if i < maxRetries-1 {
 			time.Sleep(time.Duration(400*(i+1)) * time.Millisecond)
+		}
+
+		// 检查进程是否已结束
+		isRun, _ := isProcessRunning(pid)
+		utils.Debug("isRun = ", isRun)
+		if isRun {
+			continue
+		} else {
+			return nil
 		}
 	}
 
@@ -268,9 +298,21 @@ func isProcessRunning(pid int) (bool, error) {
 	return exitCode == 259, nil
 }
 
+// gbkToUtf8 将GBK编码的字节数组转为UTF-8字符串（核心解码函数）
+func gbkToUtf8(gbkBytes []byte) (string, error) {
+	// 创建GBK转UTF-8的转换器
+	reader := transform.NewReader(strings.NewReader(string(gbkBytes)), simplifiedchinese.GBK.NewDecoder())
+	// 读取转换后的字节
+	utf8Bytes, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(utf8Bytes)), nil
+}
+
 func killProcessByPID(pid int) error {
 
-	log.Println("exce killProcessByPID")
+	utils.Debug("exce killProcessByPID")
 
 	handle, err := windows.OpenProcess(
 		windows.PROCESS_TERMINATE,
@@ -287,7 +329,7 @@ func killProcessByPID(pid int) error {
 
 func (c *ChromeProcess) GetPID() int {
 	if !isInitialized || chromeInstance != nil {
-		log.Printf("Chrome未初始化")
+		fmt.Println("[Chrome]未初始化")
 		return 0
 	}
 	return c.PID
