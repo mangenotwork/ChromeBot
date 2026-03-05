@@ -55,7 +55,9 @@ func Run() {
 			fmt.Println("这是 kill 命令触发的终止信号")
 		}
 
+		fmt.Println("清理 browser ")
 		chromeObj := browser.GetChromeInstance()
+		fmt.Println("chromeObj = ", chromeObj)
 		if chromeObj != nil {
 			_ = chromeObj.Close()
 		}

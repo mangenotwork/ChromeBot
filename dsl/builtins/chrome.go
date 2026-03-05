@@ -17,7 +17,7 @@ close : 关闭浏览器
 size : 设置浏览器窗口大小与init参数一起用,值为: 宽*高 （900*600） <值类型是字符串>
 proxy : 设置浏览器代理与init参数一起用 <值类型是字符串>
 userpath : 设置浏览器在本机的隔离目录与init参数一起用,对应浏览器的--user-data-dir，建议隔离 <值类型是字符串>
-table : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；selected：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
+tab : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；selected：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
 req :  请求网址， 值为网址 <值类型是字符串>
 （ dom : 获取当前页面html的dom树 - 改为函数 ）
 click : 点击操作，值为xpath <值类型是字符串>
@@ -104,7 +104,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 		}
 
-		if val, ok := argMap["table"]; ok && opNumber == 0 {
+		if val, ok := argMap["tab"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opTable,
 				arg:    map[string]interpreter.Value{"arg": val},
@@ -229,9 +229,17 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 		case opTable:
-			fmt.Println("table操作...")
+			fmt.Println("tab操作...")
+
 		case opReq:
 			fmt.Println("请求操作...")
+			chromeObj := browser.GetChromeInstance()
+			res, err := chromeObj.OpenUrl(op.arg["arg"].(string))
+			if err != nil {
+				fmt.Println("[Chrome]请求操作出现错误:", err.Error())
+			}
+			fmt.Println("[Chrome]请求操作结果:", res)
+
 		case opClick:
 			fmt.Println("点击操作...")
 		case opInput:
@@ -261,7 +269,7 @@ type chromeOPType string
 var (
 	opInit       chromeOPType = "init"  // 初始化浏览器
 	opClose      chromeOPType = "close" // 关闭浏览器
-	opTable      chromeOPType = "table"
+	opTable      chromeOPType = "tab"
 	opReq        chromeOPType = "req"
 	opClick      chromeOPType = "click"      // 点击操作
 	opInput      chromeOPType = "input"      // 输入操作
