@@ -2,7 +2,97 @@
 #### v0.1.2
 
 #### v0.1.1
-- [] DSL v0.1, 继续完善语法文档
+- [] DSL v0.1, 继续完善语法文档和定版
+- [] chrome 脚本操作自动化功能完整，能应对主流业务场景
+- [] http+host 脚本操作自动化功能完成，能应对主流业务场景
+
+#### v0.0.26
+- 测试和优化
+
+#### v0.0.25
+- chrome  WebAudio ： 此域名允许查看 Web Audio API。
+- chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。
+
+#### v0.0.24
+- chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
+- chrome  Tracing ： 追踪
+
+#### v0.0.23
+- chrome  ServiceWorker ： 服务任务
+- chrome  Storage ： 存储
+
+#### v0.0.22
+- chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
+- chrome  Security ： 安全域
+
+#### v0.0.21
+- chrome  Profiler ： 分析器域
+- chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
+
+#### v0.0.20
+- chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
+- chrome  Preload ： 预加载域
+
+#### v0.0.19
+- chrome  Page ： 与被检查页面相关的操作和事件属于页面域。
+- chrome  Performance ： 性能域
+
+#### v0.0.18
+- chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
+- chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
+
+#### v0.0.17
+- chrome  Media ： 该域允许对媒体元素进行详细检查。
+- chrome  Memory ： 内存相关
+
+#### v0.0.16
+- chrome  LayerTree ： 层树
+- chrome  Log ： 提供对日志条目的访问权限。
+
+#### v0.0.15
+- chrome  Inspector ： 检查域
+- chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。
+
+#### v0.0.14
+- chrome  IndexedDB : IndexedDB相关的域
+- chrome  Input ： 输入域
+
+#### v0.0.13
+- chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
+- chrome  HeapProfiler : 堆分析器域
+
+#### v0.0.12
+- chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
+- chrome  FileSystem : 文件系统域
+
+#### v0.0.11
+- chrome  Extensions : 定义浏览器扩展的命令和事件。
+- chrome  FedCm : 该域允许与 FedCM 对话框进行交互。
+
+#### v0.0.10
+- chrome  Emulation : 该域名模拟了页面的不同环境。
+- chrome  EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。
+
+#### v0.0.9
+- chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。
+- chrome  DOMStorage  : 查询和修改 DOM 存储。
+
+#### v0.0.8
+- chrome  DOM : 此域公开 DOM 读/写操作。
+- chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+
+#### v0.0.7
+- chrome  CSS ： 此域公开 CSS 的读写操作。
+- chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
+
+#### v0.0.6
+- 完善 chrome Target : 目标对象
+- chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
+- chrome  CacheStorage ： 缓存存储域
+
+#### v0.0.5
+- chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+- chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
 
 #### v0.0.4
 - [] host 宿主机的相关方法 增加 host 关键字
