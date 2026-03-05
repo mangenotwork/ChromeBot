@@ -14,7 +14,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
@@ -180,30 +179,30 @@ type mess struct {
 var messageQueue = make(chan mess, 100) // 缓冲队列
 
 func (c *ChromeProcess) DefaultNowTab() {
-	if chromeInstance.NowTabWSConn != nil {
+	if c.NowTabWSConn != nil {
 		log.Println("当前已经选中了tab")
 		return
 	}
-	targetId, webSocketDebuggerUrl, err := chromeInstance.GetFirstTabWs()
+	targetId, webSocketDebuggerUrl, err := c.GetFirstTabWs()
 	if err != nil {
 		log.Println("[Chrome] 初始化失败 err = ", err)
 	}
-	chromeInstance.NowTabTargetId = targetId
-	chromeInstance.NowTabWSUrl = webSocketDebuggerUrl
+	c.NowTabTargetId = targetId
+	c.NowTabWSUrl = webSocketDebuggerUrl
 
 	// 默认第一个Tab,并连接Chrome DevTools WebSocket
-	wsConn, err := chromeInstance.ConnTab()
+	wsConn, err := c.ConnTab()
 	if err != nil {
 		fmt.Println("[Chrome] 默认连接第一个Tab出现错误, err : ", err)
 	}
-	chromeInstance.NowTabWSConn = wsConn
+	c.NowTabWSConn = wsConn
 
-	session, err := chromeInstance.GetSession()
+	session, err := c.GetSession()
 	if err != nil {
 		fmt.Println("[Chrome] 默认连接第一个Tab创建session出现错误, err : ", err)
 	}
 	log.Println("获取到 session = ", session)
-	chromeInstance.NowTabSession = session
+	c.NowTabSession = session
 }
 
 func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
@@ -211,6 +210,7 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 		return nil, fmt.Errorf("url is null")
 	}
 	// 使用Dialer建立连接
+	log.Println("建立连接: ", c.NowTabWSUrl)
 	conn, _, err := websocket.DefaultDialer.Dial(c.NowTabWSUrl, nil)
 	if err != nil {
 		log.Fatal("连接失败:", err)
@@ -223,15 +223,15 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 			nowDone := make(chan struct{})
 			select {
 			case <-ConnTabDone:
-				gt.Info("收到结束....")
+				fmt.Println("[Chrome] ws 连接收到结束....")
 				_ = conn.Close()
 				return
 			case <-nowDone:
-				gt.Info("连接断开执行结束....")
+				fmt.Println("[Chrome] ws 连接断开执行结束....")
 				return
 			default:
 				if conn == nil {
-					gt.Error("连接失败")
+					fmt.Println("[Chrome] ws 连接失败")
 					break
 				}
 				_, message, err := conn.ReadMessage()
@@ -459,32 +459,6 @@ func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
 	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", c.Port)
 	log.Println("tabUrl = ", tabUrl)
 
-	// 2. 发起GET请求
-	resp, err := http.Get(tabUrl)
-	if err != nil {
-		fmt.Printf("请求失败：%v\n", err)
-		return "", "", err
-	}
-	// 3. 必须关闭响应体（避免内存泄漏）
-	defer resp.Body.Close()
-
-	// 4. 检查响应状态码（200表示成功）
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("响应状态码错误：%d\n", resp.StatusCode)
-		return "", "", nil
-	}
-
-	// 5. 读取响应体（字节数组）
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("读取响应体失败：%v\n", err)
-		return "", "", nil
-	}
-
-	// 6. 转换为字符串并打印
-	bodyStr := string(bodyBytes)
-	fmt.Printf("响应内容：\n%s\n", bodyStr)
-
 	var targetId = ""
 	var webSocketDebuggerUrl = ""
 	var e2r gt.Err2Retry = true
@@ -507,10 +481,12 @@ func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
 		dataMap := gt.Any2Map(dataArr[1])
 		targetId = dataMap["id"].(string)
 		webSocketDebuggerUrl = dataMap["webSocketDebuggerUrl"].(string)
+		c.NowTab = dataMap["title"].(string)
 	} else if len(dataArr) > 0 {
 		dataMap := gt.Any2Map(dataArr[0])
 		targetId = dataMap["id"].(string)
 		webSocketDebuggerUrl = dataMap["webSocketDebuggerUrl"].(string)
+		c.NowTab = dataMap["title"].(string)
 	} else {
 		return "", "", err
 	}
@@ -538,7 +514,7 @@ func (c *ChromeProcess) attachToTarget() (string, error) {
 	}`, c.NextID, c.NowTabTargetId)
 	err := c.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
-		gt.Error("发送消息失败:", err)
+		log.Println("[Chrome]发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
 	log.Printf("发送消息: %s", message)
@@ -597,7 +573,7 @@ func (c *ChromeProcess) activateTarget() (string, error) {
 	}`, c.NextID, c.NowTabTargetId)
 	err := c.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
-		gt.Error("发送消息失败:", err)
+		log.Println("[Chrome]发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
 	log.Printf("发送消息: %s", message)

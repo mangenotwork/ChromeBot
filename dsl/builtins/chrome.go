@@ -5,6 +5,7 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/utils"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -17,7 +18,7 @@ close : 关闭浏览器
 size : 设置浏览器窗口大小与init参数一起用,值为: 宽*高 （900*600） <值类型是字符串>
 proxy : 设置浏览器代理与init参数一起用 <值类型是字符串>
 userpath : 设置浏览器在本机的隔离目录与init参数一起用,对应浏览器的--user-data-dir，建议隔离 <值类型是字符串>
-tab : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；selected：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
+tab : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；select：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
 req :  请求网址， 值为网址 <值类型是字符串>
 （ dom : 获取当前页面html的dom树 - 改为函数 ）
 click : 点击操作，值为xpath <值类型是字符串>
@@ -230,6 +231,39 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opTable:
 			fmt.Println("tab操作...")
+			arg := op.arg["arg"].(string)
+			if arg == "list" { // 获取所有tab
+				chromeObj := browser.GetChromeInstance()
+				_, err := chromeObj.GetAllTab()
+				if err != nil {
+					log.Println("[Chrome]获取tab错误: ", err.Error())
+				}
+				break
+			}
+
+			if arg == "new" { // 新建一个tab
+				chromeObj := browser.GetChromeInstance()
+				_, err := chromeObj.NewTab()
+				if err != nil {
+					log.Println("[Chrome]创建tab错误: ", err.Error())
+				}
+				break
+			}
+
+			if arg == "now" { // 当前tab
+				chromeObj := browser.GetChromeInstance()
+				chromeObj.NowTabInfo()
+				break
+			}
+
+			if arg == "close" { // 关闭当前tab
+				chromeObj := browser.GetChromeInstance()
+				chromeObj.NowTabClose()
+				break
+			}
+
+			chromeObj := browser.GetChromeInstance()
+			chromeObj.SelectTab(arg)
 
 		case opReq:
 			fmt.Println("请求操作...")
