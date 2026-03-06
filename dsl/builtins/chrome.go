@@ -285,6 +285,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opInput:
 			fmt.Println("输入操作...")
+			xPath := op.arg["xpath"].(string)
+			inputText := op.arg["input"].(string)
+			chromeObj := browser.GetChromeInstance()
+			err := chromeObj.Input(xPath, inputText)
+			if err != nil {
+				fmt.Println("[Chrome]输入操作出现错误:", err.Error())
+			}
 
 		case opCheck:
 			fmt.Println("检查操作...")

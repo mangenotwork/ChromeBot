@@ -109,6 +109,8 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 		isInitialized = true // 标记：初始化完成
 
 		utils.Debugf("Chrome始化成功 | 端口：%d | PID：%d ", port, pid)
+
+		time.Sleep(1 * time.Second)
 	})
 
 	return initErr
