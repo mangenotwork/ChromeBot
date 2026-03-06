@@ -276,6 +276,12 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opClick:
 			fmt.Println("点击操作...")
+			xPath := op.arg["arg"].(string)
+			chromeObj := browser.GetChromeInstance()
+			err := chromeObj.Click(xPath)
+			if err != nil {
+				fmt.Println("[Chrome]点击操作出现错误:", err.Error())
+			}
 
 		case opInput:
 			fmt.Println("输入操作...")
