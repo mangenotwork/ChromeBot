@@ -276,23 +276,48 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opClick:
 			fmt.Println("点击操作...")
+
 		case opInput:
 			fmt.Println("输入操作...")
+
 		case opCheck:
 			fmt.Println("检查操作...")
+
 		case opWait:
 			fmt.Println("等待操作...")
+
 		case opScroll:
 			fmt.Println("滚动操作...")
+
 		case opScreenshot:
 			fmt.Println("截图操作...")
+
 		case opTo:
 			fmt.Println("将当前页面的html赋值到变量操作...")
+			chromeObj := browser.GetChromeInstance()
+			htmlBody, err := chromeObj.GetHtml()
+			if err != nil {
+				log.Println("[Chrome]获取页面的html错误: ", err.Error())
+				return nil, fmt.Errorf("[Chrome]获取页面的html错误: %s", err.Error())
+			}
+			to := op.arg["arg"].(string)
+			interp.Global().SetVar(to, htmlBody)
+
 		case opSave:
 			fmt.Println("将当前页面的html保存到本地...")
-		}
+			chromeObj := browser.GetChromeInstance()
+			htmlBody, err := chromeObj.GetHtml()
+			if err != nil {
+				log.Println("[Chrome]获取页面的html错误: ", err.Error())
+				return nil, fmt.Errorf("[Chrome]获取页面的html错误: %s", err.Error())
+			}
+			savePath := op.arg["arg"].(string)
+			err = utils.SaveDataToFile(savePath, htmlBody)
+			if err != nil {
+				fmt.Println("保存页面到文件出现了错误:", err.Error())
+			}
 
-		// todo 全局浏览器对象，打开或关闭
+		}
 
 		return nil, nil
 	})

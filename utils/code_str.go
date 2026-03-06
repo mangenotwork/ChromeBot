@@ -1,7 +1,11 @@
 package utils
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -97,4 +101,46 @@ func FixURLProtocol(url string, defaultProto ...string) string {
 
 	// 补全协议头并返回
 	return proto + url
+}
+
+func SaveDataToFile(path string, data interface{}) error {
+	if path == "" {
+		return errors.New("文件路径不能为空")
+	}
+
+	// 解析路径（处理相对路径→绝对路径，创建父目录）
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("解析路径失败：%w", err)
+	}
+	// 获取父目录（如 "/tmp/data/test.txt" → "/tmp/data"）
+	dir := filepath.Dir(absPath)
+	// 创建父目录（不存在则创建，递归创建多级目录）
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("创建父目录失败：%w", err)
+	}
+
+	// 转换数据为字节数组（适配不同数据类型）
+	var content []byte
+	switch v := data.(type) {
+	case string:
+		content = []byte(v)
+	case []byte:
+		content = v
+	default:
+		// 其他类型尝试JSON序列化（如结构体、map等）
+		jsonContent, err := json.MarshalIndent(v, "", "  ") // 格式化JSON，易读
+		if err != nil {
+			return fmt.Errorf("数据JSON序列化失败：%w", err)
+		}
+		content = jsonContent
+	}
+
+	// 写入文件（覆盖写入，不存在则创建）
+	if err := os.WriteFile(absPath, content, 0666); err != nil {
+		return fmt.Errorf("写入文件失败：%w", err)
+	}
+
+	fmt.Printf("数据已成功保存到：%s\n", absPath)
+	return nil
 }
