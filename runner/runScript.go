@@ -12,7 +12,9 @@ import (
 func runScript(source string) {
 
 	source = utils.EscapeQuotesInBackticks(source)
-	
+
+	builtins.ChromeWait = 2
+
 	// 词法分析
 	l := lexer.New(source)
 

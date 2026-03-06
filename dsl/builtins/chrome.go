@@ -5,9 +5,16 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/utils"
 	"fmt"
+	gt "github.com/mangenotwork/gathertool"
 	"log"
 	"strings"
+	"time"
 )
+
+// 一个带timeout的锁
+var chromeLock = utils.NewTimeoutLock(2 * time.Second)
+
+var ChromeWait = 0
 
 /*
 前置说明: 当前的设计一个ChromeBot进程对应一个chrome子进程, 一行命令只支持一个操作
@@ -48,6 +55,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 	interp.Global().SetFunc("chrome", func(args []interpreter.Value) (interpreter.Value, error) {
 		utils.Debug("执行 chrome 的操作，参数是 ", args, len(args))
 
+		if ChromeWait > 0 { // todo 以后更好的方案 ，  解决执行脚本命令之间操作太快
+			time.Sleep(time.Duration(ChromeWait) * time.Second)
+		}
+
+		chromeLock.Lock()
+		defer chromeLock.Unlock()
+
 		argMap := make(map[string]string)
 		for i, v := range args {
 			utils.Debugf("参数 %d %v %T\n", i, v, v)
@@ -66,13 +80,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		utils.Debug("argMap:", argMap)
 
-		op := &chromeOperation{}
+		op := &chromeOperation{
+			arg: make(map[string]interpreter.Value),
+		}
 		opNumber := 0
 
 		if _, ok := argMap["init"]; ok {
 			op = &chromeOperation{
 				opType: opInit,
-				arg:    make(map[string]interpreter.Value),
 				//level:  executionPriority[opInit],
 			}
 			opNumber++
@@ -81,7 +96,6 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if _, ok := argMap["close"]; ok && opNumber == 0 {
 			op = &chromeOperation{
 				opType: opClose,
-				arg:    make(map[string]interpreter.Value),
 				//level:  executionPriority[opClose],
 			}
 			opNumber++
@@ -157,12 +171,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["wait"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opWait,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opWait],
-			}
-			opNumber++
+			op.arg["wait"] = val
 		}
 
 		if val, ok := argMap["scroll"]; ok && opNumber == 0 {
@@ -276,6 +285,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opClick:
 			fmt.Println("点击操作...")
+
+			if wait, waitOK := op.arg["wait"]; waitOK {
+				waitInt := gt.Any2Int(wait)
+				if waitInt > 0 {
+					time.Sleep(time.Duration(waitInt) * time.Second)
+				}
+			}
+
 			xPath := op.arg["arg"].(string)
 			chromeObj := browser.GetChromeInstance()
 			err := chromeObj.Click(xPath)
@@ -285,6 +302,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opInput:
 			fmt.Println("输入操作...")
+
+			if wait, waitOK := op.arg["wait"]; waitOK {
+				waitInt := gt.Any2Int(wait)
+				if waitInt > 0 {
+					time.Sleep(time.Duration(waitInt) * time.Second)
+				}
+			}
+
 			xPath := op.arg["xpath"].(string)
 			inputText := op.arg["input"].(string)
 			chromeObj := browser.GetChromeInstance()
@@ -318,6 +343,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opSave:
 			fmt.Println("将当前页面的html保存到本地...")
+
+			if wait, waitOK := op.arg["wait"]; waitOK {
+				waitInt := gt.Any2Int(wait)
+				if waitInt > 0 {
+					time.Sleep(time.Duration(waitInt) * time.Second)
+				}
+			}
+
 			chromeObj := browser.GetChromeInstance()
 			htmlBody, err := chromeObj.GetHtml()
 			if err != nil {
