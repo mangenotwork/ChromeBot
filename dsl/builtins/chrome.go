@@ -386,6 +386,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opScreenshot:
 			fmt.Println("截图操作...")
+			savePath := op.arg["arg"].(string)
+			chromeObj := browser.GetChromeInstance()
+			res, err := chromeObj.CaptureFullPageScreenshot(savePath)
+			if err != nil {
+				log.Println("[Chrome]截图操作错误: ", err.Error())
+				return nil, fmt.Errorf("[Chrome]截图操作错误: %s", err.Error())
+			}
+			log.Printf("[Chrome]截图结果: %v", res)
 
 		case opTo:
 			fmt.Println("将当前页面的html赋值到变量操作...")
