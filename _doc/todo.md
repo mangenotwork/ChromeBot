@@ -135,7 +135,12 @@
 
 - [] 等待页面完全响应完
 - [] 整理日志打印
-- [] 多增加实例的测试用例以及测试
+- [] 多增加实例的测试用例以及测试 
+  1. https://www.eastmoney.com/  东方财经网，先进官网再访问排名，获取排名列表并保存到本地文件
+  2. https://www.xinhuanet.com/  新华网获取要闻聚焦，点击每个要闻访问文章内容并截图保存在本地
+  3. https://news.cctv.com/  央视新闻网，获取每个分类标签下的新闻列表
+  4. https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml 阳光高考获取全部的学校信息
+  
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档
