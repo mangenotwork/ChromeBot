@@ -46,20 +46,13 @@ func (c *ChromeProcess) GetHtml() (string, error) {
 
 	for {
 		select {
-		case msg, ok := <-messageQueue:
+		case respMsg, ok := <-messageQueue:
 			if !ok {
 				gt.Info("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-
-			//content, err := decodeUnicodeInHTML(msg.Content)
-			//if err != nil {
-			//	gt.Error("编码处理失败, err  = ", err)
-			//	return "", fmt.Errorf("编码处理失败")
-			//}
-			//log.Println("收到的消息 -> ", content)
-			if c.NextID == msg.ID {
-				result, err := gt.Json2Map(msg.Content)
+			if c.NextID == respMsg.ID {
+				result, err := gt.Json2Map(respMsg.Content)
 				if err != nil {
 					log.Println("回复内容解析错误")
 				} else {

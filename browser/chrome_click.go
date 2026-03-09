@@ -13,13 +13,13 @@ import (
 //go:embed chrome_click.js
 var chromeClickJS string
 
-func (c *ChromeProcess) Click(xPtah string) error {
+func (c *ChromeProcess) Click(xPath string) error {
 	if c.NowTabWSConn == nil {
 		c.DefaultNowTab()
 	}
 
-	xPtah = "\"" + strings.ReplaceAll(xPtah, "\"", "\\\"") + "\""
-	js := strings.ReplaceAll(chromeClickJS, "__XPATH__", xPtah)
+	xPath = "\"" + strings.ReplaceAll(xPath, "\"", "\\\"") + "\""
+	js := strings.ReplaceAll(chromeClickJS, "__XPATH__", xPath)
 
 	c.NextID++
 	msg := map[string]interface{}{
@@ -46,24 +46,24 @@ func (c *ChromeProcess) Click(xPtah string) error {
 
 	for {
 		select {
-		case msg, ok := <-messageQueue:
+		case respMsg, ok := <-messageQueue:
 			if !ok {
 				log.Println("消息队列已关闭")
 				return fmt.Errorf("消息队列已关闭")
 			}
-			log.Println("收到的消息 -> ", msg.Content)
-			if c.NextID == msg.ID {
+			log.Println("收到的消息 -> ", respMsg.Content)
+			if c.NextID == respMsg.ID {
 
-				resultValue, err := gt.JsonFind(msg.Content, "result/result/subtype")
+				resultValue, err := gt.JsonFind(respMsg.Content, "result/result/subtype")
 				if err != nil {
 					log.Println(err)
 				}
 				if resultValue == "error" {
-					log.Println("点击出现了错误: ", msg.Content)
-					return fmt.Errorf("点击出现了错误: %s", msg.Content)
+					log.Println("点击出现了错误: ", respMsg.Content)
+					return fmt.Errorf("点击出现了错误: %s", respMsg.Content)
 				}
 
-				resultValue, err = gt.JsonFind(msg.Content, "result/result/value")
+				resultValue, err = gt.JsonFind(respMsg.Content, "result/result/value")
 				if err != nil {
 					log.Println(err)
 				}

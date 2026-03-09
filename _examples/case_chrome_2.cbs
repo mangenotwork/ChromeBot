@@ -4,3 +4,8 @@ chrome click="//*[@id=\"chat-submit-button\"]"
 print(a)
 chrome click="//*[@id='chat-submit-button']"
 chrome click=`//*[@id='chat-submit-button']`
+
+
+chrome scroll="2000"
+chrome scrollpixel="100,1600"
+chrome scrollxpath=`//*[@id="__layout"]/div/div/section/section/main/footer/div/div[1]/div[1]/p`

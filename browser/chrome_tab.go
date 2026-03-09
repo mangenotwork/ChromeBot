@@ -76,14 +76,14 @@ func (c *ChromeProcess) NewTab() (string, error) {
 
 	for {
 		select {
-		case msg, ok := <-messageQueue:
+		case respMsg, ok := <-messageQueue:
 			if !ok {
 				log.Println("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			log.Println("收到的消息 -> ", msg.Content)
-			if c.NextID == msg.ID {
-				result, err := gt.Json2Map(msg.Content)
+			log.Println("收到的消息 -> ", respMsg.Content)
+			if c.NextID == respMsg.ID {
+				result, err := gt.Json2Map(respMsg.Content)
 				if err != nil {
 					log.Println("回复内容解析错误")
 				} else {
@@ -95,19 +95,15 @@ func (c *ChromeProcess) NewTab() (string, error) {
 						if hasMap {
 							targetId, targetIdHas := resultDataMap["targetId"]
 							if targetIdHas {
-
 								c.SelectTab(targetId.(string))
-
 								return targetId.(string), nil
 							}
 						}
 					}
-
 					return "", fmt.Errorf("开启新标签页失败,未找到targetId")
-
 				}
 
-				return msg.Content, nil
+				return respMsg.Content, nil
 			} else {
 				log.Println("不是自己的消息")
 			}

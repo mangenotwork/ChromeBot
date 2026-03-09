@@ -33,7 +33,9 @@ xpath : 当前选中的xpath, 输入的时候用
 input : 输入操作，输入内容  <值类型是字符串>
 check : 检查操作，检查页面是否存在指定xpath  <值类型是字符串>
 wait : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
-scroll : 滚动操作，滚动页面  正数往下，负数往上 <值类型是数值类型>
+scroll : 滚动操作，滚动页面  正数往下，负数往上 <值类型是数值类型>  注意: 该滚动存在局限性只针对根节点进行滚动，嵌套容器要想精确请使用 scrollxpath
+scrollpixel : scroll by pixel 滚动操作,滚动到指定坐标， 值为(x,y)如(2000, 500)   注意: 该滚动存在局限性只针对根节点进行滚动, 嵌套容器要想精确请使用 scrollxpath
+scrollxpath : 滚动操作,滚动到指定xpath <值类型是字符串>
 screenshot : 截图操作，浏览器截图操作  值为保存位置  <值类型是字符串>
 to : 将当前操作的页面html返回存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
 save : 将将当前操作的页面html存入到指定文件  <值类型是字符串>
@@ -179,6 +181,31 @@ func registerChrome(interp *interpreter.Interpreter) {
 				opType: opScroll,
 				arg:    map[string]interpreter.Value{"arg": val},
 				//level:  executionPriority[opScroll],
+				extendType: 0,
+			}
+			opNumber++
+		}
+
+		if val, ok := argMap["scrollpixel"]; ok && opNumber == 0 {
+			valList := strings.Split(val, ",")
+			if len(valList) != 2 {
+				fmt.Println("[Chrome] scrollpixel 参数错误，值为(x,y)如(2000, 500)")
+			}
+			op = &chromeOperation{
+				opType: opScroll,
+				arg:    map[string]interpreter.Value{"x": valList[0], "y": valList[1]},
+				//level:  executionPriority[opScroll],
+				extendType: 1,
+			}
+			opNumber++
+		}
+
+		if val, ok := argMap["scrollxpath"]; ok && opNumber == 0 {
+			op = &chromeOperation{
+				opType: opScroll,
+				arg:    map[string]interpreter.Value{"xpath": val},
+				//level:  executionPriority[opScroll],
+				extendType: 2,
 			}
 			opNumber++
 		}
@@ -320,12 +347,42 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opCheck:
 			fmt.Println("检查操作...")
+			inputText := op.arg["arg"].(string)
+			chromeObj := browser.GetChromeInstance()
+			has, err := chromeObj.Check(inputText)
+			if err != nil {
+				fmt.Println("[Chrome]检查操作出现错误:", err.Error())
+			}
+			fmt.Printf("[Chrome]检查操作xPath: %s , %v", inputText, has)
 
 		case opWait:
 			fmt.Println("等待操作...")
 
 		case opScroll:
 			fmt.Println("滚动操作...")
+			var err error
+			chromeObj := browser.GetChromeInstance()
+			switch op.extendType {
+			case 0:
+				high := gt.Any2Int(op.arg["arg"])
+				log.Println("滚动的高度 high = ", high)
+				err = chromeObj.ScrollByPixel(0, high)
+
+			case 1:
+				x := gt.Any2Int(op.arg["x"])
+				y := gt.Any2Int(op.arg["y"])
+				log.Println("滚动的高度 x = ", x, ", y = ", y)
+				err = chromeObj.ScrollByPixel(gt.Any2Int(op.arg["x"]), gt.Any2Int(op.arg["y"]))
+
+			case 2:
+				xpath := op.arg["xpath"].(string)
+				log.Println("滚动到Xpath = ", xpath)
+				err = chromeObj.ScrollToElement(xpath)
+			}
+
+			if err != nil {
+				fmt.Println("[Chrome]滚动操作出现错误:", err.Error())
+			}
 
 		case opScreenshot:
 			fmt.Println("截图操作...")
@@ -417,4 +474,5 @@ type chromeOperation struct {
 	opType chromeOPType                 // 操作的类型
 	arg    map[string]interpreter.Value // 操作的参数
 	//level  executionPriorityLevel // 操作等级
+	extendType int // 扩展类型，用于同效果的多类型进行区分
 }
