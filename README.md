@@ -23,6 +23,21 @@ chromeBot.exe case.cbs
 - [打开浏览器并访问 https://github.com/mangenotwork/ChromeBot](_examples/case_chrome.cbs)
 - todo...
 
+例子
+
+```cbs
+// baidu.cbs  例子1 ：简单访问百度进行查询最后截图保存操作
+chrome init  // 打开浏览器
+chrome req="www.baidu.com" // 访问 百度
+var a = NowTabGetInputFirstXpath() // 获取当前页面能输入的第一个输入框的xpath
+chrome xpath=a input="ChromeBot" // 输入
+var b = NowTabMatchDemoContentOP("百度一下") // 获取当前页面内容为“百度一下”可交互的xpath
+chrome click=b // 点击
+chrome pause=1 // 操作暂停1s等待加载
+chrome screenshot="D:\baidu4.png"  // 截图保存到本地
+chrome close  // 关闭浏览器
+```
+
 # 直接运行会进入ChromeBot REPL终端
 
 ## 运行

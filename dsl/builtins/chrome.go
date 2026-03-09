@@ -33,6 +33,7 @@ xpath : 当前选中的xpath, 输入的时候用
 input : 输入操作，输入内容  <值类型是字符串>
 check : 检查操作，检查页面是否存在指定xpath  <值类型是字符串>
 wait : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
+pause : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
 scroll : 滚动操作，滚动页面  正数往下，负数往上 <值类型是数值类型>  注意: 该滚动存在局限性只针对根节点进行滚动，嵌套容器要想精确请使用 scrollxpath
 scrollpixel : scroll by pixel 滚动操作,滚动到指定坐标， 值为(x,y)如(2000, 500)   注意: 该滚动存在局限性只针对根节点进行滚动, 嵌套容器要想精确请使用 scrollxpath
 scrollxpath : 滚动操作,滚动到指定xpath <值类型是字符串>
@@ -54,6 +55,7 @@ print(res) // 输出
 chrome close  // 关闭浏览器
 */
 func registerChrome(interp *interpreter.Interpreter) {
+
 	interp.Global().SetFunc("chrome", func(args []interpreter.Value) (interpreter.Value, error) {
 		utils.Debug("执行 chrome 的操作，参数是 ", args, len(args))
 
@@ -174,6 +176,16 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["wait"]; ok && opNumber == 0 {
 			op.arg["wait"] = val
+		}
+
+		if val, ok := argMap["pause"]; ok && opNumber == 0 {
+			op = &chromeOperation{
+				opType: opPause,
+				arg:    map[string]interpreter.Value{"arg": val},
+				//level:  executionPriority[opScroll],
+				extendType: 0,
+			}
+			opNumber++
 		}
 
 		if val, ok := argMap["scroll"]; ok && opNumber == 0 {
@@ -321,6 +333,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 			xPath := op.arg["arg"].(string)
+			// 匹配一下判断arg是不是变量
+			xPathVal, xPathValOK := interp.Global().GetVar(xPath)
+			if xPathValOK {
+				xPath = xPathVal.(string)
+			}
+			fmt.Println("[Chrome]点击的Xpath = ", xPath)
+
 			chromeObj := browser.GetChromeInstance()
 			err := chromeObj.Click(xPath)
 			if err != nil {
@@ -338,6 +357,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 			xPath := op.arg["xpath"].(string)
+			// 匹配一下判断arg是不是变量
+			xPathVal, xPathValOK := interp.Global().GetVar(xPath)
+			if xPathValOK {
+				xPath = xPathVal.(string)
+			}
+			fmt.Println("[Chrome]输入的Xpath = ", xPath)
+
 			inputText := op.arg["input"].(string)
 			chromeObj := browser.GetChromeInstance()
 			err := chromeObj.Input(xPath, inputText)
@@ -355,8 +381,17 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 			fmt.Printf("[Chrome]检查操作xPath: %s , %v", inputText, has)
 
-		case opWait:
+		case opPause:
 			fmt.Println("等待操作...")
+			if pause, pauseOK := op.arg["arg"]; pauseOK {
+				pauseInt := gt.Any2Int(pause)
+				if pauseInt > 0 {
+					for i := 0; i < pauseInt; i++ {
+						fmt.Printf("[Chrome] pause: %ds ...\n", pauseInt-i)
+						time.Sleep(time.Duration(1) * time.Second)
+					}
+				}
+			}
 
 		case opScroll:
 			fmt.Println("滚动操作...")
@@ -444,7 +479,7 @@ var (
 	opClick      chromeOPType = "click"      // 点击操作
 	opInput      chromeOPType = "input"      // 输入操作
 	opCheck      chromeOPType = "check"      // 检查操作
-	opWait       chromeOPType = "wait"       // 等待操作
+	opPause      chromeOPType = "pause"      // 等待操作
 	opScroll     chromeOPType = "scroll"     // 滚动操作
 	opScreenshot chromeOPType = "screenshot" // 截图操作
 	opTo         chromeOPType = "to"         // 将当前页面的html赋值到变量操作

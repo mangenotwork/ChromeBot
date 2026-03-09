@@ -44,3 +44,41 @@ chrome click=`//*[@id='chat-submit-button']`
 // 例子1
 chrome init
 chrome close
+
+
+
+var a= 123
+chrome click=`//*[@id="chat-submit-button"]`
+chrome click="//*[@id=\"chat-submit-button\"]"
+print(a)
+chrome click="//*[@id='chat-submit-button']"
+chrome click=`//*[@id='chat-submit-button']`
+
+
+chrome scroll="2000"
+chrome scrollpixel="100,1600"
+chrome scrollxpath=`//*[@id="__layout"]/div/div/section/section/main/footer/div/div[1]/div[1]/p`
+
+chrome screenshot="D:\a.png"
+
+
+chrome click=`/html[1]/body[1]/div[2]/div[2]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[3]/div[3]/button[1]`
+
+//*[@id="chat-submit-button"]
+/html/body/div[2]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div/div[4]/div[1]/div[3]/div[3]/button
+/html/body/div[1]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div/div[4]/div[1]/div[3]/div[3]/button[1]/text()[1]
+
+
+chrome click=`/html[1]/body[1]/div[2]/div[2]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[3]/div[3]/button`
+/html/body/div[1]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div[1]/div[4]/div[1]/div[3]/div[3]/button
+/html/body/div[1]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div[1]/div[4]/div[1]/div[3]/div[3]/button[1]/text()[1]
+/html[1]/body[1]/div[1]/div[2]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[3]/div[3]/button[1]
+/html/body/div[1]/div[2]/div[3]/div[2]/div/div[2]/div/div/div/div/div[1]/div[4]/div[1]/div[3]/div[3]/button
+/html[1]/body[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[3]/div[3]/button[1]
+/html[1]/body[1]/div[2]/div[2]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[3]/div[3]/button[1]
+
+MatchDemoContent(a, "百度一下")
+
+chrome xpath=`/html[1]/body[1]/div[1]/div[2]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[2]/textarea` input="ChromeBot" // 输入
+/html/body/div[1]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div[1]/div[4]/div[1]/div[2]/textarea
+/html/body/div[1]/div[2]/div[3]/div/div/div[2]/div/div/div/div/div[1]/div[4]/div[1]/div[2]/textarea[1]

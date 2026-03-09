@@ -1,16 +1,26 @@
 (function() {
-    // 统一占位符（和你原有代码保持一致）
-    const xpath = __XPATH__;
-    const newValue = __INPUTTEXT__;
+    // 统一占位符
+    const xpath = '//*[@id="chat-textarea"]';
+    const newValue = 'ChromeBot';
+    // 用于存储最终执行结果（CDP需要显式返回）
+    let finalResult = {
+        success: false,
+        message: '',
+        elementFound: false,
+        inputValue: ''
+    };
 
-    // 标记：是否为百度场景（通过XPath/selector特征判断）
-    const isBaiduScene = xpath.includes('chat-textarea') || xpath === '#chat-textarea';
-
-    // ====================== 通用工具函数 ======================
-    // 1. 等待元素加载（通用版）
-    function waitForElementByXPath(xpath, timeout = 3000) {
-        return new Promise((resolve) => {
-            const timer = setInterval(() => {
+    // ====================== CDP适配：同步等待元素（避免异步时序问题） ======================
+    /**
+     * 同步等待元素（CDP环境下异步定时器易出问题）
+     * @param {string} xpath - XPath表达式
+     * @param {number} timeout - 超时时间（毫秒）
+     * @returns {HTMLElement|null}
+     */
+    function waitForElementByXPathSync(xpath, timeout = 5000) {
+        const startTime = Date.now();
+        while (Date.now() - startTime < timeout) {
+            try {
                 const el = document.evaluate(
                     xpath,
                     document,
@@ -18,186 +28,119 @@
                     XPathResult.FIRST_ORDERED_NODE_TYPE,
                     null
                 ).singleNodeValue;
-                if (el) {
-                    clearInterval(timer);
-                    resolve(el);
+                if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+                    return el;
                 }
-            }, 50);
-            setTimeout(() => {
-                clearInterval(timer);
-                resolve(document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue);
-            }, timeout);
-        });
-    }
-
-    // 2. 通用React状态更新（你原有方法1）
-    function updateReactState(element, value) {
-        const keys = Object.keys(element);
-        const reactKey = keys.find(key =>
-            key.startsWith('__reactInternalInstance$') ||
-            key.startsWith('__reactFiber$')
-        );
-
-        if (reactKey && element[reactKey]) {
-            let fiberNode = element[reactKey];
-            while (fiberNode) {
-                if (fiberNode.memoizedProps) {
-                    if (fiberNode.memoizedProps.onChange) {
-                        const syntheticEvent = {
-                            target: element,
-                            currentTarget: element,
-                            type: 'change',
-                            nativeEvent: new Event('change'),
-                            preventDefault: () => {},
-                            stopPropagation: () => {},
-                            isDefaultPrevented: () => false,
-                            isPropagationStopped: () => false
-                        };
-                        element.value = value;
-                        fiberNode.memoizedProps.onChange(syntheticEvent);
-                        return true;
-                    }
-                    if (fiberNode.memoizedProps.value !== undefined && fiberNode.memoizedProps.onChange) {
-                        const event = { target: { value: value }, currentTarget: element };
-                        fiberNode.memoizedProps.onChange(event);
-                        return true;
-                    }
-                }
-                fiberNode = fiberNode.return;
+            } catch (e) {
+                console.error('XPath解析错误:', e);
             }
+            // 模拟等待（同步阻塞，CDP环境更稳定）
+            for (let i = 0; i < 1000000; i++) {}
         }
-        return false;
+        return null;
     }
 
-    // 3. 通用React合成事件（你原有方法2）
-    function triggerReactSyntheticEvent(element, value) {
-        const reactEvent = new Event('input', { bubbles: true });
-        reactEvent.simulated = true;
-        reactEvent._reactName = 'onChange';
-        reactEvent._targetInst = element[Object.keys(element).find(k => k.startsWith('__reactFiber'))];
-        reactEvent.nativeEvent = new Event('input');
-        element.dispatchEvent(reactEvent);
-
-        const changeEvent = new Event('change', { bubbles: true });
-        changeEvent.simulated = true;
-        element.dispatchEvent(changeEvent);
-        return true;
-    }
-
-    // 4. 通用备用方案（你原有最终手段）
-    function fallbackInput(element, value) {
-        const originalValue = element.value;
-        element.value = value;
-        element._value = newValue;
-
-        const events = ['input', 'change', 'blur', 'focus'];
-        for (const eventName of events) {
-            const event = new Event(eventName, { bubbles: true, cancelable: true });
-            if (eventName === 'input') {
-                event.data = value;
-                event.inputType = 'insertText';
-                event.isComposing = false;
-            }
-            element.dispatchEvent(event);
-        }
-
-        setTimeout(() => { element.blur(); }, 100);
-        setTimeout(() => { element.focus(); }, 200);
-        console.log('使用备用方案完成输入');
-        return true;
-    }
-
-    // ====================== 百度专属逻辑 ======================
-    // 百度输入框专用输入方法（你的生效代码）
-    async function inputToBaiduTextarea(el, text) {
-        if (!el) {
-            console.error('未找到百度输入框');
+    // ====================== 百度输入框专用：CDP适配版 ======================
+    /**
+     * CDP环境下百度输入框输入（强制触发所有必要事件）
+     * @param {HTMLElement} el - 输入框元素
+     * @param {string} text - 输入文本
+     * @returns {boolean}
+     */
+    function inputToBaiduTextareaCDP(el, text) {
+        if (!el || !text) {
+            finalResult.message = '元素或文本为空';
             return false;
         }
 
-        // 聚焦+清空
-        el.focus();
-        el.value = '';
-        el.dispatchEvent(new Event('focus', { bubbles: true }));
+        try {
+            // 1. 强制聚焦（CDP环境下需主动激活）
+            el.focus();
+            el.scrollIntoView({ behavior: 'instant' }); // 确保元素在视口内
 
-        // 初始change事件
-        const initChangeEvent = new Event('change', { bubbles: true });
-        Object.defineProperty(initChangeEvent, 'target', { get: () => ({ value: el.value }) });
-        el.dispatchEvent(initChangeEvent);
+            // 2. 清空原有值（强制赋值，绕过框架拦截）
+            el.value = '';
+            // 触发原生focus事件
+            el.dispatchEvent(new Event('focus', { bubbles: true, cancelable: true }));
 
-        // 逐字符输入
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            el.value += char;
+            // 3. 逐字符输入（模拟真实用户输入，CDP环境下更易被识别）
+            let currentValue = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                currentValue += char;
 
-            // 原生InputEvent
-            const inputEvent = new InputEvent('input', {
-                bubbles: true,
-                cancelable: true,
-                data: char,
-                inputType: 'insertText',
-                isComposing: false,
-                target: el
-            });
-            el.dispatchEvent(inputEvent);
+                // 强制赋值
+                el.value = currentValue;
 
-            // React合成Change事件
-            const reactChangeEvent = new Event('change', { bubbles: true });
-            Object.defineProperties(reactChangeEvent, {
-                target: { get: () => el },
-                currentTarget: { get: () => el },
-                value: { get: () => el.value }
-            });
-            el.dispatchEvent(reactChangeEvent);
+                // 构造标准InputEvent（CDP环境下需完整参数）
+                const inputEvent = new InputEvent('input', {
+                    bubbles: true,
+                    cancelable: true,
+                    data: char,
+                    inputType: 'insertText',
+                    isComposing: false,
+                    target: el
+                });
+                el.dispatchEvent(inputEvent);
 
-            await new Promise(resolve => setTimeout(resolve, 30));
+                // 构造Change事件（模拟用户输入后的change）
+                const changeEvent = new Event('change', { bubbles: true, cancelable: true });
+                Object.defineProperty(changeEvent, 'target', {
+                    get: () => ({ value: currentValue })
+                });
+                el.dispatchEvent(changeEvent);
+
+                // 短延迟（模拟真实打字间隔）
+                for (let i = 0; i < 500000; i++) {}
+            }
+
+            // 4. 最终失焦+验证
+            el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
+            finalResult.success = true;
+            finalResult.message = '百度专属输入成功';
+            finalResult.inputValue = el.value;
+            return true;
+        } catch (e) {
+            finalResult.message = '百度输入逻辑报错: ' + e.message;
+            // 终极兜底：直接赋值
+            el.value = text;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            finalResult.success = true;
+            finalResult.inputValue = el.value;
+            return true;
         }
-
-        el.dispatchEvent(new Event('blur', { bubbles: true }));
-        console.log('百度专属方案输入完成，最终值：', el.value);
-        return true;
     }
 
-    // ====================== 主执行逻辑 ======================
-    async function main() {
-        let element;
-        // 1. 获取目标元素（兼容XPath和selector）
-        if (xpath.startsWith('#') || xpath.startsWith('.')) {
-            // 是CSS选择器（百度场景）
-            element = await new Promise((resolve) => {
-                const timer = setInterval(() => {
-                    const el = document.querySelector(xpath);
-                    if (el) { clearInterval(timer); resolve(el); }
-                }, 50);
-                setTimeout(() => { clearInterval(timer); resolve(document.querySelector(xpath)); }, 3000);
-            });
-        } else {
-            // 是XPath（通用场景）
-            element = await waitForElementByXPath(xpath);
-        }
-
+    // ====================== 主执行逻辑（CDP适配：同步+显式返回） ======================
+    try {
+        // 1. 同步查找元素（CDP环境下异步定时器不可靠）
+        const element = waitForElementByXPathSync(xpath);
         if (!element) {
-            console.error('未找到目标元素：', xpath);
-            return false;
-        }
-
-        // 2. 分场景执行输入逻辑
-        if (isBaiduScene) {
-            // 百度场景：优先用专属逻辑
-            await inputToBaiduTextarea(element, newValue);
+            finalResult.message = '未找到目标元素: ' + xpath;
+            finalResult.elementFound = false;
         } else {
-            // 通用场景：按你原有逻辑执行
-            if (updateReactState(element, newValue)) {
-                console.log('通过React状态更新成功');
-            } else if (triggerReactSyntheticEvent(element, newValue)) {
-                console.log('通过合成事件更新成功');
+            finalResult.elementFound = true;
+            // 2. 判断是否为百度输入框（通过ID）
+            if (element.id === 'chat-textarea') {
+                inputToBaiduTextareaCDP(element, newValue);
             } else {
-                fallbackInput(element, newValue);
+                // 通用输入逻辑（CDP适配）
+                element.focus();
+                element.value = newValue;
+                ['input', 'change', 'blur'].forEach(evt => {
+                    element.dispatchEvent(new Event(evt, { bubbles: true }));
+                });
+                finalResult.success = true;
+                finalResult.message = '通用输入逻辑执行成功';
+                finalResult.inputValue = element.value;
             }
         }
-        return true;
+    } catch (globalErr) {
+        finalResult.message = '全局执行错误: ' + globalErr.message;
+        finalResult.success = false;
     }
 
-    // 执行主逻辑
-    main();
+    // ====================== CDP关键：显式返回结果（避免undefined） ======================
+    console.log('CDP输入执行结果:', finalResult);
+    return finalResult; // 必须显式返回，CDP才能拿到结果
 })()

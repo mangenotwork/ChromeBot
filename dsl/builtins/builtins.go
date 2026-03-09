@@ -24,6 +24,9 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 
 	// 注册 chrome
 	registerChrome(interp)
+	for name, fn := range chromeFn {
+		interp.Global().SetFunc(name, fn)
+	}
 
 	// 注册 http
 	registerHttp(interp)
