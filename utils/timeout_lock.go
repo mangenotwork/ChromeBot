@@ -54,7 +54,7 @@ func (tl *TimeoutLock) Lock() error {
 		fmt.Println("[超时提醒] 锁已超时，自动释放并失效")
 	})
 
-	fmt.Println("✅ 加锁成功")
+	Debug("✅ 加锁成功")
 	return nil
 }
 
@@ -79,7 +79,7 @@ func (tl *TimeoutLock) Unlock() error {
 	tl.locked = false
 	tl.expired = false
 
-	fmt.Println("✅ 解锁成功")
+	Debug("✅ 解锁成功")
 	return nil
 }
 

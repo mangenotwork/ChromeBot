@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -38,7 +39,7 @@ func (c *ChromeProcess) Click(xPath string) error {
 		return fmt.Errorf("发送消息失败")
 	}
 	msgStr, _ := json.Marshal(msg)
-	log.Printf("发送消息: %s", string(msgStr))
+	utils.Debugf("发送消息: %s", string(msgStr))
 
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
@@ -51,7 +52,7 @@ func (c *ChromeProcess) Click(xPath string) error {
 				log.Println("消息队列已关闭")
 				return fmt.Errorf("消息队列已关闭")
 			}
-			log.Println("收到的消息 -> ", respMsg.Content)
+			utils.Debug("收到的消息 -> ", respMsg.Content)
 			if c.NextID == respMsg.ID {
 
 				resultValue, err := gt.JsonFind(respMsg.Content, "result/result/subtype")
@@ -67,15 +68,22 @@ func (c *ChromeProcess) Click(xPath string) error {
 				if err != nil {
 					log.Println(err)
 				}
-				log.Println("执行点击操作: ", resultValue)
+				utils.Debug("执行点击操作: ", resultValue)
 
-				return nil
+				select {
+				case session := <-NowPageLoadEventFired:
+					utils.Debug("点击后页面已完全加载 session = ", session)
+					return nil
+				case <-time.After(6 * time.Second):
+					return nil
+				}
+
 			} else {
-				log.Println("不是自己的消息")
+				utils.Debug("不是自己的消息")
 			}
 
 		case <-timer.C:
-			log.Println("6秒未收到消息")
+			utils.Debug("6秒未收到消息")
 			return fmt.Errorf("接收消息超时; 6秒未收到消息")
 		}
 	}

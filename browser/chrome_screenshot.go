@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -35,7 +36,7 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 	}
 	result.Width = gt.Any2Int(pageSize["width"])
 	result.Height = gt.Any2Int(pageSize["height"])
-	log.Printf("页面完整尺寸：宽=%dpx，高=%dpx", result.Width, result.Height)
+	utils.Debugf("页面完整尺寸：宽=%dpx，高=%dpx", result.Width, result.Height)
 
 	// 步骤2：构造 Page.captureScreenshot 请求（关键参数）
 	c.NextID++
@@ -65,7 +66,7 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 		return result, fmt.Errorf("发送截图请求失败: %w", err)
 	}
 	msgStr, _ := json.Marshal(screenshotMsg)
-	log.Printf("发送截图请求: %s", string(msgStr))
+	utils.Debugf("发送截图请求: %s", string(msgStr))
 
 	// 步骤4：等待并解析截图响应
 	timeout := 10 * time.Second // 截图超时设为10秒（全屏截图可能耗时）
@@ -108,7 +109,7 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 						return result, fmt.Errorf("保存截图文件失败: %w", err)
 					}
 					result.FilePath = outputPath
-					log.Printf("截图已保存到: %s", outputPath)
+					fmt.Printf("[Chrome]截图已保存到: %s \n", outputPath)
 				}
 
 				return result, nil
@@ -151,7 +152,7 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 	}
 
 	msgStr, _ := json.Marshal(sizeMsg)
-	log.Printf("发送: %s", string(msgStr))
+	utils.Debugf("发送: %s", string(msgStr))
 
 	err := c.NowTabWSConn.WriteJSON(sizeMsg)
 	if err != nil {
@@ -170,7 +171,7 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 			}
 			if c.NextID == respMsg.ID {
 
-				log.Println("收到尺寸回复 : ", respMsg.Content)
+				utils.Debug("收到尺寸回复 : ", respMsg.Content)
 
 				result, err := gt.JsonFind(respMsg.Content, "/result/result/value")
 				if err != nil {

@@ -37,7 +37,7 @@ func FindChrome() (string, error) {
 		return path, nil
 	}
 
-	return "", fmt.Errorf("Chrome not found on this system")
+	return "", fmt.Errorf("Chrome not found on this system ")
 }
 
 // 优化的WMI查找方法

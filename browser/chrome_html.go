@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	"bytes"
 	_ "embed"
 	"encoding/json"
@@ -38,7 +39,7 @@ func (c *ChromeProcess) GetHtml() (string, error) {
 		return "", fmt.Errorf("发送消息失败")
 	}
 	msgStr, _ := json.Marshal(msg)
-	log.Printf("发送消息: %s", string(msgStr))
+	utils.Debugf("发送消息: %s", string(msgStr))
 
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
@@ -74,7 +75,7 @@ func (c *ChromeProcess) GetHtml() (string, error) {
 											}
 											return htmlBodyStr, nil
 										} else {
-											log.Println("未获取到页面html = ", value["error"])
+											log.Println("[Chrome]未获取到页面html = ", value["error"])
 											return "", fmt.Errorf("[Chrome] 未获取到页面html,err: %s", value["error"].(string))
 										}
 									}
@@ -86,11 +87,11 @@ func (c *ChromeProcess) GetHtml() (string, error) {
 				}
 
 			} else {
-				log.Println("不是自己的消息")
+				utils.Debug("不是自己的消息")
 			}
 
 		case <-timer.C:
-			log.Println("6秒未收到消息")
+			utils.Debug("6秒未收到消息")
 			return "", fmt.Errorf("接收消息超时; 6秒未收到消息")
 		}
 	}

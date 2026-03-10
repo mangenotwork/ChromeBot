@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -17,7 +18,7 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 		c.DefaultNowTab()
 	}
 
-	log.Println("输入内容 : ", text)
+	utils.Debug("输入内容 : ", text)
 
 	xPath = "'" + strings.ReplaceAll(xPath, "\"", "\\\"") + "'"
 	text = "'" + strings.ReplaceAll(text, "\"", "\\\"") + "'"
@@ -41,7 +42,7 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 		return fmt.Errorf("发送消息失败")
 	}
 	msgStr, _ := json.Marshal(msg)
-	log.Printf("发送消息: %s", string(msgStr))
+	utils.Debugf("发送消息: %s", string(msgStr))
 
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
@@ -55,14 +56,14 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 				return fmt.Errorf("消息队列已关闭")
 			}
 			if c.NextID == respMsg.ID {
-				log.Println("收到的消息 -> ", respMsg.Content)
+				utils.Debug("收到的消息 -> ", respMsg.Content)
 				return nil
 			} else {
-				log.Println("不是自己的消息")
+				utils.Debug("不是自己的消息")
 			}
 
 		case <-timer.C:
-			log.Println("6秒未收到消息")
+			utils.Debug("6秒未收到消息")
 			return fmt.Errorf("接收消息超时; 6秒未收到消息")
 		}
 	}

@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/utils"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -35,7 +36,7 @@ func (c *ChromeProcess) ScrollByPixel(x, y int) error {
 	jsPixel := strings.ReplaceAll(chromeScrollPixelJS, "__SCROLL_X__", strconv.Itoa(x))
 	jsPixel = strings.ReplaceAll(jsPixel, "__SCROLL_Y__", strconv.Itoa(y))
 	res, err := c.scroll(jsPixel)
-	log.Printf("滚动结果: %v", res)
+	log.Printf("[Chrome]滚动结果: %v", res)
 	return err
 }
 
@@ -45,7 +46,7 @@ func (c *ChromeProcess) ScrollToElement(xPath string) error {
 	jsElement := strings.ReplaceAll(chromeScrollElementJS, "__SCROLL_XPATH__", xPath)
 	jsElement = strings.ReplaceAll(jsElement, "__SCROLL_IS_SMOOTH__", strconv.FormatBool(true))
 	res, err := c.scroll(jsElement)
-	log.Printf("滚动结果: %v", res)
+	log.Printf("[Chrome]滚动结果: %v", res)
 	return err
 }
 
@@ -62,9 +63,6 @@ func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
 		c.DefaultNowTab()
 	}
 
-	log.Println("js = ", js)
-
-	// 3. 构造CDP请求
 	c.NextID++
 	msg := map[string]interface{}{
 		"id":     c.NextID,
@@ -77,15 +75,13 @@ func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
 		"sessionId": c.NowTabSession,
 	}
 
-	// 4. 发送请求
 	err := c.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		return nil, fmt.Errorf("发送滚动消息失败: %w", err)
 	}
 	msgStr, _ := json.Marshal(msg)
-	log.Printf("发送滚动消息: %s", string(msgStr))
+	utils.Debugf("发送滚动消息: %s", string(msgStr))
 
-	// 5. 等待响应
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
 	defer timer.Stop()
@@ -96,17 +92,16 @@ func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
 			if !ok {
 				return nil, fmt.Errorf("消息队列已关闭")
 			}
-			log.Println("收到滚动响应 -> ", respMsg.Content)
+			utils.Debug("收到滚动响应 -> ", respMsg.Content)
 
 			// 匹配当前请求的响应
 			if c.NextID == respMsg.ID {
-				// 6. 解析响应结果
+
 				resultJson, err := gt.JsonFind(respMsg.Content, "/result/result/value")
 				if err != nil {
 					return nil, fmt.Errorf("解析滚动结果失败: %w", err)
 				}
 
-				// 7. 转换为ScrollResult结构体
 				resultBytes, err := json.Marshal(resultJson)
 				if err != nil {
 					return nil, fmt.Errorf("转换结果为JSON失败: %w", err)
@@ -117,7 +112,6 @@ func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
 					return nil, fmt.Errorf("反序列化滚动结果失败: %w", err)
 				}
 
-				// 8. 如果JS执行失败，返回详细错误
 				if !scrollResult.Success {
 					return &scrollResult, fmt.Errorf("滚动执行失败: %s - %s", scrollResult.Error, scrollResult.Message)
 				}

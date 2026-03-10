@@ -29,8 +29,8 @@ type ChromeProcess struct {
 	Port           int             // 调试端口
 	PID            int             // 浏览器进程
 	NextID         int             // 自增消息id
-	NowTab         string          // todo 当前操作的tab
-	NowTabWSConn   *websocket.Conn // todo 当前操作的tab的websocket连接
+	NowTab         string          // 当前操作的tab
+	NowTabWSConn   *websocket.Conn // 当前操作的tab的websocket连接
 	NowTabTargetId string          // 当前操作的tab的TargetId
 	NowTabWSUrl    string          // 当前操作的tab的WSUrl
 	NowTabSession  string          // 当前操作的tab的Session
@@ -84,12 +84,12 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 			os.Exit(0)
 		}
 
-		log.Println("chromePath = ", chromePath)
+		utils.Debug("chromePath = ", chromePath)
 
 		if userPath == "" { // 如果没设定就使用默认  在谷歌目录下  \Google\Chrome\Application\
 			userPath = fmt.Sprintf("%sChromeBot\\profiles\\default", strings.Replace(chromePath, "chrome.exe", "", -1))
 		}
-		log.Println("userPath = ", userPath)
+		utils.Debug("userPath = ", userPath)
 
 		// 启动Chrome进程
 		pid, err := startChromeProcess(chromePath, windowSize, proxy, userPath, port)
@@ -153,6 +153,7 @@ func startChromeProcess(chromePath, windowSize, proxy, userPath string, port int
 	}
 
 	pid := cmd.Process.Pid
+	fmt.Println("[Chrome]浏览器进程 PID: ", pid)
 
 	for i := 0; i < 40; i++ {
 		if ok, _ := isProcessRunning(pid); ok {
@@ -203,7 +204,7 @@ func (c *ChromeProcess) DefaultNowTab() {
 	if err != nil {
 		fmt.Println("[Chrome] 默认连接第一个Tab创建session出现错误, err : ", err)
 	}
-	log.Println("获取到 session = ", session)
+	utils.Debug("获取到 session = ", session)
 	c.NowTabSession = session
 
 	// 启动页面监听
@@ -218,7 +219,7 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 		return nil, fmt.Errorf("url is null")
 	}
 	// 使用Dialer建立连接
-	log.Println("建立连接: ", c.NowTabWSUrl)
+	utils.Debug("建立连接: ", c.NowTabWSUrl)
 	conn, _, err := websocket.DefaultDialer.Dial(c.NowTabWSUrl, nil)
 	if err != nil {
 		log.Fatal("连接失败:", err)
@@ -273,7 +274,12 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 
 				}
 
-				log.Printf("=====> 收到服务器回复: %s", message)
+				msgDebug := string(message)
+				if len(msgDebug) > 4000 {
+					msgDebug = msgDebug[0:4000] + " --> 太多了省略 ..."
+				}
+
+				utils.Debug("=====> 收到服务器回复: %s", msgDebug)
 
 				// getRequestImg(string(message))  // 监听到图片资源
 
@@ -281,25 +287,6 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 				if err != nil {
 					gt.Error("回复内容解析错误")
 				} else {
-
-					//// todo 改出大bug了，id无法收到消息
-					//var (
-					//	sessionId   = ""
-					//	sessionIdOK = false
-					//)
-					//sessionId, sessionIdOK = result["sessionId"].(string)
-					//if !sessionIdOK {
-					//	sessionId = ""
-					//}
-					//
-					//// 监听页面加载
-					//method, methodOK := result["method"].(string)
-					//if methodOK && method == "Page.loadEventFired" {
-					//	NowPageLoadEventFired <- sessionId
-					//} else if methodOK && method == "Page.frameStoppedLoading" {
-					//	time.Sleep(2 * time.Second) // frameStoppedLoading后延迟2秒
-					//	NowPageLoadEventFired <- sessionId
-					//}
 
 					// 提取sessionId
 					sessionId, sessionIdOK := result["sessionId"].(string)
@@ -323,9 +310,9 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 							// 使用select+default，避免NowPageLoadEventFired无缓冲时阻塞
 							select {
 							case NowPageLoadEventFired <- sessionId:
-								log.Printf("发送页面加载事件，sessionId: %s", sessionId)
+								utils.Debug("发送页面加载事件，sessionId: %s", sessionId)
 							default:
-								log.Printf("NowPageLoadEventFired通道阻塞，跳过发送: %s", sessionId)
+								utils.Debug("NowPageLoadEventFired通道阻塞，跳过发送: %s", sessionId)
 							}
 						}
 					}
@@ -378,7 +365,7 @@ func (c *ChromeProcess) Close() error {
 		fmt.Println("[Chrome]未初始化")
 		return nil
 	}
-	fmt.Println("关闭WS连接")
+	utils.Debug("关闭WS连接")
 	// 关闭WS连接
 	go c.CloseNowTabConn()
 
@@ -509,12 +496,12 @@ func (c *ChromeProcess) GetPID() int {
 }
 
 func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
-	log.Println("c.UserPath = ", c.UserPath)
+	utils.Debug("c.UserPath = ", c.UserPath)
 	isNew := !utils.PathExists(c.UserPath)
-	log.Println("isNew = ", isNew)
+	utils.Debug("isNew = ", isNew)
 
 	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", c.Port)
-	log.Println("tabUrl = ", tabUrl)
+	utils.Debug("tabUrl = ", tabUrl)
 
 	var targetId = ""
 	var webSocketDebuggerUrl = ""
@@ -524,7 +511,7 @@ func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
 		gt.Error(err)
 		return "", "", err
 	}
-	log.Println("json/list = ", ctx.RespBodyString())
+	utils.Debug("json/list = ", ctx.RespBodyString())
 
 	dataArr := make([]map[string]interface{}, 0)
 	err = json.Unmarshal([]byte(ctx.RespBodyString()), &dataArr)
@@ -532,7 +519,7 @@ func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
 		return "", "", err
 	}
 
-	log.Println("rList = ", dataArr)
+	utils.Debug("rList = ", dataArr)
 
 	if isNew && len(dataArr) > 1 {
 		dataMap := gt.Any2Map(dataArr[1])
@@ -548,15 +535,16 @@ func (c *ChromeProcess) GetFirstTabWs() (string, string, error) {
 		return "", "", err
 	}
 
-	log.Printf("ws url %s", webSocketDebuggerUrl)
+	utils.Debugf("ws url %s", webSocketDebuggerUrl)
 	return targetId, webSocketDebuggerUrl, nil
 }
 
 func (c *ChromeProcess) GetSession() (string, error) {
-	c.activateTarget()
-
+	_, err := c.activateTarget()
+	if err != nil {
+		log.Println("[Chrome]执行activateTarget遇到错误， err = ", err.Error())
+	}
 	return c.attachToTarget()
-
 }
 
 func (c *ChromeProcess) attachToTarget() (string, error) {
@@ -574,7 +562,7 @@ func (c *ChromeProcess) attachToTarget() (string, error) {
 		log.Println("[Chrome]发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
-	log.Printf("发送消息: %s", message)
+	utils.Debugf("发送消息: %s", message)
 
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
@@ -587,7 +575,7 @@ func (c *ChromeProcess) attachToTarget() (string, error) {
 				gt.Info("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			gt.Info("收到的消息 -> ", msg.Content)
+			utils.Debug("收到的消息 -> ", msg.Content)
 			if c.NextID == msg.ID {
 				result, err := gt.Json2Map(msg.Content)
 				if err != nil {
@@ -633,7 +621,7 @@ func (c *ChromeProcess) activateTarget() (string, error) {
 		log.Println("[Chrome]发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
-	log.Printf("发送消息: %s", message)
+	utils.Debugf("发送消息: %s", message)
 
 	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
@@ -643,14 +631,14 @@ func (c *ChromeProcess) activateTarget() (string, error) {
 		select {
 		case msg, ok := <-messageQueue:
 			if !ok {
-				gt.Info("消息队列已关闭")
+				utils.Debug("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			gt.Info("收到的消息 -> ", msg.Content)
+			utils.Debug("收到的消息 -> ", msg.Content)
 			if c.NextID == msg.ID {
 				result, err := gt.Json2Map(msg.Content)
 				if err != nil {
-					gt.Error("回复内容解析错误")
+					utils.Debug("回复内容解析错误")
 				} else {
 					resultData, resultDataOK := result["result"]
 					if resultDataOK {
@@ -666,11 +654,11 @@ func (c *ChromeProcess) activateTarget() (string, error) {
 
 				return msg.Content, nil
 			} else {
-				gt.Info("不是自己的消息")
+				utils.Debug("不是自己的消息")
 			}
 
 		case <-timer.C:
-			gt.Info("6秒未收到消息")
+			utils.Debug("6秒未收到消息")
 			return "", fmt.Errorf("接收消息超时; 6秒未收到消息")
 		}
 	}
@@ -696,7 +684,7 @@ func (c *ChromeProcess) OpenUrl(url string) (string, error) {
 		log.Println("发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
-	log.Printf("发送消息: %s", message)
+	utils.Debugf("发送消息: %s", message)
 
 	timeout := 30 * time.Second
 	timer := time.NewTimer(timeout)
@@ -709,12 +697,12 @@ func (c *ChromeProcess) OpenUrl(url string) (string, error) {
 				log.Println("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			log.Println("收到的消息 -> ", msg.Content)
+			utils.Debug("收到的消息 -> ", msg.Content)
 			if c.NextID == msg.ID {
 
 				select {
 				case session := <-NowPageLoadEventFired:
-					log.Println("页面已完全加载 session = ", session)
+					utils.Debug("页面已完全加载 session = ", session)
 					return msg.Content, nil
 				case <-time.After(6 * time.Second):
 					return "", fmt.Errorf("页面加载超时")
