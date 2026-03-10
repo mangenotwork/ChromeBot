@@ -2,6 +2,7 @@ package builtins
 
 import (
 	"ChromeBot/dsl/interpreter"
+	"ChromeBot/utils"
 	"fmt"
 	gt "github.com/mangenotwork/gathertool"
 	"golang.org/x/text/encoding"
@@ -47,6 +48,7 @@ var strFn = map[string]interpreter.Function{
 	"RegFn":           strRegFn,           // RegFn 函数 内置了很多用正则提取的常用场景方法 第一个参数是字符串，第二个是方法名
 	"RegDel":          strRegDel,          // RegDel 函数 常见的删除方法支持html删除指定标签内容 第一个参数是字符串，第二个是方法名或标签名
 	"RegHas":          strRegHas,          // RegHas 函数 使用正则判断是否存在某内容 第一个参数是字符串，第二个是方法名
+	"SaveToFile":      strSaveToFile,      // SaveToFile 函数 将字符串保存到指定函数 todo 扩展为内置函数 save 任意变量都能保存到文件
 }
 
 func strUpper(args []interpreter.Value) (interpreter.Value, error) {
@@ -711,4 +713,22 @@ func strRegFn(args []interpreter.Value) (interpreter.Value, error) {
 		res = append(res, v)
 	}
 	return res, nil
+}
+
+func strSaveToFile(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("SaveToFile(arg, path) 需要2个参数 ")
+	}
+
+	pathStr, pathStrOK := args[1].(string)
+	if !pathStrOK {
+		return nil, fmt.Errorf("SaveToFile(arg, path)参数要求是字符串 ")
+	}
+
+	err := utils.SaveDataToFile(pathStr, gt.Any2String(args[0]))
+	if err != nil {
+		fmt.Println("保存页面到文件出现了错误:", err.Error())
+	}
+
+	return nil, nil
 }

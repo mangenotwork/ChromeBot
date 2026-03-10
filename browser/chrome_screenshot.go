@@ -126,6 +126,8 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 
 // getPageFullSize 获取页面完整尺寸（宽高）
 func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
+	// 截图前获取尺寸等待500ms
+	time.Sleep(500 * time.Millisecond)
 	c.NextID++
 	// 执行JS获取页面完整宽高
 	sizeMsg := map[string]interface{}{
@@ -159,7 +161,7 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 		return nil, fmt.Errorf("发送获取尺寸请求失败: %w", err)
 	}
 
-	timeout := 5 * time.Second
+	timeout := 6 * time.Second
 	timer := time.NewTimer(timeout)
 	defer timer.Stop()
 

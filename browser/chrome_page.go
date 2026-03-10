@@ -42,6 +42,18 @@ func (c *ChromeProcess) PageEnable() error {
 			}
 			if c.NextID == respMsg.ID {
 				utils.Debug("收到的消息 -> ", respMsg.Content)
+
+				c.NextID++
+				disableFrameEvents := map[string]interface{}{
+					"id":        c.NextID,
+					"method":    "Page.setLifecycleEventsEnabled", // 禁用生命周期事件
+					"params":    map[string]interface{}{"enabled": false},
+					"sessionId": c.NowTabSession,
+				}
+				if err := c.NowTabWSConn.WriteJSON(disableFrameEvents); err != nil {
+					utils.Debug("禁用frame事件失败: ", err)
+				}
+
 				return nil
 			} else {
 				utils.Debug("不是自己的消息")

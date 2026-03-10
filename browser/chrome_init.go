@@ -228,8 +228,10 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 
 	go func() {
 
+		nowDone := make(chan struct{}, 1)
+		defer close(nowDone)
+
 		for {
-			nowDone := make(chan struct{})
 			select {
 			case <-ConnTabDone:
 				fmt.Println("[Chrome] ws 连接收到结束....")
@@ -300,9 +302,6 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 						// 关键修改5：优化通道发送逻辑，避免阻塞
 						var sendFlag bool
 						if method == "Page.loadEventFired" {
-							sendFlag = true
-						} else if method == "Page.frameStoppedLoading" {
-							time.Sleep(2 * time.Second)
 							sendFlag = true
 						}
 

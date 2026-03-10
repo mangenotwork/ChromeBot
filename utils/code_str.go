@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -143,4 +144,20 @@ func SaveDataToFile(path string, data interface{}) error {
 
 	fmt.Printf("数据已成功保存到：%s\n", absPath)
 	return nil
+}
+
+// UnescapeUnicode 将Unicode编码的字符串转为中文
+func UnescapeUnicode(unicodeStr string) string {
+	quotedStr := "\"" + unicodeStr + "\""
+	res, err := strconv.Unquote(quotedStr)
+	if err != nil {
+		var jsonRes string
+		err = json.Unmarshal([]byte(quotedStr), &jsonRes)
+		if err != nil {
+			Debugf("转义失败：%v", err)
+			return unicodeStr
+		}
+		return jsonRes
+	}
+	return res
 }

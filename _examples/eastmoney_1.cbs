@@ -1,0 +1,10 @@
+// 访问东方财经网，先进官网再点击排行，获取排名列表并将数据保存到本地文件
+// 东方财经网 ： https://www.eastmoney.com/
+chrome init  // 打开浏览器
+chrome req="https://www.eastmoney.com/" // 访问
+chrome click=`/html/body/div[3]/div[2]/div[4]/ul[2]/li[1]/a[4]` // 点击排行
+chrome to=body
+//chrome screenshot="D:\eastmoney_2.png"
+var rse = NowTabGetPointIDHTML("table", "dbtable") // 获取页面标签table id=dbtable 的html 保存到变量 rse
+SaveToFile(rse, "D:\eastmoney_data_2.txt") // 将变量rse保存到文件
+chrome close
