@@ -3,5 +3,5 @@ chrome init  // 打开浏览器
 chrome req="www.baidu.com" // 访问
 chrome xpath=`//*[@id="chat-textarea"]` input="mange" // 输入
 chrome click=`//*[@id="chat-submit-button"]` // 点击确定
-chrome wait=4 save="mange.html" // 默认等待页面变换 将当前页面的html存储到变量 res
-//chrome close  // 关闭浏览器
+chrome screenshot="D:\baidu4.png"
+chrome close  // 关闭浏览器

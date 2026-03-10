@@ -205,6 +205,12 @@ func (c *ChromeProcess) DefaultNowTab() {
 	}
 	log.Println("获取到 session = ", session)
 	c.NowTabSession = session
+
+	// 启动页面监听
+	err = c.PageEnable()
+	if err != nil {
+		log.Println("页面加载失败")
+	}
 }
 
 func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
@@ -267,7 +273,7 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 
 				}
 
-				//log.Printf("=====> 收到服务器回复: %s", message)
+				log.Printf("=====> 收到服务器回复: %s", message)
 
 				// getRequestImg(string(message))  // 监听到图片资源
 
@@ -275,6 +281,55 @@ func (c *ChromeProcess) ConnTab() (*websocket.Conn, error) {
 				if err != nil {
 					gt.Error("回复内容解析错误")
 				} else {
+
+					//// todo 改出大bug了，id无法收到消息
+					//var (
+					//	sessionId   = ""
+					//	sessionIdOK = false
+					//)
+					//sessionId, sessionIdOK = result["sessionId"].(string)
+					//if !sessionIdOK {
+					//	sessionId = ""
+					//}
+					//
+					//// 监听页面加载
+					//method, methodOK := result["method"].(string)
+					//if methodOK && method == "Page.loadEventFired" {
+					//	NowPageLoadEventFired <- sessionId
+					//} else if methodOK && method == "Page.frameStoppedLoading" {
+					//	time.Sleep(2 * time.Second) // frameStoppedLoading后延迟2秒
+					//	NowPageLoadEventFired <- sessionId
+					//}
+
+					// 提取sessionId
+					sessionId, sessionIdOK := result["sessionId"].(string)
+					if !sessionIdOK {
+						sessionId = ""
+					}
+
+					// 监听页面加载事件
+					method, methodOK := result["method"].(string)
+					if methodOK {
+						// 关键修改5：优化通道发送逻辑，避免阻塞
+						var sendFlag bool
+						if method == "Page.loadEventFired" {
+							sendFlag = true
+						} else if method == "Page.frameStoppedLoading" {
+							time.Sleep(2 * time.Second)
+							sendFlag = true
+						}
+
+						if sendFlag && sessionId != "" {
+							// 使用select+default，避免NowPageLoadEventFired无缓冲时阻塞
+							select {
+							case NowPageLoadEventFired <- sessionId:
+								log.Printf("发送页面加载事件，sessionId: %s", sessionId)
+							default:
+								log.Printf("NowPageLoadEventFired通道阻塞，跳过发送: %s", sessionId)
+							}
+						}
+					}
+
 					id, ok := result["id"].(float64)
 					//gt.Info(id, ok)
 					if !ok {
@@ -638,12 +693,12 @@ func (c *ChromeProcess) OpenUrl(url string) (string, error) {
 	}`, c.NextID, utils.FixURLProtocol(url), c.NowTabSession)
 	err := c.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
-		gt.Error("发送消息失败:", err)
+		log.Println("发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
 	}
 	log.Printf("发送消息: %s", message)
 
-	timeout := 6 * time.Second
+	timeout := 30 * time.Second
 	timer := time.NewTimer(timeout)
 	defer timer.Stop() // 重要：确保计时器被清理
 
@@ -651,19 +706,30 @@ func (c *ChromeProcess) OpenUrl(url string) (string, error) {
 		select {
 		case msg, ok := <-messageQueue:
 			if !ok {
-				gt.Info("消息队列已关闭")
+				log.Println("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			gt.Info("收到的消息 -> ", msg.Content)
+			log.Println("收到的消息 -> ", msg.Content)
 			if c.NextID == msg.ID {
-				return msg.Content, nil
+
+				select {
+				case session := <-NowPageLoadEventFired:
+					log.Println("页面已完全加载 session = ", session)
+					return msg.Content, nil
+				case <-time.After(6 * time.Second):
+					return "", fmt.Errorf("页面加载超时")
+				}
+
+				//return msg.Content, nil
+
 			} else {
-				gt.Info("不是自己的消息")
+				log.Println("不是自己的消息")
 			}
 
 		case <-timer.C:
-			gt.Info("6秒未收到消息")
-			return "", fmt.Errorf("接收消息超时; 6秒未收到消息")
+			log.Println("30秒未收到消息")
+			return "", fmt.Errorf("接收消息超时; 30秒未收到消息")
 		}
 	}
+
 }

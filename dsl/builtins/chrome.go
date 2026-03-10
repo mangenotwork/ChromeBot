@@ -12,7 +12,7 @@ import (
 )
 
 // 一个带timeout的锁
-var chromeLock = utils.NewTimeoutLock(2 * time.Second)
+var chromeLock = utils.NewTimeoutLock(30 * time.Second)
 
 var ChromeWait = 0
 

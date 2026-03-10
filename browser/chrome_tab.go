@@ -159,6 +159,13 @@ func (c *ChromeProcess) SelectTab(targetId string) {
 			}
 			log.Println("获取到 session = ", session)
 			c.NowTabSession = session
+
+			// 启动页面监听
+			err = c.PageEnable()
+			if err != nil {
+				log.Println("页面加载失败")
+			}
+
 		}
 
 	}

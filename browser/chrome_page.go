@@ -1,38 +1,23 @@
 package browser
 
 import (
-	_ "embed"
 	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 )
 
-//go:embed chrome_input.js
-var chromeInputJS string
-
-func (c *ChromeProcess) Input(xPath, text string) error {
+func (c *ChromeProcess) PageEnable() error {
 	if c.NowTabWSConn == nil {
 		c.DefaultNowTab()
 	}
 
-	log.Println("输入内容 : ", text)
-
-	xPath = "'" + strings.ReplaceAll(xPath, "\"", "\\\"") + "'"
-	text = "'" + strings.ReplaceAll(text, "\"", "\\\"") + "'"
-	js := strings.ReplaceAll(chromeInputJS, "__XPATH__", xPath)
-	js = strings.ReplaceAll(js, "__INPUTTEXT__", text)
-
+	// 1. 启用Page事件监听（必须）
 	c.NextID++
 	msg := map[string]interface{}{
-		"id":     c.NextID,
-		"method": "Runtime.evaluate",
-		"params": map[string]interface{}{
-			"expression":    js,
-			"returnByValue": true,
-			"awaitPromise":  true,
-		},
+		"id":        c.NextID,
+		"method":    "Page.enable",
+		"params":    map[string]interface{}{},
 		"sessionId": c.NowTabSession,
 	}
 	err := c.NowTabWSConn.WriteJSON(msg)
@@ -66,4 +51,5 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 			return fmt.Errorf("接收消息超时; 6秒未收到消息")
 		}
 	}
+
 }

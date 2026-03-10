@@ -1,7 +1,7 @@
 (function() {
     // 统一占位符
-    const xpath = '//*[@id="chat-textarea"]';
-    const newValue = 'ChromeBot';
+    const xpath = __XPATH__;
+    const newValue = __INPUTTEXT__;
     // 用于存储最终执行结果（CDP需要显式返回）
     let finalResult = {
         success: false,
