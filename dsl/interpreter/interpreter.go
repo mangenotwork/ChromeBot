@@ -5,8 +5,10 @@ import (
 	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
+	gt "github.com/mangenotwork/gathertool"
 	"os"
 	"strconv"
+	"sync"
 )
 
 var IsREPL = false
@@ -86,21 +88,44 @@ type Function func(args []Value) (Value, error)
 // Context 执行上下文
 type Context struct {
 	parent      *Context
+	children    []*Context
 	variables   map[string]Value
 	functions   map[string]Function
 	returnVal   *Value
 	hasReturn   bool
 	hasBreak    bool
 	hasContinue bool
+	id          string
+	mu          sync.RWMutex
 }
 
 // NewContext 创建上下文
 func NewContext(parent *Context) *Context {
-	return &Context{
+
+	md5Str := gt.IDMd5()
+	ctx := &Context{
 		parent:    parent,
 		variables: make(map[string]Value),
 		functions: make(map[string]Function),
+		id:        md5Str,
+		children:  []*Context{}, // 初始化子上下文列表
 	}
+	utils.Debug("  **************** NewContext 创建上下文   ***************  md5Str = ", md5Str, " | parent = ", parent)
+	if parent != nil {
+		parent.mu.Lock()
+		parent.children = append(parent.children, ctx)
+		parent.mu.Unlock()
+	}
+	return ctx
+}
+
+func (c *Context) GetChildren() []*Context {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	// 返回副本，避免外部修改内部切片
+	children := make([]*Context, len(c.children))
+	copy(children, c.children)
+	return children
 }
 
 // SetVar 设置变量
@@ -111,8 +136,19 @@ func (c *Context) SetVar(name string, value Value) {
 // GetVar 获取变量
 func (c *Context) GetVar(name string) (Value, bool) {
 	val, ok := c.variables[name]
+	utils.Debug("获取变量 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.id)
 	if !ok && c.parent != nil {
-		return c.parent.GetVar(name)
+		val, ok = c.parent.GetVar(name)
+		utils.Debug("获取不到变量在父里找 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.parent.id)
+		return val, ok
+	}
+	if !ok && len(c.children) > 0 {
+		for _, item := range c.children {
+			val, ok = item.GetVar(name)
+			if ok {
+				return val, ok
+			}
+		}
 	}
 	return val, ok
 }
@@ -515,6 +551,8 @@ func (i *Interpreter) evaluateWhileStmt(stmt *ast.WhileStmt, ctx *Context, hang 
 }
 
 func (i *Interpreter) evaluateForStmt(stmt *ast.ForStmt, ctx *Context, hang int) Value {
+
+	utils.Debug(" ==== evaluateForStmt ==== ")
 
 	if stmt.Init != nil {
 		_ = i.evaluateStmt(stmt.Init, ctx, hang)

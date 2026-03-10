@@ -461,10 +461,10 @@ func strRegHtml(args []interpreter.Value) (interpreter.Value, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("RegHtml(str,str) 需要2个参数 ")
 	}
-	str, ok1 := args[0].(string)
-	if !ok1 {
-		return nil, fmt.Errorf("RegHtml(str,str) 第一个参数要求是字符串 ")
-	}
+	str := gt.Any2String(args[0])
+	//if !ok1 {
+	//	return nil, fmt.Errorf("RegHtml(str,str) 第一个参数要求是字符串 ")
+	//}
 	label, ok2 := args[1].(string)
 	if !ok2 {
 		return nil, fmt.Errorf("RegHtml(str,str) 第二个参数要求是字符串 ")
@@ -513,10 +513,11 @@ func strRegHtmlText(args []interpreter.Value) (interpreter.Value, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("RegHtmlText(str,str) 需要2个参数 ")
 	}
-	str, ok1 := args[0].(string)
-	if !ok1 {
-		return nil, fmt.Errorf("RegHtmlText(str,str) 第一个参数要求是字符串 ")
-	}
+	str := gt.Any2String(args[0])
+	str = strings.Replace(str, "\\\"", "\"", -1)
+	//if !ok1 {
+	//	return nil, fmt.Errorf("RegHtmlText(str,str) 第一个参数要求是字符串 ")
+	//}
 	label, ok2 := args[1].(string)
 	if !ok2 {
 		return nil, fmt.Errorf("RegHtmlText(str,str) 第二个参数要求是字符串 ")

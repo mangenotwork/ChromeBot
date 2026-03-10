@@ -315,8 +315,17 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opReq:
 			fmt.Println("[Chrome]请求操作...")
+			reqUrl := op.arg["arg"].(string)
+			utils.Debug("reqUrl = ", reqUrl)
+			// 匹配一下判断arg是不是变量
+			reqUrlVal, reqUrlValOK := interp.Global().GetVar(reqUrl)
+			if reqUrlValOK {
+				utils.Debug("存在变量 ", reqUrl, " | 值: ", reqUrlVal)
+				reqUrl = reqUrlVal.(string)
+			}
+			fmt.Println("[Chrome]请求 url = ", reqUrl)
 			chromeObj := browser.GetChromeInstance()
-			_, err := chromeObj.OpenUrl(op.arg["arg"].(string))
+			_, err := chromeObj.OpenUrl(reqUrl)
 			if err != nil {
 				fmt.Println("[Chrome]请求操作出现错误:", err.Error())
 			}
@@ -421,6 +430,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 		case opScreenshot:
 			fmt.Println("[Chrome]截图操作...")
 			savePath := op.arg["arg"].(string)
+			// 匹配一下判断arg是不是变量
+			savePathVal, savePathValOK := interp.Global().GetVar(savePath)
+			if savePathValOK {
+				savePath = savePathVal.(string)
+			}
+			fmt.Println("[Chrome]存储的 path = ", savePath)
+
 			chromeObj := browser.GetChromeInstance()
 			res, err := chromeObj.CaptureFullPageScreenshot(savePath)
 			if err != nil {

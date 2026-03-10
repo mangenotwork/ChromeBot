@@ -1,0 +1,19 @@
+// 新华网获取要闻聚焦，点击每个要闻访问文章内容并截图保存在本地
+// https://www.xinhuanet.com/
+chrome init  // 打开浏览器
+chrome req="https://www.xinhuanet.com/" // 访问
+var rse = NowTabGetPointClassHTML("div", "depth-cont")
+SaveToFile(rse, "D:\xinhuanet_data_1.txt") // 将变量rse保存到文件
+var a = RegHtml(rse, "a")
+for item in a {
+    print("要闻链接 : ", item)
+    var href = RegHtmlText(item, "href")[0]
+    print("href : ", href)
+    var title = RegHtmlText(item, "a")[0]
+    print("title : ", title)
+    chrome req=href
+    var path = "D:\xinhuanet_"+title+".png"
+    chrome screenshot=path
+    chrome pause=2
+}
+chrome close
