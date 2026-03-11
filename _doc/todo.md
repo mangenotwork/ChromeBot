@@ -86,16 +86,14 @@
 - chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
 
 #### v0.0.6
+- 检查当前是否支持该协议域
+- chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+- chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
 - 完善 chrome Target : 目标对象
 - chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
 - chrome  CacheStorage ： 缓存存储域
 
 #### v0.0.5
-- 检查当前是否支持该协议域
-- chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
-- chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
-
-#### v0.0.4
 - [] host 宿主机的相关方法 增加 host 关键字
   1. host name
   2. host ip
@@ -105,9 +103,33 @@
   6. todo 思考系统相关需要什么自动化方法
 - [] 网站死链检查
 - [] 网站证书信息检查
-- [] 并发请求 
-- [] http代理 
-- [] websocket客户端 
+- [] 并发请求
+- [] http代理
+- [] websocket客户端
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档
+
+#### v0.0.4
+- [] <bug转需求> chrome /json/list 连不上的时候重试，重试几次还是不行重启进程在重试
+```
+对应bug : [Chrome] 初始化失败 err =  Get "http://127.0.0.1:60051/json/list": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+```
+- [] 系统级别的交互确认弹窗
+- [] <bug转需求> 本地系统记录chrome userpath进程，如果存在默认隔离环境的chrome进程提供交互选择关闭还是新建隔离环境
+```
+对应bug : 多chrome进程同端口无法保证唯一性，没关闭上个chrome导致新脚本无法使用
+```
+- [] 脚本执行结束后关闭当前chrome进程的debugging
+- [] Xpath格式检查相关的函数
+- [] 语法: 支持 \ 作为代码的换行连接符，与命令行的换行一样
+- [] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=MatchDemoContentOP(a, "百度一下")
+- [] 支持输出chrome信息
+- [] 如果本地未安装chrome引导安装
+- [] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
+```
+对应bug : 手动操作浏览器后如果是关闭了当前的tab,会导致nowTab失焦现象
+```
 - [] 改测试的bug和优化 
 - [] bug和优化验收 
 - [] 更新文档 
@@ -146,9 +168,9 @@
   3. [ok] https://news.cctv.com/  央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来
   4. [ok] https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml 阳光高考获取全部的学校信息
   
-- [] 改测试的bug和优化
-- [] bug和优化验收
-- [] 更新文档
+- [ok] 改测试的bug和优化
+- [ok] bug和优化验收
+- [ok] 更新文档
 
 #### v0.0.2
 - [ok] http请求方法 增加 http 关键字

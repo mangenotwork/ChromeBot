@@ -364,13 +364,22 @@ func registerChrome(interp *interpreter.Interpreter) {
 				}
 			}
 
-			xPath := op.arg["xpath"].(string)
+			xPath, ok := op.arg["xpath"].(string)
+			if !ok {
+				xPath = ""
+			}
 			// 匹配一下判断arg是不是变量
 			xPathVal, xPathValOK := interp.Global().GetVar(xPath)
 			if xPathValOK {
 				xPath = xPathVal.(string)
 			}
 			fmt.Println("[Chrome]输入的Xpath = ", xPath)
+
+			// todo 检查xpath
+			if xPath == "" {
+				fmt.Println("[Chrome]输入操作警告: 未设置Xpath无法执行操作")
+				break
+			}
 
 			inputText := op.arg["input"].(string)
 			chromeObj := browser.GetChromeInstance()
