@@ -111,14 +111,14 @@
 - [] 更新文档
 
 #### v0.0.4
-- [] <bug转需求> chrome /json/list 连不上的时候重试，重试几次还是不行重启进程在重试
-```
-对应bug : [Chrome] 初始化失败 err =  Get "http://127.0.0.1:60051/json/list": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-```
-- [] 系统级别的交互确认弹窗
+- [ok] 系统级别的交互确认弹窗
 - [] <bug转需求> 本地系统记录chrome userpath进程，如果存在默认隔离环境的chrome进程提供交互选择关闭还是新建隔离环境
 ```
 对应bug : 多chrome进程同端口无法保证唯一性，没关闭上个chrome导致新脚本无法使用
+```
+- [] <bug转需求> chrome /json/list 连不上的时候重试，重试几次还是不行重启进程在重试
+```
+对应bug : [Chrome] 初始化失败 err =  Get "http://127.0.0.1:60051/json/list": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
 ```
 - [] 脚本执行结束后关闭当前chrome进程的debugging
 - [] Xpath格式检查相关的函数

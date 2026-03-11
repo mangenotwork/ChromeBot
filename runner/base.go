@@ -35,16 +35,15 @@ func Run() {
 		fmt.Println("按Ctrl+C或者Ctrl+Z退出程序，也可以使用 'exit' 或 'quit' 命令退出程序。")
 		fmt.Println("===================================================================")
 
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		signal.Notify(utils.SigChan, syscall.SIGINT, syscall.SIGTERM)
 		fmt.Printf("程序已启动 主PID: %d\n", os.Getpid())
 
 		//ctx, cancel := context.WithCancel(context.Background())
 		//defer cancel()
 
-		go runREPL(sigChan)
+		go runREPL(utils.SigChan)
 
-		sig := <-sigChan
+		sig := <-utils.SigChan
 		fmt.Printf("\n接收到信号: %v。开始执行清理工作...\n", sig)
 
 		// 区分信号类型（可选）
@@ -87,13 +86,16 @@ func Run() {
 		}
 		utils.Debug(source)
 
+		utils.RunMode = "Script"
+
 		runScript(string(source))
 
-		// todo 最后清理浏览器, 是否要这样设计
-		//chromeObj := browser.GetChromeInstance()
-		//if chromeObj != nil {
-		//	_ = chromeObj.Close()
-		//}
+		fmt.Println("清理 browser ")
+		chromeObj := browser.GetChromeInstance()
+		fmt.Println("chromeObj = ", chromeObj)
+		if chromeObj != nil {
+			_ = chromeObj.Close()
+		}
 
 	}
 

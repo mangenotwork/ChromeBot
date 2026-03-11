@@ -1,0 +1,23 @@
+var a = "aaaa"
+var b = "bbbb"
+var is = sysConfirmBox("选择", "Y:a / N:b")
+if is {
+    print(a)
+} else {
+    print(b)
+}
+
+sysExitBox()
+
+// 效率不是很好，会偶现未响应
+var case1 = sysDialogBox("测试","内容",{1:"btn1", 2:"btn2", 3:"btn3", 4:"btn4"},0,0)
+print(case1)
+
+sysInfoTip("信息提示框")
+
+sysWarningTip("警告提示框")
+
+sysErrorTip("错误提示框")
+
+sysSuccessTip("成功提示框")
+

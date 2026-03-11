@@ -30,4 +30,10 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 
 	// 注册 http
 	registerHttp(interp)
+
+	// 注册 systemFn
+	for name, fn := range systemFn {
+		interp.Global().SetFunc(name, fn)
+	}
+
 }
