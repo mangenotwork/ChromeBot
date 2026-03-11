@@ -1,0 +1,13 @@
+// 阳光高考获取全部的学校信息
+// https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml
+chrome init  // 打开浏览器
+chrome req="https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml"
+var res=NowTabGetPointClassHTML("div", "sch-item")
+print(res)
+for var i=0; i<10; i++ { // 从第二页开始
+    chrome click=`//form[@id="PageForm"]//li[last()]//a[text()=">"]`
+    var res=NowTabGetPointClassHTML("div", "sch-item")
+    print(res)
+    chrome pause=2
+}
+chrome close

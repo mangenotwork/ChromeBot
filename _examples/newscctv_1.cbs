@@ -1,0 +1,17 @@
+// 央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来
+// https://news.cctv.com/
+chrome init  // 打开浏览器
+chrome req="https://news.cctv.com/"
+var label = ["新闻","国内","国际","经济","社会","法治","图片","文娱","科技","生活","军事","快看"]
+for item in label {
+    print("寻找 --> ", item)
+    var xpath = NowTabMatchDemoContentOP(item)
+    chrome click=xpath // 点击
+    var newsList = NowTabGetPointIDHTML("ul", "newslist")
+    var title = RegHtml(newsList, "h3")
+    for titleItem in  title {
+        print("新闻title : ", titleItem)
+    }
+    chrome pause=2
+}
+chrome close
