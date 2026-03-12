@@ -55,11 +55,7 @@ func Run() {
 		}
 
 		fmt.Println("清理 browser ")
-		chromeObj := browser.GetChromeInstance()
-		fmt.Println("chromeObj = ", chromeObj)
-		if chromeObj != nil {
-			_ = chromeObj.Close()
-		}
+		_ = browser.Close()
 
 		// 此处可以添加你的清理逻辑，例如关闭文件、断开网络连接等
 		// ...

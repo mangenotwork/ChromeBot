@@ -14,26 +14,27 @@ import (
 //go:embed chrome_check.js
 var chromeCheckJS string
 
-func (c *ChromeProcess) Check(xPath string) (bool, error) {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func Check(xPath string) (bool, error) {
+
+	if !DefaultNowTab() {
+		return false, nil
 	}
 
 	xPath = "\"" + strings.ReplaceAll(xPath, "\"", "\\\"") + "\""
 	js := strings.ReplaceAll(chromeCheckJS, "__XPATH__", xPath)
 
-	c.NextID++
+	chromeInstance.NextID++
 	msg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     chromeInstance.NextID,
 		"method": "Runtime.evaluate",
 		"params": map[string]interface{}{
 			"expression":    js,
 			"returnByValue": true,
 			"awaitPromise":  true,
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
-	err := c.NowTabWSConn.WriteJSON(msg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		gt.Error("发送消息失败:", err)
 		return false, fmt.Errorf("发送消息失败")
@@ -53,7 +54,7 @@ func (c *ChromeProcess) Check(xPath string) (bool, error) {
 				return false, fmt.Errorf("消息队列已关闭")
 			}
 			utils.Debug("收到的消息 -> ", respMsg.Content)
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 				resultValue, err := gt.JsonFind(respMsg.Content, "/result/result/value")
 				if err != nil {
 					log.Println(err)

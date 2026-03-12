@@ -22,14 +22,15 @@ type ScreenshotResult struct {
 	Error    string `json:"error"`    // 错误信息
 }
 
-func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*ScreenshotResult, error) {
+func CaptureFullPageScreenshot(outputPath string) (*ScreenshotResult, error) {
 	result := &ScreenshotResult{Success: false}
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+
+	if !DefaultNowTab() {
+		return result, nil
 	}
 
 	// 步骤1：先获取页面完整尺寸（宽高）
-	pageSize, err := c.getPageFullSize()
+	pageSize, err := getPageFullSize()
 	if err != nil {
 		result.Error = fmt.Sprintf("获取页面尺寸失败: %v", err)
 		return result, fmt.Errorf("获取页面尺寸失败: %w", err)
@@ -39,9 +40,9 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 	utils.Debugf("页面完整尺寸：宽=%dpx，高=%dpx", result.Width, result.Height)
 
 	// 步骤2：构造 Page.captureScreenshot 请求（关键参数）
-	c.NextID++
+	chromeInstance.NextID++
 	screenshotMsg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     chromeInstance.NextID,
 		"method": "Page.captureScreenshot",
 		"params": map[string]interface{}{
 			"format":                "png", // 截图格式（png/jpeg/webp）
@@ -56,11 +57,11 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 				"scale":  1.0, // 缩放比例
 			},
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
 
 	// 步骤3：发送截图请求
-	err = c.NowTabWSConn.WriteJSON(screenshotMsg)
+	err = chromeInstance.NowTabWSConn.WriteJSON(screenshotMsg)
 	if err != nil {
 		result.Error = fmt.Sprintf("发送截图请求失败: %v", err)
 		return result, fmt.Errorf("发送截图请求失败: %w", err)
@@ -83,7 +84,7 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 
 			//log.Println("收到截图响应 -> ", respMsg.Content)
 
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 				// 检查响应错误
 				errObj, err := gt.JsonFind(respMsg.Content, "/error")
 				if err == nil && errObj != nil {
@@ -103,7 +104,7 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 
 				// 步骤5：如果指定了保存路径，将base64保存为图片文件
 				if outputPath != "" {
-					err = c.saveBase64ToImage(gt.Any2String(base64Data), outputPath)
+					err = saveBase64ToImage(gt.Any2String(base64Data), outputPath)
 					if err != nil {
 						result.Error = fmt.Sprintf("保存截图文件失败: %v", err)
 						return result, fmt.Errorf("保存截图文件失败: %w", err)
@@ -125,13 +126,13 @@ func (c *ChromeProcess) CaptureFullPageScreenshot(outputPath string) (*Screensho
 }
 
 // getPageFullSize 获取页面完整尺寸（宽高）
-func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
+func getPageFullSize() (map[string]interface{}, error) {
 	// 截图前获取尺寸等待500ms
 	time.Sleep(500 * time.Millisecond)
-	c.NextID++
+	chromeInstance.NextID++
 	// 执行JS获取页面完整宽高
 	sizeMsg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     chromeInstance.NextID,
 		"method": "Runtime.evaluate",
 		"params": map[string]interface{}{
 			"expression": `({
@@ -150,13 +151,13 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 			})`,
 			"returnByValue": true,
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
 
 	msgStr, _ := json.Marshal(sizeMsg)
 	utils.Debugf("发送: %s", string(msgStr))
 
-	err := c.NowTabWSConn.WriteJSON(sizeMsg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(sizeMsg)
 	if err != nil {
 		return nil, fmt.Errorf("发送获取尺寸请求失败: %w", err)
 	}
@@ -171,7 +172,7 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 			if !ok {
 				return nil, fmt.Errorf("消息队列关闭")
 			}
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 
 				utils.Debug("收到尺寸回复 : ", respMsg.Content)
 
@@ -188,7 +189,7 @@ func (c *ChromeProcess) getPageFullSize() (map[string]interface{}, error) {
 	}
 }
 
-func (c *ChromeProcess) saveBase64ToImage(base64Str, outputPath string) error {
+func saveBase64ToImage(base64Str, outputPath string) error {
 	// 解码base64
 	imgData, err := base64.StdEncoding.DecodeString(base64Str)
 	if err != nil {

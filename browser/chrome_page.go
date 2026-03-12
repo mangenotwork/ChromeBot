@@ -8,20 +8,20 @@ import (
 	"time"
 )
 
-func (c *ChromeProcess) PageEnable() error {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func PageEnable() error {
+	if !DefaultNowTab() {
+		return fmt.Errorf("浏览器未初始化")
 	}
 
 	// 1. 启用Page事件监听（必须）
-	c.NextID++
+	chromeInstance.NextID++
 	msg := map[string]interface{}{
-		"id":        c.NextID,
+		"id":        chromeInstance.NextID,
 		"method":    "Page.enable",
 		"params":    map[string]interface{}{},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
-	err := c.NowTabWSConn.WriteJSON(msg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		log.Println("发送消息失败:", err)
 		return fmt.Errorf("发送消息失败")
@@ -40,17 +40,17 @@ func (c *ChromeProcess) PageEnable() error {
 				log.Println("消息队列已关闭")
 				return fmt.Errorf("消息队列已关闭")
 			}
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 				utils.Debug("收到的消息 -> ", respMsg.Content)
 
-				c.NextID++
+				chromeInstance.NextID++
 				disableFrameEvents := map[string]interface{}{
-					"id":        c.NextID,
+					"id":        chromeInstance.NextID,
 					"method":    "Page.setLifecycleEventsEnabled", // 禁用生命周期事件
 					"params":    map[string]interface{}{"enabled": false},
-					"sessionId": c.NowTabSession,
+					"sessionId": chromeInstance.NowTabSession,
 				}
-				if err := c.NowTabWSConn.WriteJSON(disableFrameEvents); err != nil {
+				if err := chromeInstance.NowTabWSConn.WriteJSON(disableFrameEvents); err != nil {
 					utils.Debug("禁用frame事件失败: ", err)
 				}
 

@@ -85,8 +85,7 @@ func chromeNowTabMatchDemoContentOP(args []interpreter.Value) (interpreter.Value
 	}
 
 	// 获取当前页面
-	chromeObj := browser.GetChromeInstance()
-	htmlText, err := chromeObj.GetHtml()
+	htmlText, err := browser.GetHtml()
 	if err != nil {
 		fmt.Println("[Chrome]未获取到当前页面的html:", err.Error())
 		return "", err
@@ -98,8 +97,7 @@ func chromeNowTabMatchDemoContentOP(args []interpreter.Value) (interpreter.Value
 
 func chromeNowTabGetInputFirstXpath(args []interpreter.Value) (interpreter.Value, error) {
 	// 获取当前页面
-	chromeObj := browser.GetChromeInstance()
-	htmlText, err := chromeObj.GetHtml()
+	htmlText, err := browser.GetHtml()
 	if err != nil {
 		fmt.Println("[Chrome]未获取到当前页面的html:", err.Error())
 		return "", err
@@ -129,8 +127,7 @@ func chromeNowTabGetPointHTML(args []interpreter.Value) (interpreter.Value, erro
 		return nil, fmt.Errorf("NowTabGetPointHTML(label, attr, val) 参数要求是字符串 ")
 	}
 
-	chromeObj := browser.GetChromeInstance()
-	htmlText, err := chromeObj.GetHtml()
+	htmlText, err := browser.GetHtml()
 	if err != nil {
 		fmt.Println("[Chrome]未获取到当前页面的html:", err.Error())
 		return "", err
@@ -160,8 +157,7 @@ func chromeNowTabGetPointIDHTML(args []interpreter.Value) (interpreter.Value, er
 		return nil, fmt.Errorf("NowTabGetPointIDHTML(label, val) 参数要求是字符串 ")
 	}
 
-	chromeObj := browser.GetChromeInstance()
-	htmlText, err := chromeObj.GetHtml()
+	htmlText, err := browser.GetHtml()
 	if err != nil {
 		fmt.Println("[Chrome]未获取到当前页面的html:", err.Error())
 		return "", err
@@ -191,8 +187,7 @@ func chromeNowTabGetPointClassHTML(args []interpreter.Value) (interpreter.Value,
 		return nil, fmt.Errorf("NowTabGetPointClassHTML(label, val) 参数要求是字符串 ")
 	}
 
-	chromeObj := browser.GetChromeInstance()
-	htmlText, err := chromeObj.GetHtml()
+	htmlText, err := browser.GetHtml()
 	if err != nil {
 		fmt.Println("[Chrome]未获取到当前页面的html:", err.Error())
 		return "", err

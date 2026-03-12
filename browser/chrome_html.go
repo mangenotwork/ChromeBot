@@ -17,23 +17,23 @@ import (
 var chromeHtmlJS string
 
 // GetHtml 获取页面的html
-func (c *ChromeProcess) GetHtml() (string, error) {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func GetHtml() (string, error) {
+	if !DefaultNowTab() {
+		return "", nil
 	}
 
-	c.NextID++
+	chromeInstance.NextID++
 	msg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     chromeInstance.NextID,
 		"method": "Runtime.evaluate",
 		"params": map[string]interface{}{
 			"expression":    chromeHtmlJS,
 			"returnByValue": true,
 			"awaitPromise":  true,
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
-	err := c.NowTabWSConn.WriteJSON(msg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		gt.Error("发送消息失败:", err)
 		return "", fmt.Errorf("发送消息失败")
@@ -52,7 +52,7 @@ func (c *ChromeProcess) GetHtml() (string, error) {
 				gt.Info("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 				result, err := gt.Json2Map(respMsg.Content)
 				if err != nil {
 					log.Println("回复内容解析错误")

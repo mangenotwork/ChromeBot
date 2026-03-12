@@ -11,11 +11,12 @@ import (
 )
 
 // GetAllTab 查看所有的页签
-func (c *ChromeProcess) GetAllTab() (map[string]string, error) {
-
+func GetAllTab() (map[string]string, error) {
 	res := make(map[string]string)
-
-	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", c.Port)
+	if !DefaultNowTab() {
+		return res, nil
+	}
+	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", chromeInstance.Port)
 	utils.Debug("tabUrl = ", tabUrl)
 
 	var e2r gt.Err2Retry = true
@@ -50,24 +51,27 @@ func (c *ChromeProcess) GetAllTab() (map[string]string, error) {
 }
 
 // NewTab 新建标签页
-func (c *ChromeProcess) NewTab() (string, error) {
+func NewTab() (string, error) {
+R:
 
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+	if !DefaultNowTab() {
+		return "", nil
 	}
 
-	c.NextID++
+	chromeInstance.NextID++
 	message := fmt.Sprintf(`{
 	   "id": %d,
 	   "method": "Target.createTarget",
 	   "params": {
 	       "url": "chrome://newtab/"
 	   }
-	}`, c.NextID)
-	err := c.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	}`, chromeInstance.NextID)
+	err := chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		log.Println("发送消息失败:", err)
-		return "", fmt.Errorf("发送消息失败")
+		chromeInstance.NowTabWSConn = nil
+		goto R
+		//return "", fmt.Errorf("发送消息失败")
 	}
 	utils.Debugf("发送消息: %s", message)
 
@@ -83,7 +87,7 @@ func (c *ChromeProcess) NewTab() (string, error) {
 				return "", fmt.Errorf("消息队列已关闭")
 			}
 			utils.Debug("收到的消息 -> ", respMsg.Content)
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 				result, err := gt.Json2Map(respMsg.Content)
 				if err != nil {
 					log.Println("回复内容解析错误")
@@ -96,7 +100,7 @@ func (c *ChromeProcess) NewTab() (string, error) {
 						if hasMap {
 							targetId, targetIdHas := resultDataMap["targetId"]
 							if targetIdHas {
-								c.SelectTab(targetId.(string))
+								SelectTab(targetId.(string))
 								return targetId.(string), nil
 							}
 						}
@@ -117,11 +121,15 @@ func (c *ChromeProcess) NewTab() (string, error) {
 }
 
 // SelectTab 切换Tab
-func (c *ChromeProcess) SelectTab(targetId string) {
+func SelectTab(targetId string) {
+
+	if !DefaultNowTab() {
+		return
+	}
 
 	log.Println("[Chrome]切换Tab targetId = ", targetId)
 
-	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", c.Port)
+	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", chromeInstance.Port)
 	utils.Debug("tabUrl = ", tabUrl)
 
 	var e2r gt.Err2Retry = true
@@ -131,6 +139,7 @@ func (c *ChromeProcess) SelectTab(targetId string) {
 		return
 	}
 	utils.Debug("json/list = ", ctx.RespBodyString())
+	log.Println("json/list = ", ctx.RespBodyString())
 
 	dataArr := make([]map[string]interface{}, 0)
 	err = json.Unmarshal([]byte(ctx.RespBodyString()), &dataArr)
@@ -138,30 +147,33 @@ func (c *ChromeProcess) SelectTab(targetId string) {
 		return
 	}
 
+	has := false
+
 	for _, v := range dataArr {
 		if targetId == v["id"].(string) {
-			c.NowTabTargetId = targetId
-			c.NowTabWSUrl = v["webSocketDebuggerUrl"].(string)
-			c.NowTab = v["title"].(string)
+			has = true
+			chromeInstance.NowTabTargetId = targetId
+			chromeInstance.NowTabWSUrl = v["webSocketDebuggerUrl"].(string)
+			chromeInstance.NowTab = v["title"].(string)
 
 			// go func() { ConnTabDone <- struct{}{} }()
 
 			// 默认第一个Tab,并连接Chrome DevTools WebSocket
-			wsConn, err := c.ConnTab()
+			wsConn, err := ConnTab()
 			if err != nil {
 				fmt.Println("[Chrome] 默认连接第一个Tab出现错误, err : ", err)
 			}
-			c.NowTabWSConn = wsConn
+			chromeInstance.NowTabWSConn = wsConn
 
-			session, err := c.GetSession()
+			session, err := GetSession()
 			if err != nil {
 				fmt.Println("[Chrome] 连接Tab的session出现错误, err : ", err)
 			}
 			log.Println("获取到 session = ", session)
-			c.NowTabSession = session
+			chromeInstance.NowTabSession = session
 
 			// 启动页面监听
-			err = c.PageEnable()
+			err = PageEnable()
 			if err != nil {
 				log.Println("页面加载失败")
 			}
@@ -169,42 +181,44 @@ func (c *ChromeProcess) SelectTab(targetId string) {
 		}
 
 	}
+
+	if !has {
+		fmt.Println("[Chrome]未匹配到targetId = ", targetId)
+	}
 }
 
 // NowTabInfo 当前标签页的信息
-func (c *ChromeProcess) NowTabInfo() {
-
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func NowTabInfo() {
+	if !DefaultNowTab() {
+		return
 	}
-
-	fmt.Println("[Chrome] tab id : ", c.NowTabTargetId)
-	fmt.Println("[Chrome] tab title : ", c.NowTab)
-	fmt.Println("[Chrome] tab session : ", c.NowTabSession)
+	fmt.Println("[Chrome] tab id : ", chromeInstance.NowTabTargetId)
+	fmt.Println("[Chrome] tab title : ", chromeInstance.NowTab)
+	fmt.Println("[Chrome] tab session : ", chromeInstance.NowTabSession)
 }
 
 // NowTabClose 关闭当前标签页
-func (c *ChromeProcess) NowTabClose() {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func NowTabClose() {
+	if !DefaultNowTab() {
+		return
 	}
 
-	tabList, _ := c.GetAllTab()
+	tabList, _ := GetAllTab()
 	utils.Debug("tabList len = ", len(tabList))
 	if len(tabList) <= 1 {
 		log.Println("[Chrome]当前页签小于等于1个，不允许被关闭")
 		return
 	}
 
-	c.NextID++
+	chromeInstance.NextID++
 	message := fmt.Sprintf(`{
 	   "id": %d,
 	   "method": "Target.closeTarget",
 	   "params": {
 	      "targetId": "%s"
 	   }
-	}`, c.NextID, c.NowTabTargetId)
-	err := c.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	}`, chromeInstance.NextID, chromeInstance.NowTabTargetId)
+	err := chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		log.Println("发送消息失败:", err)
 		return
@@ -223,7 +237,7 @@ func (c *ChromeProcess) NowTabClose() {
 				return
 			}
 			utils.Debug("收到的消息 -> ", msg.Content)
-			if c.NextID == msg.ID {
+			if chromeInstance.NextID == msg.ID {
 				result, err := gt.Json2Map(msg.Content)
 				if err != nil {
 					log.Println("回复内容解析错误")
@@ -239,8 +253,8 @@ func (c *ChromeProcess) NowTabClose() {
 
 								log.Println("Target.closeTarget 关闭成功, 切换tab")
 								for tableItemKey, _ := range tabList {
-									if tableItemKey != c.NowTabTargetId {
-										c.SelectTab(tableItemKey)
+									if tableItemKey != chromeInstance.NowTabTargetId {
+										SelectTab(tableItemKey)
 									}
 								}
 

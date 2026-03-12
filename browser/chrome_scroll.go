@@ -32,20 +32,20 @@ type ScrollElementParam struct {
 }
 
 // ScrollByPixel 按像素滚动
-func (c *ChromeProcess) ScrollByPixel(x, y int) error {
+func ScrollByPixel(x, y int) error {
 	jsPixel := strings.ReplaceAll(chromeScrollPixelJS, "__SCROLL_X__", strconv.Itoa(x))
 	jsPixel = strings.ReplaceAll(jsPixel, "__SCROLL_Y__", strconv.Itoa(y))
-	res, err := c.scroll(jsPixel)
+	res, err := scroll(jsPixel)
 	log.Printf("[Chrome]滚动结果: %v", res)
 	return err
 }
 
 // ScrollToElement 按元素滚动
-func (c *ChromeProcess) ScrollToElement(xPath string) error {
+func ScrollToElement(xPath string) error {
 	xPath = "'" + strings.ReplaceAll(xPath, "\"", "\\\"") + "'"
 	jsElement := strings.ReplaceAll(chromeScrollElementJS, "__SCROLL_XPATH__", xPath)
 	jsElement = strings.ReplaceAll(jsElement, "__SCROLL_IS_SMOOTH__", strconv.FormatBool(true))
-	res, err := c.scroll(jsElement)
+	res, err := scroll(jsElement)
 	log.Printf("[Chrome]滚动结果: %v", res)
 	return err
 }
@@ -58,24 +58,24 @@ type ScrollResult struct {
 	Stack   string `json:"stack"`   // 可选：异常堆栈
 }
 
-func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func scroll(js string) (*ScrollResult, error) {
+	if !DefaultNowTab() {
+		return &ScrollResult{Success: false}, nil
 	}
 
-	c.NextID++
+	chromeInstance.NextID++
 	msg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     chromeInstance.NextID,
 		"method": "Runtime.evaluate",
 		"params": map[string]interface{}{
 			"expression":    js,
 			"returnByValue": true, // 必须：返回完整的对象结构
 			"awaitPromise":  false,
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
 
-	err := c.NowTabWSConn.WriteJSON(msg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		return nil, fmt.Errorf("发送滚动消息失败: %w", err)
 	}
@@ -95,7 +95,7 @@ func (c *ChromeProcess) scroll(js string) (*ScrollResult, error) {
 			utils.Debug("收到滚动响应 -> ", respMsg.Content)
 
 			// 匹配当前请求的响应
-			if c.NextID == respMsg.ID {
+			if chromeInstance.NextID == respMsg.ID {
 
 				resultJson, err := gt.JsonFind(respMsg.Content, "/result/result/value")
 				if err != nil {

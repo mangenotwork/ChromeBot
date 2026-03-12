@@ -13,9 +13,9 @@ import (
 //go:embed chrome_input.js
 var chromeInputJS string
 
-func (c *ChromeProcess) Input(xPath, text string) error {
-	if c.NowTabWSConn == nil {
-		c.DefaultNowTab()
+func Input(xPath, text string) error {
+	if !DefaultNowTab() {
+		return nil
 	}
 
 	utils.Debug("输入内容 : ", text)
@@ -25,18 +25,18 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 	js := strings.ReplaceAll(chromeInputJS, "__XPATH__", xPath)
 	js = strings.ReplaceAll(js, "__INPUTTEXT__", text)
 
-	c.NextID++
+	id := GetNextMsgID()
 	msg := map[string]interface{}{
-		"id":     c.NextID,
+		"id":     id,
 		"method": "Runtime.evaluate",
 		"params": map[string]interface{}{
 			"expression":    js,
 			"returnByValue": true,
 			"awaitPromise":  true,
 		},
-		"sessionId": c.NowTabSession,
+		"sessionId": chromeInstance.NowTabSession,
 	}
-	err := c.NowTabWSConn.WriteJSON(msg)
+	err := chromeInstance.NowTabWSConn.WriteJSON(msg)
 	if err != nil {
 		log.Println("发送消息失败:", err)
 		return fmt.Errorf("发送消息失败")
@@ -55,7 +55,7 @@ func (c *ChromeProcess) Input(xPath, text string) error {
 				log.Println("消息队列已关闭")
 				return fmt.Errorf("消息队列已关闭")
 			}
-			if c.NextID == respMsg.ID {
+			if id == respMsg.ID {
 				utils.Debug("收到的消息 -> ", respMsg.Content)
 				return nil
 			} else {

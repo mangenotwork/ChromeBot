@@ -94,6 +94,7 @@
 - chrome  CacheStorage ： 缓存存储域
 
 #### v0.0.5
+- [] 定时任务
 - [] host 宿主机的相关方法 增加 host 关键字
   1. host name
   2. host ip
@@ -114,11 +115,7 @@
 - [ok] 系统级别的交互确认弹窗
 - [ok] <bug转需求> 本地系统记录chrome userpath进程，如果存在默认隔离环境的chrome进程提供交互选择关闭还是新建隔离环境
 - [ok] chrome init 新增new指令初始化隔离环境
-- [] <bug转需求> chrome /json/list 连不上的时候重试，重试几次还是不行重启进程在重试
-```
-对应bug : [Chrome] 初始化失败 err =  Get "http://127.0.0.1:60051/json/list": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-```
-- [] 脚本执行结束后关闭当前chrome进程的debugging
+- [ok] <bug转需求> chrome连不上的时候重试
 - [] Xpath格式检查相关的函数
 - [] 语法: 支持 \ 作为代码的换行连接符，与命令行的换行一样
 - [] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=MatchDemoContentOP(a, "百度一下")

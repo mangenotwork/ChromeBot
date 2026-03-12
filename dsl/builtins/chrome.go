@@ -232,16 +232,11 @@ func registerChrome(interp *interpreter.Interpreter) {
 			if _, ok := op.arg["new"]; ok {
 				isNew = true
 			}
-
-			err := browser.ChromeInit(windowSize, proxy, userPath, isNew)
-			if err != nil {
-				fmt.Println("[ERR]", err.Error())
-			}
+			browser.ChromeInit(windowSize, proxy, userPath, isNew)
 
 		case opClose:
 			fmt.Println("[Chrome]关闭浏览器...")
-			chromeObj := browser.GetChromeInstance()
-			err := chromeObj.Close()
+			err := browser.Close()
 			if err != nil {
 				fmt.Println("[ERR]", err.Error())
 			}
@@ -250,37 +245,29 @@ func registerChrome(interp *interpreter.Interpreter) {
 			fmt.Println("[Chrome]tab操作...")
 			arg := op.arg["arg"].(string)
 			if arg == "list" { // 获取所有tab
-				chromeObj := browser.GetChromeInstance()
-				_, err := chromeObj.GetAllTab()
+				_, err := browser.GetAllTab()
 				if err != nil {
 					log.Println("[Chrome]获取tab错误: ", err.Error())
 				}
 				break
 			}
-
 			if arg == "new" { // 新建一个tab
-				chromeObj := browser.GetChromeInstance()
-				_, err := chromeObj.NewTab()
+				_, err := browser.NewTab()
 				if err != nil {
 					log.Println("[Chrome]创建tab错误: ", err.Error())
 				}
 				break
 			}
-
 			if arg == "now" { // 当前tab
-				chromeObj := browser.GetChromeInstance()
-				chromeObj.NowTabInfo()
+				browser.NowTabInfo()
 				break
 			}
-
 			if arg == "close" { // 关闭当前tab
-				chromeObj := browser.GetChromeInstance()
-				chromeObj.NowTabClose()
+				browser.NowTabClose()
 				break
 			}
-
-			chromeObj := browser.GetChromeInstance()
-			chromeObj.SelectTab(arg)
+			log.Println("arg = ", arg)
+			browser.SelectTab(arg)
 
 		case opReq:
 			fmt.Println("[Chrome]请求操作...")
@@ -293,15 +280,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 				reqUrl = reqUrlVal.(string)
 			}
 			fmt.Println("[Chrome]请求 url = ", reqUrl)
-			chromeObj := browser.GetChromeInstance()
-			_, err := chromeObj.OpenUrl(reqUrl)
+			_, err := browser.OpenUrl(reqUrl)
 			if err != nil {
 				fmt.Println("[Chrome]请求操作出现错误:", err.Error())
 			}
 
 		case opClick:
 			fmt.Println("[Chrome]点击操作...")
-
 			if wait, waitOK := op.arg["wait"]; waitOK {
 				waitInt := gt.Any2Int(wait)
 				if waitInt > 0 {
@@ -316,16 +301,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 				xPath = xPathVal.(string)
 			}
 			fmt.Println("[Chrome]点击的Xpath = ", xPath)
-
-			chromeObj := browser.GetChromeInstance()
-			err := chromeObj.Click(xPath)
+			err := browser.Click(xPath)
 			if err != nil {
 				fmt.Println("[Chrome]点击操作出现错误:", err.Error())
 			}
 
 		case opInput:
 			fmt.Println("[Chrome]输入操作...")
-
 			if wait, waitOK := op.arg["wait"]; waitOK {
 				waitInt := gt.Any2Int(wait)
 				if waitInt > 0 {
@@ -351,8 +333,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 			inputText := op.arg["input"].(string)
-			chromeObj := browser.GetChromeInstance()
-			err := chromeObj.Input(xPath, inputText)
+			err := browser.Input(xPath, inputText)
 			if err != nil {
 				fmt.Println("[Chrome]输入操作出现错误:", err.Error())
 			}
@@ -360,8 +341,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		case opCheck:
 			fmt.Println("[Chrome]检查操作...")
 			inputText := op.arg["arg"].(string)
-			chromeObj := browser.GetChromeInstance()
-			has, err := chromeObj.Check(inputText)
+			has, err := browser.Check(inputText)
 			if err != nil {
 				fmt.Println("[Chrome]检查操作出现错误:", err.Error())
 			}
@@ -382,23 +362,23 @@ func registerChrome(interp *interpreter.Interpreter) {
 		case opScroll:
 			fmt.Println("[Chrome]滚动操作...")
 			var err error
-			chromeObj := browser.GetChromeInstance()
+
 			switch op.extendType {
 			case 0:
 				high := gt.Any2Int(op.arg["arg"])
 				log.Println("滚动的高度 high = ", high)
-				err = chromeObj.ScrollByPixel(0, high)
+				err = browser.ScrollByPixel(0, high)
 
 			case 1:
 				x := gt.Any2Int(op.arg["x"])
 				y := gt.Any2Int(op.arg["y"])
 				log.Println("滚动的高度 x = ", x, ", y = ", y)
-				err = chromeObj.ScrollByPixel(gt.Any2Int(op.arg["x"]), gt.Any2Int(op.arg["y"]))
+				err = browser.ScrollByPixel(gt.Any2Int(op.arg["x"]), gt.Any2Int(op.arg["y"]))
 
 			case 2:
 				xpath := op.arg["xpath"].(string)
 				log.Println("滚动到Xpath = ", xpath)
-				err = chromeObj.ScrollToElement(xpath)
+				err = browser.ScrollToElement(xpath)
 			}
 
 			if err != nil {
@@ -415,8 +395,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 			fmt.Println("[Chrome]存储的 path = ", savePath)
 
-			chromeObj := browser.GetChromeInstance()
-			res, err := chromeObj.CaptureFullPageScreenshot(savePath)
+			res, err := browser.CaptureFullPageScreenshot(savePath)
 			if err != nil {
 				log.Println("[Chrome]截图操作错误: ", err.Error())
 				return nil, fmt.Errorf("[Chrome]截图操作错误: %s", err.Error())
@@ -425,8 +404,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opTo:
 			fmt.Println("[Chrome]将当前页面的html赋值到变量操作...")
-			chromeObj := browser.GetChromeInstance()
-			htmlBody, err := chromeObj.GetHtml()
+			htmlBody, err := browser.GetHtml()
 			if err != nil {
 				log.Println("[Chrome]获取页面的html错误: ", err.Error())
 				return nil, fmt.Errorf("[Chrome]获取页面的html错误: %s", err.Error())
@@ -436,16 +414,13 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		case opSave:
 			fmt.Println("[Chrome]将当前页面的html保存到本地...")
-
 			if wait, waitOK := op.arg["wait"]; waitOK {
 				waitInt := gt.Any2Int(wait)
 				if waitInt > 0 {
 					time.Sleep(time.Duration(waitInt) * time.Second)
 				}
 			}
-
-			chromeObj := browser.GetChromeInstance()
-			htmlBody, err := chromeObj.GetHtml()
+			htmlBody, err := browser.GetHtml()
 			if err != nil {
 				log.Println("[Chrome]获取页面的html错误: ", err.Error())
 				return nil, fmt.Errorf("[Chrome]获取页面的html错误: %s", err.Error())
