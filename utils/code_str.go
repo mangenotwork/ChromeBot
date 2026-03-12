@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -160,4 +161,46 @@ func UnescapeUnicode(unicodeStr string) string {
 		return jsonRes
 	}
 	return res
+}
+
+// ProcessCommandLine 处理命令行字符串，还原\ + 换行的长命令
+// 参数: input - 带\换行的命令行字符串
+// 返回: 处理后的字符串（\换行被替换为空格，其他换行保留）
+func ProcessCommandLine(input string) string {
+	// 按换行符拆分（兼容Windows(\r\n)和Linux(\n)）
+	lines := strings.Split(input, "\n")
+	var buf bytes.Buffer // 高效拼接字符串
+
+	for i, line := range lines {
+		// 剔除行末尾的空格/制表符/回车（只保留有效字符）
+		trimmedLine := strings.TrimRight(line, " \t\r")
+		lineLen := len(trimmedLine)
+
+		// 判断是否以\结尾（且不是空行）
+		if lineLen > 0 && trimmedLine[lineLen-1] == '\\' {
+			// 统计末尾连续的\数量
+			backslashCount := 0
+			for j := lineLen - 1; j >= 0 && trimmedLine[j] == '\\'; j-- {
+				backslashCount++
+			}
+			// 奇数个\：最后一个\用于换行，替换为空格；偶数个\：保留原\
+			if backslashCount%2 == 1 {
+				buf.WriteString(trimmedLine[:lineLen-backslashCount])
+				buf.WriteString(strings.Repeat("\\", backslashCount-1))
+				buf.WriteString(" ")
+			} else {
+				buf.WriteString(trimmedLine)
+				buf.WriteString("\n")
+			}
+		} else {
+			// 非\结尾的行，直接写入（最后一行不加多余换行）
+			buf.WriteString(line)
+			// 不是最后一行则保留换行符
+			if i != len(lines)-1 {
+				buf.WriteString("\n")
+			}
+		}
+	}
+
+	return buf.String()
 }

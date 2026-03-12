@@ -137,6 +137,10 @@ func ChromeInit(windowSize, proxy, userPath string, isNew bool) {
 		utils.Debugf("Chrome始化成功 | 端口：%d | PID：%d ", port, pid)
 		fmt.Printf("Chrome始化成功 | 端口：%d | PID：%d \n", port, pid)
 
+		if utils.RunMode == "Script" { // 脚本模式下在启动进程后增加两秒，等待系统处理进程
+			time.Sleep(2 * time.Second)
+		}
+
 		time.Sleep(1 * time.Second)
 	})
 }

@@ -1,1 +1,6 @@
-chrome init
+chrome \
+init new
+chrome \
+req = \
+"www.baidu.com"
+chrome tab=list

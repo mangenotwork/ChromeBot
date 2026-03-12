@@ -11,6 +11,7 @@ import (
 
 func runScript(source string) {
 
+	source = utils.ProcessCommandLine(source)
 	source = utils.EscapeQuotesInBackticks(source)
 
 	builtins.ChromeWait = 2
