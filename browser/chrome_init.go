@@ -52,7 +52,7 @@ func GetChromeInstance() *ChromeProcess {
 }
 
 // ChromeInit 初始化Chrome单例
-func ChromeInit(windowSize, proxy, userPath string) error {
+func ChromeInit(windowSize, proxy, userPath string, isNew bool) error {
 
 	if isInitialized && chromeInstance != nil {
 		isRun, _ := isProcessRunning(chromeInstance.PID)
@@ -90,23 +90,28 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 		// 获取可执行文件的完整路径
 		wd, _ := os.Getwd()
 
-		if userPath == "" { // 如果没设定就使用默认  在谷歌目录下  \Google\Chrome\Application\
-			userPath = fmt.Sprintf("%s\\profiles\\default", wd)
-		}
-		utils.Debug("userPath = ", userPath)
-		fmt.Printf("当前谷歌浏览器工作目录：%s\n", userPath)
-
-		if HasLocalRecord(userPath) {
-			fmt.Printf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录 \n", userPath)
-			isNew, _ := host.SystemConfirmBox("确认操作", fmt.Sprintf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录?", userPath))
-			if isNew {
-				n, _ := countDirectSubDirs(fmt.Sprintf("%s\\profiles\\", wd), false)
-				userPath = fmt.Sprintf("%s\\profiles\\%d", wd, n)
-			} else {
-				fmt.Printf("当前谷歌浏览器工作目录:%s 正在被其他任务执行, 该脚本终止 \n", userPath)
-				os.Exit(0)
+		// userPath 与 isNew 用时在时，优先使用 userPath
+		if userPath == "" && isNew {
+			fmt.Println("新建chrome隔离环境")
+			n, _ := countDirectSubDirs(fmt.Sprintf("%s\\profiles\\", wd), false)
+			userPath = fmt.Sprintf("%s\\profiles\\%d", wd, n)
+		} else if userPath == "" && !isNew {
+			userPath = fmt.Sprintf("%s\\profiles\\default", wd) // 默认
+			if HasLocalRecord(userPath) {
+				fmt.Printf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录 \n", userPath)
+				isRun, _ := host.SystemConfirmBox("确认操作", fmt.Sprintf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录?", userPath))
+				if isRun {
+					n, _ := countDirectSubDirs(fmt.Sprintf("%s\\profiles\\", wd), false)
+					userPath = fmt.Sprintf("%s\\profiles\\%d", wd, n)
+				} else {
+					fmt.Printf("当前谷歌浏览器工作目录:%s 正在被其他任务执行, 该脚本终止 \n", userPath)
+					os.Exit(0)
+				}
 			}
 		}
+
+		utils.Debug("userPath = ", userPath)
+		fmt.Printf("当前谷歌浏览器工作目录：%s\n", userPath)
 
 		// 启动Chrome进程
 		pid, err := startChromeProcess(chromePath, windowSize, proxy, userPath, port)

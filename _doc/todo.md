@@ -113,6 +113,7 @@
 #### v0.0.4
 - [ok] 系统级别的交互确认弹窗
 - [ok] <bug转需求> 本地系统记录chrome userpath进程，如果存在默认隔离环境的chrome进程提供交互选择关闭还是新建隔离环境
+- [ok] chrome init 新增new指令初始化隔离环境
 - [] <bug转需求> chrome /json/list 连不上的时候重试，重试几次还是不行重启进程在重试
 ```
 对应bug : [Chrome] 初始化失败 err =  Get "http://127.0.0.1:60051/json/list": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
