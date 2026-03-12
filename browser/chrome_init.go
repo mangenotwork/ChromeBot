@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/internal/host"
 	"ChromeBot/utils"
 	"encoding/json"
 	"errors"
@@ -86,10 +87,26 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 
 		utils.Debug("chromePath = ", chromePath)
 
+		// 获取可执行文件的完整路径
+		wd, _ := os.Getwd()
+
 		if userPath == "" { // 如果没设定就使用默认  在谷歌目录下  \Google\Chrome\Application\
-			userPath = fmt.Sprintf("%sChromeBot\\profiles\\default", strings.Replace(chromePath, "chrome.exe", "", -1))
+			userPath = fmt.Sprintf("%s\\profiles\\default", wd)
 		}
 		utils.Debug("userPath = ", userPath)
+		fmt.Printf("当前谷歌浏览器工作目录：%s\n", userPath)
+
+		if HasLocalRecord(userPath) {
+			fmt.Printf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录 \n", userPath)
+			isNew, _ := host.SystemConfirmBox("确认操作", fmt.Sprintf("当前谷歌浏览器工作目录：%s 已经在运行，是否新创建一个工作目录?", userPath))
+			if isNew {
+				n, _ := countDirectSubDirs(fmt.Sprintf("%s\\profiles\\", wd), false)
+				userPath = fmt.Sprintf("%s\\profiles\\%d", wd, n)
+			} else {
+				fmt.Printf("当前谷歌浏览器工作目录:%s 正在被其他任务执行, 该脚本终止 \n", userPath)
+				os.Exit(0)
+			}
+		}
 
 		// 启动Chrome进程
 		pid, err := startChromeProcess(chromePath, windowSize, proxy, userPath, port)
@@ -97,6 +114,8 @@ func ChromeInit(windowSize, proxy, userPath string) error {
 			initErr = fmt.Errorf("启动Chrome进程失败：%w", err)
 			return
 		}
+
+		AddLocalRecord(userPath, pid)
 
 		chromeInstance = &ChromeProcess{
 			WindowSize: windowSize,

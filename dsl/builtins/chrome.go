@@ -90,18 +90,12 @@ func registerChrome(interp *interpreter.Interpreter) {
 		opNumber := 0
 
 		if _, ok := argMap["init"]; ok {
-			op = &chromeOperation{
-				opType: opInit,
-				//level:  executionPriority[opInit],
-			}
+			op.opType = opInit
 			opNumber++
 		}
 
 		if _, ok := argMap["close"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opClose,
-				//level:  executionPriority[opClose],
-			}
+			op.opType = opClose
 			opNumber++
 		}
 
@@ -124,38 +118,26 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["tab"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opTable,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opTable],
-			}
+			op.opType = opTable
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["req"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opReq,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opReq],
-			}
+			op.opType = opReq
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["click"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opClick,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opClick],
-			}
+			op.opType = opClick
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["input"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opInput,
-				arg:    map[string]interpreter.Value{"input": val},
-				//level:  executionPriority[opInput],
-			}
+			op.opType = opInput
+			op.arg["input"] = val
 			opNumber++
 		}
 
@@ -166,11 +148,8 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["check"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opCheck,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opCheck],
-			}
+			op.opType = opCheck
+			op.arg["arg"] = val
 			opNumber++
 		}
 
@@ -179,22 +158,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["pause"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opPause,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opScroll],
-				extendType: 0,
-			}
+			op.opType = opPause
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["scroll"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opScroll,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opScroll],
-				extendType: 0,
-			}
+			op.opType = opScroll
+			op.arg["arg"] = val
 			opNumber++
 		}
 
@@ -203,49 +174,35 @@ func registerChrome(interp *interpreter.Interpreter) {
 			if len(valList) != 2 {
 				fmt.Println("[Chrome] scrollpixel 参数错误，值为(x,y)如(2000, 500)")
 			}
-			op = &chromeOperation{
-				opType: opScroll,
-				arg:    map[string]interpreter.Value{"x": valList[0], "y": valList[1]},
-				//level:  executionPriority[opScroll],
-				extendType: 1,
-			}
+			op.opType = opScroll
+			op.arg["x"] = valList[0]
+			op.arg["y"] = valList[1]
+			op.extendType = 1
 			opNumber++
 		}
 
 		if val, ok := argMap["scrollxpath"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opScroll,
-				arg:    map[string]interpreter.Value{"xpath": val},
-				//level:  executionPriority[opScroll],
-				extendType: 2,
-			}
+			op.opType = opScroll
+			op.arg["xpath"] = val
+			op.extendType = 2
 			opNumber++
 		}
 
 		if val, ok := argMap["screenshot"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opScreenshot,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opScreenshot],
-			}
+			op.opType = opScreenshot
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["to"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opTo,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opTo],
-			}
+			op.opType = opTo
+			op.arg["arg"] = val
 			opNumber++
 		}
 
 		if val, ok := argMap["save"]; ok && opNumber == 0 {
-			op = &chromeOperation{
-				opType: opSave,
-				arg:    map[string]interpreter.Value{"arg": val},
-				//level:  executionPriority[opSave],
-			}
+			op.opType = opSave
+			op.arg["arg"] = val
 			opNumber++
 		}
 

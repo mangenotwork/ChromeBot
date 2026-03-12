@@ -90,12 +90,12 @@ func Run() {
 
 		runScript(string(source))
 
-		fmt.Println("清理 browser ")
-		chromeObj := browser.GetChromeInstance()
-		fmt.Println("chromeObj = ", chromeObj)
-		if chromeObj != nil {
-			_ = chromeObj.Close()
-		}
+		//fmt.Println("清理 browser ")
+		//chromeObj := browser.GetChromeInstance()
+		//fmt.Println("chromeObj = ", chromeObj)
+		//if chromeObj != nil {
+		//	_ = chromeObj.Close()
+		//}
 
 	}
 
