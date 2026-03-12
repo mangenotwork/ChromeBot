@@ -300,8 +300,15 @@ func registerChrome(interp *interpreter.Interpreter) {
 			if xPathValOK {
 				xPath = xPathVal.(string)
 			}
+
+			_, err := utils.ValidateXPathPureNative(xPath)
+			if err != nil {
+				fmt.Println("[Chrome]点击操作警告: ", err.Error())
+				break
+			}
+
 			fmt.Println("[Chrome]点击的Xpath = ", xPath)
-			err := browser.Click(xPath)
+			err = browser.Click(xPath)
 			if err != nil {
 				fmt.Println("[Chrome]点击操作出现错误:", err.Error())
 			}
@@ -326,14 +333,19 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 			fmt.Println("[Chrome]输入的Xpath = ", xPath)
 
-			// todo 检查xpath
 			if xPath == "" {
 				fmt.Println("[Chrome]输入操作警告: 未设置Xpath无法执行操作")
 				break
 			}
 
+			_, err := utils.ValidateXPathPureNative(xPath)
+			if err != nil {
+				fmt.Println("[Chrome]输入操作警告: ", err.Error())
+				break
+			}
+
 			inputText := op.arg["input"].(string)
-			err := browser.Input(xPath, inputText)
+			err = browser.Input(xPath, inputText)
 			if err != nil {
 				fmt.Println("[Chrome]输入操作出现错误:", err.Error())
 			}
@@ -377,6 +389,11 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 			case 2:
 				xpath := op.arg["xpath"].(string)
+				_, err = utils.ValidateXPathPureNative(xpath)
+				if err != nil {
+					fmt.Println("[Chrome]滚动操作警告: ", err.Error())
+					break
+				}
 				log.Println("滚动到Xpath = ", xpath)
 				err = browser.ScrollToElement(xpath)
 			}

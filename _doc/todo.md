@@ -116,7 +116,7 @@
 - [ok] <bug转需求> 本地系统记录chrome userpath进程，如果存在默认隔离环境的chrome进程提供交互选择关闭还是新建隔离环境
 - [ok] chrome init 新增new指令初始化隔离环境
 - [ok] <bug转需求> chrome连不上的时候重试
-- [] Xpath格式检查相关的函数
+- [ok] Xpath格式检查相关的函数
 - [] 语法: 支持 \ 作为代码的换行连接符，与命令行的换行一样
 - [] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=MatchDemoContentOP(a, "百度一下")
 - [] 支持输出chrome信息
