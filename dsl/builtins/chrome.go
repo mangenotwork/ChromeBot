@@ -15,6 +15,34 @@ import (
 var chromeLock = utils.NewTimeoutLock(60 * time.Second) // 默认1分钟
 var ChromeWait = 0
 
+var chromeSupport = map[string]bool{
+	"init":        true,
+	"close":       true,
+	"size":        true,
+	"proxy":       true,
+	"userpath":    true,
+	"new":         true,
+	"tab":         true,
+	"req":         true,
+	"click":       true,
+	"xpath":       true,
+	"input":       true,
+	"check":       true,
+	"wait":        true,
+	"pause":       true,
+	"scroll":      true,
+	"scrollpixel": true,
+	"scrollxpath": true,
+	"screenshot":  true,
+	"to":          true,
+	"save":        true,
+}
+
+func hasChromeSupport(cmd string) bool {
+	_, ok := chromeSupport[cmd]
+	return ok
+}
+
 /*
 前置说明: 当前的设计一个ChromeBot进程对应一个chrome子进程, 一行命令只支持一个操作
 
@@ -69,6 +97,10 @@ func registerChrome(interp *interpreter.Interpreter) {
 		argsStr = processArgs(interp, argsStr)
 		utils.Debug("执行 ProcessArgs 参数 处理  ", argsStr, len(args))
 
+		if len(argsStr) == 0 {
+			return nil, fmt.Errorf("未知命令，请参考文档")
+		}
+
 		chromeLock.Lock()
 		defer chromeLock.Unlock()
 
@@ -76,6 +108,10 @@ func registerChrome(interp *interpreter.Interpreter) {
 		for _, v := range argsStr {
 			vList := strings.SplitN(v, "=", 2)
 			utils.Debug("vList = ", vList, len(vList))
+			if !hasChromeSupport(vList[0]) {
+				fmt.Println("[Chrome]未知命令 ", vList[0], ";请参考文档。")
+				return nil, fmt.Errorf("[Chrome]未知命令 %s;请参考文档。", vList[0])
+			}
 			if len(vList) == 1 {
 				argMap[vList[0]] = ""
 			} else if len(vList) == 2 {
@@ -553,6 +589,12 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 			prevList := strings.SplitN(prev, "=", 2)
 
 			if len(prevList) == 2 {
+
+				if !hasChromeSupport(prevList[0]) {
+					fmt.Println("[Chrome]未知命令 ", prevList[0], ";请参考文档。")
+					return nil
+				}
+
 				funcName := prevList[1]
 				utils.Debug("检查到函数 --> ", funcName)
 				fn, has := interp.Global().GetFunc(funcName)
