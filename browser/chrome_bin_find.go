@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"ChromeBot/internal/host"
 	"bytes"
 	"fmt"
 	"os"
@@ -36,6 +37,8 @@ func FindChrome() (string, error) {
 	if path, err := findChromeByWMI(); err == nil {
 		return path, nil
 	}
+
+	_, _ = host.ErrorTipBox("检测到系统未安装chrome,请安装chrome.\n chrome下载地址: https://www.google.cn/chrome/index.html ")
 
 	return "", fmt.Errorf("Chrome not found on this system ")
 }

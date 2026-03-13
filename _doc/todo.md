@@ -127,7 +127,7 @@
 - [ok] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=NowTabMatchDemoContentOP("百度一下")
 - [ok] chrome 非法参数应该提示
 - [ok] 支持输出chrome信息
-- [] 如果本地未安装chrome引导安装
+- [ok] 如果本地未安装chrome提示安装
 - [] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
 ```
 对应bug : 手动操作浏览器后如果是关闭了当前的tab,会导致nowTab失焦现象
