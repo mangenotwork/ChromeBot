@@ -36,6 +36,7 @@ var chromeSupport = map[string]bool{
 	"screenshot":  true,
 	"to":          true,
 	"save":        true,
+	"info":        true,
 }
 
 func hasChromeSupport(cmd string) bool {
@@ -68,6 +69,7 @@ scrollxpath : 滚动操作,滚动到指定xpath <值类型是字符串>
 screenshot : 截图操作，浏览器截图操作  值为保存位置  <值类型是字符串>
 to : 将当前操作的页面html返回存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
 save : 将将当前操作的页面html存入到指定文件  <值类型是字符串>
+info : 获取chrome 的信息
 
 语法
 
@@ -128,6 +130,11 @@ func registerChrome(interp *interpreter.Interpreter) {
 
 		if _, ok := argMap["init"]; ok {
 			op.opType = opInit
+			opNumber++
+		}
+
+		if _, ok := argMap["info"]; ok {
+			op.opType = opInfo
 			opNumber++
 		}
 
@@ -255,6 +262,23 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		switch op.opType {
+
+		case opInfo:
+			chromePath, err := browser.FindChrome()
+			if err != nil {
+				fmt.Println("获取chrome可执行文件路径失败")
+			}
+			fmt.Println("[Chrom] 路径 : ", chromePath)
+			info, err := browser.GetChromeInfo(chromePath)
+			if err != nil {
+				fmt.Printf("获取Chrome信息失败: %v\n", err)
+			} else {
+				fmt.Println("Chrome 浏览器信息：")
+				for k, v := range info {
+					fmt.Printf("%-20s: %s\n", k, v)
+				}
+			}
+
 		case opInit:
 			fmt.Println("[Chrome]初始化浏览器...")
 			windowSize, proxy, userPath := "", "", ""
@@ -497,6 +521,7 @@ type chromeOPType string
 
 var (
 	opInit       chromeOPType = "init"  // 初始化浏览器
+	opInfo       chromeOPType = "info"  // 获取chrome info
 	opClose      chromeOPType = "close" // 关闭浏览器
 	opTable      chromeOPType = "tab"
 	opReq        chromeOPType = "req"
