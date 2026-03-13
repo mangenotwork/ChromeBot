@@ -118,14 +118,21 @@
 - [ok] <bug转需求> chrome连不上的时候重试
 - [ok] Xpath格式检查相关的函数
 - [ok] 语法: 支持 \ 作为代码的换行连接符，与命令行的换行一样
-- [] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=MatchDemoContentOP(a, "百度一下")
+- [ok] 语法: 命令式值能绑定上函数并执行函数使用函数的返回值 如: chrome click=NowTabMatchDemoContentOP("百度一下")
+- [] chrome 非法参数应该提示
 - [] 支持输出chrome信息
 - [] 如果本地未安装chrome引导安装
 - [] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
 ```
 对应bug : 手动操作浏览器后如果是关闭了当前的tab,会导致nowTab失焦现象
 ```
-- [] 改测试的bug和优化 
+- [] 测试并新增示例
+  1. https://www.doubao.com/chat/ 交互豆包问豆包问题
+  2. https://www.zhaozhongtian.top/rand-phone 交互网站手机号随机生成，采集将生成的手机号
+  3. https://www.toutiao.com/ 头条采集今日要闻访问后截图保存到本地
+  4. https://www.douyin.com/?recommend=1 抖音交互下滑视频
+  
+- [] 改测试的bug和优化
 - [] bug和优化验收 
 - [] 更新文档 
 
@@ -158,10 +165,10 @@
 - [ok] 等待页面完全响应完
 - [ok] 整理日志打印
 - [ok] 多增加实例的测试用例以及测试 
-  1. [ok] https://www.eastmoney.com/  东方财经网，先进官网再访问排名，获取排名列表并保存到本地文件
-  2. [ok] https://www.xinhuanet.com/  新华网获取要闻聚焦，点击每个要闻访问文章内容并截图保存在本地
-  3. [ok] https://news.cctv.com/  央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来
-  4. [ok] https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml 阳光高考获取全部的学校信息
+  1. [ok] eastmoney_1.cbs  东方财经网，先进官网再访问排名，获取排名列表并保存到本地文件
+  2. [ok] xinhuanet_1.cbs  新华网获取要闻聚焦，点击每个要闻访问文章内容并截图保存在本地
+  3. [ok] newscctv_1.cbs  央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来
+  4. [ok] gaokaochsi_1.cbs 阳光高考获取全部的学校信息
   
 - [ok] 改测试的bug和优化
 - [ok] bug和优化验收

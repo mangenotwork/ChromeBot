@@ -13,7 +13,6 @@ import (
 
 // 一个带timeout的锁
 var chromeLock = utils.NewTimeoutLock(60 * time.Second) // 默认1分钟
-
 var ChromeWait = 0
 
 /*
@@ -60,27 +59,28 @@ func registerChrome(interp *interpreter.Interpreter) {
 	interp.Global().SetFunc("chrome", func(args []interpreter.Value) (interpreter.Value, error) {
 		utils.Debug("执行 chrome 的操作，参数是 ", args, len(args))
 
-		if ChromeWait > 0 { // todo 以后更好的方案 ，  解决执行脚本命令之间操作太快
-			time.Sleep(time.Duration(ChromeWait) * time.Second)
+		argsStr := make([]string, 0)
+		for i, arg := range args {
+			utils.Debugf("参数 %d %v %T\n", i, arg, arg)
+			argsStr = append(argsStr, arg.(string))
 		}
+
+		// 处理 函数类型的参数
+		argsStr = processArgs(interp, argsStr)
+		utils.Debug("执行 ProcessArgs 参数 处理  ", argsStr, len(args))
 
 		chromeLock.Lock()
 		defer chromeLock.Unlock()
 
 		argMap := make(map[string]string)
-		for i, v := range args {
-			utils.Debugf("参数 %d %v %T\n", i, v, v)
-			switch v.(type) {
-			case string:
-				vList := strings.SplitN(v.(string), "=", 2)
-				utils.Debug("vList = ", vList, len(vList))
-				if len(vList) == 1 {
-					argMap[vList[0]] = ""
-				} else if len(vList) == 2 {
-					argMap[vList[0]] = vList[1]
-				}
+		for _, v := range argsStr {
+			vList := strings.SplitN(v, "=", 2)
+			utils.Debug("vList = ", vList, len(vList))
+			if len(vList) == 1 {
+				argMap[vList[0]] = ""
+			} else if len(vList) == 2 {
+				argMap[vList[0]] = vList[1]
 			}
-
 		}
 
 		utils.Debug("argMap:", argMap)
@@ -214,6 +214,9 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		utils.Debugf("执行 : %v", op)
+		if ChromeWait > 0 { // todo 以后更好的方案 ，  解决执行脚本命令之间操作太快
+			time.Sleep(time.Duration(ChromeWait) * time.Second)
+		}
 
 		switch op.opType {
 		case opInit:
@@ -503,4 +506,93 @@ type chromeOperation struct {
 	arg    map[string]interpreter.Value // 操作的参数
 	//level  executionPriorityLevel // 操作等级
 	extendType int // 扩展类型，用于同效果的多类型进行区分
+}
+
+func processArgs(interp *interpreter.Interpreter, args []string) []string {
+	// 空数组直接返回
+	if len(args) == 0 {
+		return args
+	}
+
+	var result []string
+	i := 0
+	length := len(args)
+
+	for i < length {
+		// 找到左括号的位置
+		if args[i] == "(" {
+			// 检查左括号前是否有元素（避免数组越界）
+			if i == 0 {
+				// 左括号开头，直接保留（异常场景）
+				result = append(result, args[i])
+				i++
+				continue
+			}
+
+			// 查找对应的右括号
+			rightIdx := -1
+			for j := i + 1; j < length; j++ {
+				if args[j] == ")" {
+					rightIdx = j
+					break
+				}
+			}
+
+			if rightIdx == -1 {
+				// 未找到右括号，按原格式保留
+				result = append(result, args[i-1], args[i])
+				i++
+				continue
+			}
+
+			// 提取括号内的元素并拼接
+			innerElements := args[i+1 : rightIdx]
+			//innerStr := strings.Join(innerElements, ",")
+			prev := args[i-1]
+
+			prevList := strings.SplitN(prev, "=", 2)
+
+			if len(prevList) == 2 {
+				funcName := prevList[1]
+				utils.Debug("检查到函数 --> ", funcName)
+				fn, has := interp.Global().GetFunc(funcName)
+				utils.Debug("找到函数结果  --> ", has)
+				utils.Debug("找到函数参数 --> ", innerElements, " | len:", len(innerElements))
+				fnArgs := make([]interpreter.Value, 0)
+				for _, arg := range innerElements {
+					val, valHas := interp.Global().GetVar(arg)
+					if valHas {
+						arg = val.(string)
+					}
+					fnArgs = append(fnArgs, arg)
+				}
+				utils.Debug("整理出函数参数 --> ", fnArgs, " | len:", len(fnArgs))
+				rse, rseErr := fn(fnArgs)
+				if rseErr != nil {
+					fmt.Println("[Chrome]命令行中的函数运行出现错误, err = ", rseErr.Error())
+					return result
+				}
+				utils.Debug("函数运行结果 ", rse)
+				// 拼接成完整字符串（前元素 + ( + 拼接内容 + )）
+				fullStr := fmt.Sprintf("%s=%s", prevList[0], rse)
+				utils.Debug("fullStr = ", fullStr)
+
+				result = append(result, fullStr)
+
+				// 跳过已处理的元素
+				i = rightIdx + 1
+			}
+
+		} else {
+			if i+1 < length && args[i+1] == "(" {
+				i++
+			} else {
+				// 单元素/非括号后无左括号 → 直接添加
+				result = append(result, args[i])
+				i++
+			}
+		}
+	}
+
+	return result
 }

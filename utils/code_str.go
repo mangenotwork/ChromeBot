@@ -204,3 +204,65 @@ func ProcessCommandLine(input string) string {
 
 	return buf.String()
 }
+
+// ProcessArgs 处理包含括号的参数数组，合并括号内的元素
+func ProcessArgs(args []string) []string {
+	// 空数组直接返回
+	if len(args) == 0 {
+		return args
+	}
+
+	var result []string
+	i := 0
+	length := len(args)
+
+	for i < length {
+		// 找到左括号的位置
+		if args[i] == "(" {
+			// 检查左括号前是否有元素（避免数组越界）
+			if i == 0 {
+				// 左括号开头，直接保留（异常场景）
+				result = append(result, args[i])
+				i++
+				continue
+			}
+
+			// 查找对应的右括号
+			rightIdx := -1
+			for j := i + 1; j < length; j++ {
+				if args[j] == ")" {
+					rightIdx = j
+					break
+				}
+			}
+
+			if rightIdx == -1 {
+				// 未找到右括号，按原格式保留
+				result = append(result, args[i-1], args[i])
+				i++
+				continue
+			}
+
+			// 提取括号内的元素并拼接
+			innerElements := args[i+1 : rightIdx]
+			innerStr := strings.Join(innerElements, ",")
+
+			// 拼接成完整字符串（前元素 + ( + 拼接内容 + )）
+			fullStr := fmt.Sprintf("%s(%s)", args[i-1], innerStr)
+			result = append(result, fullStr)
+
+			// 跳过已处理的元素
+			i = rightIdx + 1
+		} else {
+			if i+1 < length && args[i+1] == "(" {
+				i++
+			} else {
+				// 单元素/非括号后无左括号 → 直接添加
+				result = append(result, args[i])
+				i++
+			}
+		}
+	}
+
+	return result
+}

@@ -777,8 +777,9 @@ func OpenUrl(url string) (string, error) {
 				log.Println("消息队列已关闭")
 				return "", fmt.Errorf("消息队列已关闭")
 			}
-			utils.Debug("收到的消息 -> ", msg.Content)
+			utils.Debug("OpenUrl 收到的消息 -> ", msg.Content)
 			if chromeInstance.NextID == msg.ID {
+				utils.Debug("OpenUrl 匹配到消息 -> ", msg.ID)
 
 				select {
 				case session := <-NowPageLoadEventFired:
@@ -790,9 +791,9 @@ func OpenUrl(url string) (string, error) {
 
 				//return msg.Content, nil
 
-			} else {
-				log.Println("不是自己的消息")
-			}
+			} //else {
+			//log.Println("不是自己的消息")
+			//}
 
 		case <-timer.C:
 			log.Println("30秒未收到消息")
