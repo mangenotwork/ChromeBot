@@ -650,5 +650,151 @@ http get url="https://resource.ecosmos.vip/AD/ad_h5.png?t=1772181855" save="D:\a
 
 ### Chrome关键字
 
-todo....
+自动操作浏览器指令，命令式语法；环境会进行隔离，不影响当前用户已用的chrome; 注意：一个ChromeBot进程对应一个chrome子进程, 一行命令只支持一个操作； 
+如果想多开运行多个ChromeBot进程执行脚本需要再启动时候添加new参数来进行隔离； 支持弹出窗进行交互；
 
+参数说明：
+
+- init : 初始化打开浏览器，如果已经打开后续语句再出现init会忽略
+- close : 关闭浏览器
+- size : 设置浏览器窗口大小与init参数一起用,值为: 宽*高 （900*600） <值类型是字符串>
+- proxy : 设置浏览器代理与init参数一起用 <值类型是字符串>
+- userpath : 设置浏览器在本机的隔离目录与init参数一起用,对应浏览器的--user-data-dir，建议隔离 <值类型是字符串>
+- new : 设置浏览器新建一个隔离环境与init参数一起用；与userPath同时在时，优先使用userPath
+- tab : 页签, 值有get:获取；set:指定哪个标签切换到指定的页签; new：新建一个页签；1<number>:第一个页签；select：返回当前选中的页签; 注意: 如果是没有选中页签下文操作默认当前浏览器的页签进行操作 <值类型是指定的字符串>
+- req :  请求网址， 值为网址 <值类型是字符串>
+- click : 点击操作，值为xpath <值类型是字符串>
+- xpath : 当前选中的xpath, 输入的时候用
+- input : 输入操作，输入内容  <值类型是字符串>
+- check : 检查操作，检查页面是否存在指定xpath  <值类型是字符串>
+- wait : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
+- pause : 默认会执行等待页面加载完成，这个参数给定操作时候设置等待的时间  <值类型是数值类型>
+- scroll : 滚动操作，滚动页面  正数往下，负数往上 <值类型是数值类型>  注意: 该滚动存在局限性只针对根节点进行滚动，嵌套容器要想精确请使用 scrollxpath
+- scrollpixel : scroll by pixel 滚动操作,滚动到指定坐标， 值为(x,y)如(2000, 500)   注意: 该滚动存在局限性只针对根节点进行滚动, 嵌套容器要想精确请使用 scrollxpath
+- scrollxpath : 滚动操作,滚动到指定xpath <值类型是字符串>
+- screenshot : 截图操作，浏览器截图操作  值为保存位置  <值类型是字符串>
+- to : 将当前操作的页面html返回存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
+- save : 将将当前操作的页面html存入到指定文件  <值类型是字符串>
+- info : 获取chrome 的信息
+- as : 将指令的结果赋值给变量
+
+下面是相关例子
+```cbs
+// 例子1 ：简单访问百度进行查询最后截图保存操作
+chrome init  // 打开浏览器
+chrome req="www.baidu.com" // 访问 百度
+chrome xpath=NowTabGetInputFirstXpath() input="ChromeBot" // 获取当前页面能输入的第一个输入框的xpath
+chrome click=NowTabMatchDemoContentOP("百度一下") // 获取当前页面内容为“百度一下”可交互的xpath
+chrome screenshot="D:\baidu5.png"  // 截图保存到本地
+chrome close  // 关闭浏览器
+
+// 例子2 ： 央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来
+// https://news.cctv.com/
+chrome init  // 打开浏览器
+chrome req="https://news.cctv.com/"
+var label = ["新闻","国内","国际","经济","社会","法治","图片","文娱","科技","生活","军事","快看"]
+for item in label {
+    print("寻找 --> ", item)
+    var xpath = NowTabMatchDemoContentOP(item)
+    chrome click=xpath // 点击
+    var newsList = NowTabGetPointIDHTML("ul", "newslist")
+    var title = RegHtml(newsList, "h3")
+    for titleItem in  title {
+        print("新闻title : ", titleItem)
+    }
+    chrome pause=2
+}
+chrome close
+
+// 例子3 ： 抖音交互下滑视频
+// https://www.douyin.com/?recommend=1
+chrome init
+chrome req="https://www.douyin.com/?recommend=1 "
+sleep(2000)
+
+// 1. 关闭登录
+chrome click=`//*[@id="douyin_login_comp_flat_panel"]/div/div[1]/div[2]`
+sleep(1000)
+
+// 2. 点击推荐  NowTabMatchDemoContentOP("推荐")
+chrome click=NowTabMatchDemoContentOP("推荐")
+sleep(1000)
+
+// 3. 看5秒点击下一个
+chrome click=`//*[@id="douyin-right-container"]/div[3]/div[1]/div/div/div[2]`
+sleep(5000)
+
+// 4. 截图，然后结束
+chrome screenshot="D:\\douyin_1.png"
+chrome close
+
+
+// 例子4 ： 交互豆包问豆包问题
+// https://www.doubao.com/chat/
+chrome init
+chrome req="https://www.doubao.com/chat/"
+sleep(2000) // 加载完页面等两秒
+chrome xpath=`//textarea[@data-testid='chat_input_input']` input="你好豆包，介绍一下你自己"
+chrome click=`//*[@id='flow-end-msg-send']`
+// 等待回复，检查是否回复完，最多44检查
+var isWait = 0
+for var wait= 0; wait < 45; wait++ {
+    if isWait > 1 {
+        print("已经回复完") // 回复完了截图
+        chrome screenshot="D:\doubao_1.png"
+        break
+    }
+    chrome check=`//div[contains(@class, 'send-btn-wrapper') and (contains(@class, '!hidden'))]` as=has
+    if has == false {
+        isWait++
+    }
+}
+if isWait==0 {
+    print("回复太慢，还在回复吗?请检查")
+}
+chrome close
+```
+
+### Chrome 自动化场景下的相关方法
+
+- ShowDemoTree 显示当前demo树
+```
+ShowDemoTree()
+```
+
+- MatchDemoContent 获取匹配到标签内容的xpath
+```
+MatchDemoContent(html, "首页")
+```
+
+- MatchDemoContentOP 获取匹配到标签内容的xpath, 能用于操作的xpath
+```
+MatchDemoContentOP(html, "首页")
+```
+
+- NowTabMatchDemoContentOP 获取当前操作的页面匹配到标签内容的xpath, 能用于操作的xpath
+```
+NowTabMatchDemoContentOP("首页")
+```
+
+- NowTabGetInputFirstXpath 获取当前操作的页面匹配到能输入的标签的xpath，返回匹配到的第一个
+```
+NowTabGetInputFirstXpath()
+```
+
+- NowTabGetPointHTML 获取指定位置的HTML， 用标签， 标签属性， 属性值来定位
+```
+NowTabGetPointHTML(label, attr, val) // label:标签  attr:标签属性  val:属性值
+```
+
+- NowTabGetPointIDHTML 获取指定位置的HTML， 用标签， 标签属性为id， 属性值来定位
+```
+NowTabGetPointIDHTML(label, val) // label:标签 id的val:属性值
+```
+
+- NowTabGetPointClassHTML 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
+```
+NowTabGetPointClassHTML(label, val) // label:标签 class的val:属性值
+```
+
+### todo....
