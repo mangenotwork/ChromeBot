@@ -1,0 +1,21 @@
+// 抖音交互下滑视频
+// https://www.douyin.com/?recommend=1
+chrome init
+chrome req="https://www.douyin.com/?recommend=1 "
+sleep(2000)
+
+// 1. 关闭登录
+chrome click=`//*[@id="douyin_login_comp_flat_panel"]/div/div[1]/div[2]`
+sleep(1000)
+
+// 2. 点击推荐  NowTabMatchDemoContentOP("推荐")
+chrome click=NowTabMatchDemoContentOP("推荐")
+sleep(1000)
+
+// 3. 看5秒点击下一个
+chrome click=`//*[@id="douyin-right-container"]/div[3]/div[1]/div/div/div[2]`
+sleep(5000)
+
+// 4. 截图，然后结束
+chrome screenshot="D:\\douyin_1.png"
+chrome close

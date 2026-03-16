@@ -133,11 +133,11 @@
 - [ok] 支持输出chrome信息
 - [ok] 如果本地未安装chrome提示安装
 - [ok] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
-- [] 测试并新增示例
+- [ok] 测试并新增示例
   1. [ok] doubao_1.cbs 交互豆包问豆包问题
-  2. https://www.zhaozhongtian.top/rand-phone 交互网站手机号随机生成，采集将生成的手机号
-  3. https://www.toutiao.com/ 头条采集今日要闻访问后截图保存到本地
-  4. https://www.douyin.com/?recommend=1 抖音交互下滑视频
+  2. [ok] zzttop_1.cbs 交互网站手机号随机生成，采集将生成的手机号
+  3. [ok] toutiao_1.cbs 头条采集今日要闻访问后截图保存到本地
+  4. [ok] douyin_1.cbs 抖音交互下滑视频
   
 - [] 改测试的bug和优化
 - [] bug和优化验收 

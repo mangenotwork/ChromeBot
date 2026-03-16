@@ -12,7 +12,7 @@ for item in a {
     var title = RegHtmlText(item, "a")[0]
     print("title : ", title)
     chrome req=href
-    var path = "D:\xinhuanet_"+title+".png"
+    var path = "D:\\xinhuanet_"+title+".png"
     chrome screenshot=path
     chrome pause=2
 }

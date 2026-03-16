@@ -1,0 +1,8 @@
+// 交互网站手机号随机生成，采集将生成的手机号
+// https://www.zhaozhongtian.top/rand-phone
+chrome init
+chrome req="https://www.zhaozhongtian.top/rand-phone"
+chrome click=NowTabMatchDemoContentOP("生成")
+var res=NowTabGetPointIDHTML("textarea", "exampleFormControlTextarea1")
+var resTxt = RegDel(res[0], "html")
+print("采集到的数据 : ", join(resTxt, ""))

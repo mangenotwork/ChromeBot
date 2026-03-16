@@ -169,7 +169,11 @@ func chromeNowTabGetPointIDHTML(args []interpreter.Value) (interpreter.Value, er
 	}
 
 	fmt.Println("NowTabGetPointIDHTML 结果: ", res)
-	return res, err
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, v)
+	}
+	return resVal, err
 }
 
 func chromeNowTabGetPointClassHTML(args []interpreter.Value) (interpreter.Value, error) {

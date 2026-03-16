@@ -1,0 +1,21 @@
+// 头条采集今日要闻访问后截图保存到本地
+// https://www.toutiao.com
+chrome init
+chrome req="https://www.toutiao.com/"
+sleep(2000)
+var rse = NowTabGetPointClassHTML("div", "feed-five-wrapper")
+print(rse)
+var a = RegHtml(rse, "a")
+for item in a {
+    print("要闻链接 : ", item)
+    var href = RegHtmlText(item, "href")[0]
+    print("href : ", href)
+    var title = RegHtmlText(item, "a")[0]
+    print("title : ", title)
+    chrome req=href
+    var path = "D:\\toutiao_"+title+".png"
+    print("path = ", path)
+    chrome screenshot=path
+    chrome pause=2
+}
+chrome close

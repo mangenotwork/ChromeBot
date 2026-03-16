@@ -22,6 +22,7 @@ var strFn = map[string]interpreter.Function{
 	"split":           strSplit,           // split 字符分割
 	"replace":         strReplace,         // replace 字符串替换
 	"replaceN":        strReplaceN,        // replaceN 字符串替换 指定替换几个
+	"join":            strJoin,            // join 数组进行连接 join([arr], "-")
 	"CleanWhitespace": strCleanWhitespace, // CleanWhitespace 函数 清理字符串回车，换行符号，还有前后空格
 	"StrDeleteSpace":  strDeleteSpace,     // StrDeleteSpace 函数 删除字符串前后的空格
 	"UnicodeDecode":   strUnicodeDecode,   // UnicodeDec 函数 字符串进行unicode编码
@@ -139,6 +140,26 @@ func strReplaceN(args []interpreter.Value) (interpreter.Value, error) {
 		return nil, fmt.Errorf("replaceN()最后一个参数%s", err.Error())
 	}
 	result := strings.Replace(s1, s2, s3, n)
+	return result, nil
+}
+
+func strJoin(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("join([arr], character) 需要2个参数")
+	}
+	arrList, ok := args[0].([]interpreter.Value)
+	if !ok {
+		return nil, fmt.Errorf("join([arr], character) arr需要列表参数")
+	}
+	character, ok := args[1].(string)
+	if !ok {
+		return nil, fmt.Errorf("join([arr], character) character需要字符串参数")
+	}
+	arr := make([]string, 0)
+	for _, v := range arrList {
+		arr = append(arr, v.(string))
+	}
+	result := strings.Join(arr, character)
 	return result, nil
 }
 
@@ -569,6 +590,7 @@ func strRegDel(args []interpreter.Value) (interpreter.Value, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("RegDel(str,str) 需要2个参数 ")
 	}
+	fmt.Printf("strRegDel %T str = %s ", args[0], args[0])
 	str, ok1 := args[0].(string)
 	if !ok1 {
 		return nil, fmt.Errorf("RegDel(str,str) 第一个参数要求是字符串 ")
@@ -584,7 +606,7 @@ func strRegDel(args []interpreter.Value) (interpreter.Value, error) {
 	res := make([]interpreter.Value, 0)
 	list := fn(str)
 	for _, v := range list {
-		res = append(res, v)
+		res = append(res, string(v))
 	}
 	return res, nil
 }
