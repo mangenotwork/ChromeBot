@@ -14,7 +14,7 @@ import (
 var chromeInputJS string
 
 func Input(xPath, text string) error {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return nil
 	}
 

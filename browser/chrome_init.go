@@ -210,13 +210,21 @@ type mess struct {
 
 var messageQueue = make(chan mess, 100) // 缓冲队列
 
-func DefaultNowTab() bool {
+// DefaultNowTab 默认当前交互Tab
+// isOP 是否是操作， 点击，输入，截图
+func DefaultNowTab(isOP bool) bool {
 	if chromeInstance == nil {
 		fmt.Println("[Chrome]未初始化浏览器进程,请执行chrome init命令进行初始化")
 		return false
 	}
+
+	if isOP {
+		fmt.Println("CheckTab ....")
+		CheckTab() // 检查当前操作是tab是否被意外丢失
+	}
+
 	if chromeInstance.NowTabWSConn != nil {
-		fmt.Println("[Chrome]以获取浏览器tab页聚焦")
+		fmt.Println("[Chrome]获取浏览器tab页聚焦")
 		return true
 	}
 
@@ -268,6 +276,20 @@ func DefaultNowTab() bool {
 		log.Println("页面加载失败")
 	}
 	return true
+}
+
+func CheckTab() {
+	tabData, err := getAllTabData()
+	if err != nil {
+		fmt.Println("[Chrome] 获取所有tab出现错误, err : ", err)
+		return
+	}
+	fmt.Println("tabData = ", tabData)
+	if _, ok := tabData[chromeInstance.NowTabTargetId]; !ok {
+		host.ErrorTipBox("当前浏览器操作Tab已丢失，请检查！")
+	} else {
+		fmt.Println("存在tabid = ", chromeInstance.NowTabTargetId)
+	}
 }
 
 func ConnTab() (*websocket.Conn, error) {
@@ -746,7 +768,7 @@ func activateTarget() (string, error) {
 }
 
 func OpenUrl(url string) (string, error) {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return "", nil
 	}
 

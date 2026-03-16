@@ -18,7 +18,7 @@ var chromeHtmlJS string
 
 // GetHtml 获取页面的html
 func GetHtml() (string, error) {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return "", nil
 	}
 

@@ -128,10 +128,7 @@
 - [ok] chrome 非法参数应该提示
 - [ok] 支持输出chrome信息
 - [ok] 如果本地未安装chrome提示安装
-- [] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
-```
-对应bug : 手动操作浏览器后如果是关闭了当前的tab,会导致nowTab失焦现象
-```
+- [ok] <bug转需求> tab失焦后进行提示, 提供交互确认，如果是继续则默认选择第一个tab,如果是结束就结束脚本
 - [] 测试并新增示例
   1. https://www.doubao.com/chat/ 交互豆包问豆包问题
   2. https://www.zhaozhongtian.top/rand-phone 交互网站手机号随机生成，采集将生成的手机号

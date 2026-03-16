@@ -15,7 +15,7 @@ import (
 var chromeClickJS string
 
 func Click(xPath string) error {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return fmt.Errorf("浏览器未初始化")
 	}
 

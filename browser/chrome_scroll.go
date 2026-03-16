@@ -59,7 +59,7 @@ type ScrollResult struct {
 }
 
 func scroll(js string) (*ScrollResult, error) {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return &ScrollResult{Success: false}, nil
 	}
 

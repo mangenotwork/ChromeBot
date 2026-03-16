@@ -10,12 +10,8 @@ import (
 	"time"
 )
 
-// GetAllTab 查看所有的页签
-func GetAllTab() (map[string]string, error) {
+func getAllTabData() (map[string]string, error) {
 	res := make(map[string]string)
-	if !DefaultNowTab() {
-		return res, nil
-	}
 	tabUrl := fmt.Sprintf("http://127.0.0.1:%d/json/list", chromeInstance.Port)
 	utils.Debug("tabUrl = ", tabUrl)
 
@@ -50,11 +46,19 @@ func GetAllTab() (map[string]string, error) {
 	return res, nil
 }
 
+// GetAllTab 查看所有的页签
+func GetAllTab() (map[string]string, error) {
+	if !DefaultNowTab(false) {
+		return map[string]string{}, nil
+	}
+	return getAllTabData()
+}
+
 // NewTab 新建标签页
 func NewTab() (string, error) {
 R:
 
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return "", nil
 	}
 
@@ -123,7 +127,7 @@ R:
 // SelectTab 切换Tab
 func SelectTab(targetId string) {
 
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return
 	}
 
@@ -189,7 +193,7 @@ func SelectTab(targetId string) {
 
 // NowTabInfo 当前标签页的信息
 func NowTabInfo() {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return
 	}
 	fmt.Println("[Chrome] tab id : ", chromeInstance.NowTabTargetId)
@@ -199,7 +203,7 @@ func NowTabInfo() {
 
 // NowTabClose 关闭当前标签页
 func NowTabClose() {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return
 	}
 

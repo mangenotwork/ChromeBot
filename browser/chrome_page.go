@@ -9,7 +9,7 @@ import (
 )
 
 func PageEnable() error {
-	if !DefaultNowTab() {
+	if !DefaultNowTab(false) {
 		return fmt.Errorf("浏览器未初始化")
 	}
 

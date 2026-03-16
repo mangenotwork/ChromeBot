@@ -25,7 +25,7 @@ type ScreenshotResult struct {
 func CaptureFullPageScreenshot(outputPath string) (*ScreenshotResult, error) {
 	result := &ScreenshotResult{Success: false}
 
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return result, nil
 	}
 

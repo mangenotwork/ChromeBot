@@ -16,7 +16,7 @@ var chromeCheckJS string
 
 func Check(xPath string) (bool, error) {
 
-	if !DefaultNowTab() {
+	if !DefaultNowTab(true) {
 		return false, nil
 	}
 
