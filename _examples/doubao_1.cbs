@@ -1,0 +1,24 @@
+// 交互豆包问豆包问题
+// https://www.doubao.com/chat/
+chrome init
+chrome req="https://www.doubao.com/chat/"
+sleep(2000) // 加载完页面等两秒
+chrome xpath=`//textarea[@data-testid='chat_input_input']` input="你好豆包，介绍一下你自己"
+chrome click=`//*[@id='flow-end-msg-send']`
+// 等待回复，检查是否回复完，最多44检查
+var isWait = 0
+for var wait= 0; wait < 45; wait++ {
+    if isWait > 1 {
+        print("已经回复完") // 回复完了截图
+        chrome screenshot="D:\doubao_1.png"
+        break
+    }
+    chrome check=`//div[contains(@class, 'send-btn-wrapper') and (contains(@class, '!hidden'))]` as=has
+    if has == false {
+        isWait++
+    }
+}
+if isWait==0 {
+    print("回复太慢，还在回复吗?请检查")
+}
+chrome close

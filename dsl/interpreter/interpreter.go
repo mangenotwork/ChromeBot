@@ -99,6 +99,15 @@ type Context struct {
 	mu          sync.RWMutex
 }
 
+type CtxValue struct {
+	isParent bool
+	ctxID    string
+	Value    Value
+}
+
+// 父子变量作用域映射
+var childrenParentMapValue sync.Map
+
 // NewContext 创建上下文
 func NewContext(parent *Context) *Context {
 
@@ -130,21 +139,33 @@ func (c *Context) GetChildren() []*Context {
 
 // SetVar 设置变量
 func (c *Context) SetVar(name string, value Value) {
+	utils.Debug("设置变量 SetVar -> ", name, value)
+	utils.Debugf("val %T %v ", value, value)
 	c.variables[name] = value
+	// 存在父子映射作用域关系的变量，给父的值也同步了
+	if _, iscp := childrenParentMapValue.Load(c.id); iscp && c.parent != nil {
+		c.parent.variables[name] = value
+	}
+	utils.Debug(c.variables[name])
+	utils.Debugf("%s -> %v", c.id, c.variables[name])
 }
 
 // GetVar 获取变量
 func (c *Context) GetVar(name string) (Value, bool) {
 	val, ok := c.variables[name]
 	utils.Debug("获取变量 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.id)
+
 	if !ok && c.parent != nil {
-		val, ok = c.parent.GetVar(name)
+		val, ok = c.parent.variables[name]
 		utils.Debug("获取不到变量在父里找 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.parent.id)
-		return val, ok
+		childrenParentMapValue.Store(c.id, c.parent.id)
+		if ok {
+			return val, ok
+		}
 	}
 	if !ok && len(c.children) > 0 {
 		for _, item := range c.children {
-			val, ok = item.GetVar(name)
+			val, ok = item.variables[name]
 			if ok {
 				return val, ok
 			}
@@ -979,8 +1000,8 @@ func (i *Interpreter) evaluatePostfixExpr(expr *ast.PostfixExpr, ctx *Context, h
 		switch t := target.(type) {
 		case *ast.Identifier:
 			// 更新变量
+			utils.Debugf("%s 更新变量 %s: %v -> %v", ctx.id, t.Name, originalValue, newValue)
 			ctx.SetVar(t.Name, newValue)
-			utils.Debug("更新变量 %s: %v -> %v", t.Name, originalValue, newValue)
 
 		case *indexTarget:
 			// 更新列表或字典元素

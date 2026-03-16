@@ -40,6 +40,138 @@
         return null;
     }
 
+    // ====================== React适配：更新React受控组件状态 ======================
+    /**
+     * 查找React Fiber节点并更新受控组件状态
+     * @param {HTMLElement} element - 目标输入框元素
+     * @param {string} value - 要输入的文本值
+     * @returns {boolean} 是否更新成功
+     */
+    function updateReactState(element, value) {
+        // 查找React内部属性（兼容不同React版本）
+        const keys = Object.keys(element);
+        const reactKey = keys.find(key =>
+            key.startsWith('__reactInternalInstance$') ||
+            key.startsWith('__reactFiber$')
+        );
+
+        if (reactKey && element[reactKey]) {
+            let fiberNode = element[reactKey];
+
+            // 向上查找最近的state节点
+            while (fiberNode) {
+                if (fiberNode.memoizedProps) {
+                    // 尝试找到onChange处理器
+                    if (fiberNode.memoizedProps.onChange) {
+                        const syntheticEvent = {
+                            target: element,
+                            currentTarget: element,
+                            type: 'change',
+                            nativeEvent: new Event('change'),
+                            preventDefault: () => {},
+                            stopPropagation: () => {},
+                            isDefaultPrevented: () => false,
+                            isPropagationStopped: () => false
+                        };
+
+                        // 更新DOM值
+                        element.value = value;
+
+                        // 调用onChange处理器更新React state
+                        fiberNode.memoizedProps.onChange(syntheticEvent);
+                        return true;
+                    }
+
+                    // 尝试找到value属性（受控组件）
+                    if (fiberNode.memoizedProps.value !== undefined) {
+                        if (fiberNode.memoizedProps.onChange) {
+                            const event = {
+                                target: { value: value },
+                                currentTarget: element
+                            };
+                            fiberNode.memoizedProps.onChange(event);
+                            return true;
+                        }
+                    }
+                }
+
+                // 继续向上查找父Fiber节点
+                fiberNode = fiberNode.return;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 触发React合成事件（备用方案）
+     * @param {HTMLElement} element - 目标输入框元素
+     * @param {string} value - 要输入的文本值
+     * @returns {boolean} 是否触发成功
+     */
+    function triggerReactSyntheticEvent(element, value) {
+        // 设置DOM基础值
+        element.value = value;
+
+        // 构造React专用Input事件
+        const reactEvent = new Event('input', { bubbles: true });
+        reactEvent.simulated = true;
+        reactEvent._reactName = 'onChange';
+        reactEvent._targetInst = element[Object.keys(element).find(k => k.startsWith('__reactFiber'))];
+        reactEvent.nativeEvent = new Event('input');
+
+        // 触发input事件
+        element.dispatchEvent(reactEvent);
+
+        // 触发change事件
+        const changeEvent = new Event('change', { bubbles: true });
+        changeEvent.simulated = true;
+        element.dispatchEvent(changeEvent);
+
+        return true;
+    }
+
+    /**
+     * React组件终极输入方案（兜底逻辑）
+     * @param {HTMLElement} element - 目标输入框元素
+     * @param {string} value - 要输入的文本值
+     * @returns {boolean} 是否执行成功
+     */
+    function reactFallbackInput(element, value) {
+        // 备份原始值
+        const originalValue = element.value;
+
+        // 强制设置DOM值
+        element.value = value;
+        element._value = value; // 兼容部分框架内部属性
+
+        // 触发所有可能的事件
+        const events = ['input', 'change', 'blur', 'focus'];
+        for (const eventName of events) {
+            const event = new Event(eventName, {
+                bubbles: true,
+                cancelable: true
+            });
+
+            // 为input事件补充CDP环境所需属性
+            if (eventName === 'input') {
+                event.data = value;
+                event.inputType = 'insertText';
+                event.isComposing = false;
+            }
+
+            element.dispatchEvent(event);
+        }
+
+        // 模拟用户操作时序（CDP环境下同步替代setTimeout）
+        element.blur(); // 模拟失去焦点触发验证
+        // 同步延迟替代setTimeout
+        for (let i = 0; i < 500000; i++) {}
+        element.focus(); // 重新获取焦点
+
+        return true;
+    }
+
     // ====================== 百度输入框专用：CDP适配版 ======================
     /**
      * CDP环境下百度输入框输入（强制触发所有必要事件）
@@ -120,11 +252,30 @@
             finalResult.elementFound = false;
         } else {
             finalResult.elementFound = true;
-            // 2. 判断是否为百度输入框（通过ID）
+
+            // 优先处理百度专属输入框
             if (element.id === 'chat-textarea') {
                 inputToBaiduTextareaCDP(element, newValue);
-            } else {
-                // 通用输入逻辑（CDP适配）
+            }
+            // 其次尝试React组件输入逻辑
+            else if (updateReactState(element, newValue)) {
+                finalResult.success = true;
+                finalResult.message = '通过React状态更新成功';
+                finalResult.inputValue = element.value;
+            }
+            else if (triggerReactSyntheticEvent(element, newValue)) {
+                finalResult.success = true;
+                finalResult.message = '通过React合成事件更新成功';
+                finalResult.inputValue = element.value;
+            }
+            // 最后使用React兜底方案或通用输入逻辑
+            else if (reactFallbackInput(element, newValue)) {
+                finalResult.success = true;
+                finalResult.message = '使用React备用方案输入成功';
+                finalResult.inputValue = element.value;
+            }
+            // 通用输入逻辑（兜底）
+            else {
                 element.focus();
                 element.value = newValue;
                 ['input', 'change', 'blur'].forEach(evt => {

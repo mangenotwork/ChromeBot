@@ -1,0 +1,19 @@
+var has = false
+var isWait = 0
+for var i= 0; i < 45; i++ {
+    print("isWait = ", isWait)
+    if isWait > 2 {
+        print("已经完")
+        break
+    }
+    //sleep(1000)
+    if has == false {
+        print("isWait++")
+        isWait++
+    }
+}
+if isWait==0 {
+    print("未完")
+} else {
+    print("已完 isWait : ", isWait)
+}

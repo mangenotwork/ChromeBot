@@ -20,7 +20,7 @@ const (
 
 func Run() {
 
-	utils.IsDebug = false
+	utils.IsDebug = true
 	gt.CloseLog()
 
 	if len(os.Args) < 2 {
