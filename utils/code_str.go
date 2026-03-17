@@ -13,14 +13,6 @@ import (
 )
 
 func EscapeQuotesInBackticks(input string) string {
-	//re := regexp.MustCompile(`(` + "`[^`]*`" + `)`)
-	//result := re.ReplaceAllStringFunc(input, func(match string) string {
-	//	content := strings.Trim(match, "`")
-	//	escapedContent := strings.ReplaceAll(content, `"`, `\"`)
-	//	return "`" + escapedContent + "`"
-	//})
-	//log.Println("result = ", result)
-	//return result
 
 	lines := strings.Split(input, "\n")
 	// 预编译正则（提升性能）

@@ -152,6 +152,9 @@ func (c *Context) SetVar(name string, value Value) {
 
 // GetVar 获取变量
 func (c *Context) GetVar(name string) (Value, bool) {
+
+	// todo 优先获取全局常量
+
 	val, ok := c.variables[name]
 	utils.Debug("获取变量 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.id)
 

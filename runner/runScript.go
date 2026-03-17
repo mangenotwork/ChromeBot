@@ -5,6 +5,7 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/dsl/lexer"
 	"ChromeBot/dsl/parser"
+	"ChromeBot/global"
 	"ChromeBot/utils"
 	"fmt"
 )
@@ -13,6 +14,7 @@ func runScript(source string) {
 
 	source = utils.ProcessCommandLine(source)
 	source = utils.EscapeQuotesInBackticks(source)
+	source = globalAnalysisScript(source)
 
 	builtins.ChromeWait = 2
 
@@ -39,6 +41,11 @@ func runScript(source string) {
 	builtins.RegisterBuiltins(interp)
 
 	// 执行程序
+
+	if global.IsRegisterCron {
+		fmt.Println("开启了定时任务 ", global.CronPerformance.Arg, " -> ", global.CronToChinese(global.CronPerformance.Arg))
+	}
+
 	result, err := interp.Interpret(program)
 	if err != nil {
 		fmt.Printf("执行错误: %v\n", err)
@@ -48,4 +55,5 @@ func runScript(source string) {
 	if result != nil {
 		fmt.Printf("程序返回值: %v\n", result)
 	}
+
 }

@@ -101,9 +101,25 @@
 - 完善 chrome Target : 目标对象
 - chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
 - chrome  CacheStorage ： 缓存存储域
+- 实现全局 @mysql
+- 实现全局 @redis
 
 #### v0.0.5
-- [] 定时任务
+- [] 设计脚本配置 以 @ 开头, 全局的程序执行前就需要处理，优先解析并保存在全局常量，只有脚本模式下才有
+  方案，在脚本解析前，优先判断@开头的行，如果符合以下全局配置则记录到全局配置常量，否则进行报错，脚本过完后将每行的第一个 @改为#，然后执行后面的语法检查
+  [ok] 1. @cron 设置定时执行脚本  todo: 设计语法，参考 cron 核心定时参数总览
+  [] 2. @conf_json 设置外部配置文件json,读取json文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用   todo 只设计语法
+  [] 3. @conf_yaml 设置外部配置文件yaml,读取yaml文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用   todo 只设计语法
+  [] 4. @conf_ini 设置外部配置文件ini,读取ini文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用   todo 只设计语法
+  [] 5. @mysql 全局声明并连接mysql as到指定对象 todo 只设计语法
+  [] 6. @redis 全局声明并连接redis as到指定对象 todo 只设计语法
+  [] 7. @chrome_check 全局检查是否支持chrome浏览器，提取检查，如果宿主机未安装会提前检查出来 语法 : 直接使用  @chrome_check
+  [] 8. @network_check 全局检查网络是否OK, 如果当前宿主机未网络会提前检查出来 语法: 请求地址可以是ip也可以是域名 如: @network_check "www.baidu.com"
+
+- [] 实现全局定时任务
+- [] 实现全局配置 @conf_json, @conf_yaml, @conf_ini
+- [] 实现全局 @chrome_check
+- [] 实现全局 @network_check
 - [] host 宿主机的相关方法 增加 host 关键字
   1. host name
   2. host ip
