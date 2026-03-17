@@ -36,6 +36,7 @@ func runREPL(sigChan chan os.Signal) {
 
 		line = utils.ProcessCommandLine(line)
 		line = utils.EscapeQuotesInBackticks(line)
+		line = globalAnalysisLine(line)
 
 		if shouldExit(line) {
 			fmt.Println("BayBay.")

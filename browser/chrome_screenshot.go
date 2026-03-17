@@ -104,6 +104,9 @@ func CaptureFullPageScreenshot(outputPath string) (*ScreenshotResult, error) {
 
 				// 步骤5：如果指定了保存路径，将base64保存为图片文件
 				if outputPath != "" {
+
+					outputPath = utils.SanitizeFileName(outputPath)
+
 					err = saveBase64ToImage(gt.Any2String(base64Data), outputPath)
 					if err != nil {
 						result.Error = fmt.Sprintf("保存截图文件失败: %v", err)
@@ -201,6 +204,7 @@ func saveBase64ToImage(base64Str, outputPath string) error {
 	if err != nil {
 		return fmt.Errorf("解析路径失败：%w", err)
 	}
+
 	// 获取父目录（如 "/tmp/data/test.txt" → "/tmp/data"）
 	dir := filepath.Dir(absPath)
 	// 创建父目录（不存在则创建，递归创建多级目录）

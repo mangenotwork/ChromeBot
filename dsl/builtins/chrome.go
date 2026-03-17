@@ -419,6 +419,12 @@ func registerChrome(interp *interpreter.Interpreter) {
 			}
 
 			inputText := op.arg["input"].(string)
+			inputTextVal, inputTextValOK := interp.Global().GetVar(inputText)
+			if inputTextValOK {
+				inputText = inputTextVal.(string)
+			}
+			fmt.Println("[Chrome]输入内容 = ", inputText)
+
 			err = browser.Input(xPath, inputText)
 			if err != nil {
 				fmt.Println("[Chrome]输入操作出现错误:", err.Error())

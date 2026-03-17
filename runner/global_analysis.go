@@ -32,17 +32,32 @@ func globalAnalysisScript(input string) string {
 
 	// 步骤3：还原换行结构
 	result := strings.Join(processedLines, "\n")
-	fmt.Println("处理完成，总行数：", len(processedLines))
-	fmt.Println("result：", result)
-	fmt.Println("global解析完成  -------- ")
+	//fmt.Println("处理完成，总行数：", len(processedLines))
+	//fmt.Println("result：", result)
+	//fmt.Println("global解析完成  -------- ")
 	return result
 }
 
-func globalAnalysisLine() {
-
+func globalAnalysisLine(line string) string {
+	trimmedLine := strings.TrimLeft(line, " \t")
+	if trimmedLine == "" || !strings.HasPrefix(trimmedLine, "@") {
+		utils.Debug("没 @ 不需要处理 -> ", line)
+		return line
+	}
+	fmt.Println("[Wrong]REPL模式下不支持@语法")
+	line = strings.Replace(line, "@", "#", 1)
+	return line
 }
 
 func globalAnalysis(line string) {
+
+	if strings.Contains(line, "//") {
+		line = strings.SplitN(line, "//", 2)[0]
+	}
+
+	if strings.Contains(line, "#") {
+		line = strings.SplitN(line, "#", 2)[0]
+	}
 
 	re := regexp.MustCompile(`\s*=\s*`) // 去掉 = 两边的空格
 	normalized := re.ReplaceAllString(line, "=")
@@ -58,6 +73,9 @@ func globalAnalysis(line string) {
 		}
 		switch globalCommand {
 		case global.Cron:
+			if global.IsRegisterCron {
+				fmt.Println("[Wrong]已设置过@cron,只能设置一次。")
+			}
 			arg := strings.Join(lineList[1:len(lineList)], " ")
 			global.RegisterCron(arg)
 		}

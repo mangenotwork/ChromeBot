@@ -1,0 +1,14 @@
+// 全局设置
+@cron  0 * * * * *  // 一分钟执行一次
+
+// 变量定义
+var now = "当前热点"+date()
+var savePath = "D:\baidu-"+now+".png"
+
+// 脚本操作
+chrome init
+chrome req="www.baidu.com"
+chrome xpath=NowTabGetInputFirstXpath() input=now
+chrome click=NowTabMatchDemoContentOP("百度一下")
+chrome screenshot=savePath
+chrome close

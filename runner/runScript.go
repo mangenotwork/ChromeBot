@@ -8,6 +8,9 @@ import (
 	"ChromeBot/global"
 	"ChromeBot/utils"
 	"fmt"
+	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 func runScript(source string) {
@@ -44,16 +47,54 @@ func runScript(source string) {
 
 	if global.IsRegisterCron {
 		fmt.Println("开启了定时任务 ", global.CronPerformance.Arg, " -> ", global.CronToChinese(global.CronPerformance.Arg))
-	}
 
-	result, err := interp.Interpret(program)
-	if err != nil {
-		fmt.Printf("执行错误: %v\n", err)
-		return
-	}
+		c := cron.New(
+			cron.WithSeconds(),
+			cron.WithParser(cron.NewParser(
+				cron.Second|cron.Minute|cron.Hour|cron.Dom|cron.Month|cron.Dow,
+			)),
+		)
 
-	if result != nil {
-		fmt.Printf("程序返回值: %v\n", result)
+		taskID, err := c.AddFunc(global.CronPerformance.Arg, func() {
+
+			entry := c.Entries()[0]
+			currentTime := time.Now().Format(time.DateTime)
+			nextTime := entry.Next.In(time.Local).Format(time.DateTime)
+			fmt.Printf("[Cron] 定时任务执行脚本; 当前时间：%s | 任务下次执行时间：%s \n", currentTime, nextTime)
+
+			result, err := interp.Interpret(program)
+			if err != nil {
+				fmt.Printf("执行错误: %v\n", err)
+				return
+			}
+
+			if result != nil {
+				fmt.Printf("程序返回值: %v\n", result)
+			}
+		})
+		if err != nil {
+			fmt.Printf("添加任务失败：%v\n", err)
+			return
+		}
+		fmt.Printf("添加任务成功，ID：%d\n", taskID)
+
+		// 启动cron
+		c.Start()
+
+		// 阻塞主线程
+		select {}
+
+	} else {
+		result, err := interp.Interpret(program)
+		if err != nil {
+			fmt.Printf("执行错误: %v\n", err)
+			return
+		}
+
+		if result != nil {
+			fmt.Printf("程序返回值: %v\n", result)
+		}
+
 	}
 
 }

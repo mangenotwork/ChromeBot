@@ -258,3 +258,13 @@ func ProcessArgs(args []string) []string {
 
 	return result
 }
+
+func SanitizeFileName(fullPath string) string {
+	dir := filepath.Dir(fullPath)
+	filename := filepath.Base(fullPath)
+	// 正则匹配时间格式的冒号（HH:MM:SS 中的:），替换为-
+	// 正则规则：匹配 数字:数字 或 数字:数字 的格式（避免误替换其他冒号）
+	timeColonRegex := regexp.MustCompile(`(\d{2}):(\d{2}):(\d{2})`)
+	sanitizedFilename := timeColonRegex.ReplaceAllString(filename, "${1}-${2}-${3}")
+	return filepath.Join(dir, sanitizedFilename)
+}
