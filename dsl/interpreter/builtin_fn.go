@@ -54,35 +54,62 @@ func builtinPrint(args []Value) (Value, error) {
 	return nil, nil
 }
 
-func dictToString(d DictType) string {
-	if d == nil {
-		return "dict[]"
+func dictToString(data Value) string {
+	// 场景1：nil值
+	if data == nil {
+		return "nil"
 	}
 
-	var sb strings.Builder
-	sb.WriteString("dict[")
-
-	first := true
-	for key, value := range d {
-		if !first {
-			sb.WriteString(", ")
-		}
-		// 处理key
-		sb.WriteString(fmt.Sprint(key))
-		sb.WriteString(":")
-
-		// 递归处理嵌套字典
-		if nestedDict, ok := value.(DictType); ok {
-			sb.WriteString(dictToString(nestedDict))
-		} else {
-			sb.WriteString(fmt.Sprint(value))
+	// 场景2：嵌套 DictType（map[Value]Value）
+	if nestedDict, ok := data.(DictType); ok {
+		if nestedDict == nil {
+			return "dict[]"
 		}
 
-		first = false
+		var sb strings.Builder
+		sb.WriteString("dict[")
+
+		first := true
+		for key, value := range nestedDict {
+			if !first {
+				sb.WriteString(", ")
+			}
+			// 处理key（支持任意Value类型的key）
+			sb.WriteString(fmt.Sprint(key))
+			sb.WriteString(":")
+
+			// 递归处理value（可能是DictType/[]Value/基础类型）
+			sb.WriteString(dictToString(value))
+
+			first = false
+		}
+
+		sb.WriteString("]")
+		return sb.String()
 	}
 
-	sb.WriteString("]")
-	return sb.String()
+	// 场景3：[]Value 数组
+	if arr, ok := data.([]Value); ok {
+		var sb strings.Builder
+		sb.WriteString("[")
+
+		first := true
+		for _, elem := range arr {
+			if !first {
+				sb.WriteString(", ")
+			}
+			// 递归处理数组元素（可能是DictType/[]Value/基础类型）
+			sb.WriteString(dictToString(elem))
+
+			first = false
+		}
+
+		sb.WriteString("]")
+		return sb.String()
+	}
+
+	// 场景4：基础类型（string/int/float64/bool等）
+	return fmt.Sprint(data)
 }
 
 func builtinInt(args []Value) (Value, error) {

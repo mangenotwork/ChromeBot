@@ -71,13 +71,46 @@ func globalAnalysis(line string) {
 			fmt.Printf("[Err]未知global指令%s, 请参考文档。\n", command)
 			os.Exit(0)
 		}
+
+		fmt.Println("arg = ", lineList[1:len(lineList)])
+
 		switch globalCommand {
+
 		case global.Cron:
 			if global.IsRegisterCron {
 				fmt.Println("[Wrong]已设置过@cron,只能设置一次。")
 			}
 			arg := strings.Join(lineList[1:len(lineList)], " ")
 			global.RegisterCron(arg)
+
+		case global.ConfJson, global.ConfYaml, global.ConfINI:
+			argMap := make(map[string]string)
+			for _, argItem := range lineList[1:len(lineList)] {
+				argItemList := strings.SplitN(argItem, "=", 2)
+				argMap[argItemList[0]] = argItemList[1]
+			}
+
+			path, pathOK := argMap["path"]
+			if !pathOK {
+				fmt.Printf("[Err]@%s缺少参数path.正确语法@%s path=\"\" as=conf", globalCommand, globalCommand)
+				os.Exit(0)
+			}
+
+			as, asOK := argMap["as"]
+			if !asOK {
+				fmt.Printf("[Err]@%s缺少参数as.正确语法@%s path=\"\" as=conf", globalCommand, globalCommand)
+				os.Exit(0)
+			}
+
+			switch globalCommand {
+			case global.ConfJson:
+				global.ReadJsonToConf(path, as)
+			case global.ConfYaml:
+				global.ReadYamlToConf(path, as)
+			case global.ConfINI:
+				global.ReadINIToConf(path, as)
+			}
+
 		}
 	}
 

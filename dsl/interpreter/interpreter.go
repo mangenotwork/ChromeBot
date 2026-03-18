@@ -13,6 +13,8 @@ import (
 
 var IsREPL = false
 
+var Const sync.Map
+
 // Value 值接口
 type Value interface{}
 
@@ -139,6 +141,14 @@ func (c *Context) GetChildren() []*Context {
 
 // SetVar 设置变量
 func (c *Context) SetVar(name string, value Value) {
+
+	// 注意全局常量
+	_, ok := Const.Load(name)
+	if ok {
+		fmt.Printf("[Err]%s已被定义为全局常量 \n", name)
+		return
+	}
+
 	utils.Debug("设置变量 SetVar -> ", name, value)
 	utils.Debugf("val %T %v ", value, value)
 	c.variables[name] = value
@@ -153,9 +163,13 @@ func (c *Context) SetVar(name string, value Value) {
 // GetVar 获取变量
 func (c *Context) GetVar(name string) (Value, bool) {
 
-	// todo 优先获取全局常量
+	// 优先获取全局常量
+	val, ok := Const.Load(name)
+	if ok {
+		return val, ok
+	}
 
-	val, ok := c.variables[name]
+	val, ok = c.variables[name]
 	utils.Debug("获取变量 name=", name, " |  val = ", val, " | ok = ", ok, " | ctxmd5 = ", c.id)
 
 	if !ok && c.parent != nil {
