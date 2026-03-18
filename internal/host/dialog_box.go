@@ -381,7 +381,9 @@ func wndProc(hWnd syscall.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 
 	if !exists {
 		if msg == WM_NCCREATE {
+			// nolint:unsafeptr // Windows API: CREATESTRUCT与lParam内存布局匹配，转换安全
 			createStruct := (*CREATESTRUCT)(unsafe.Pointer(lParam))
+			// nolint:unsafeptr // Windows API: DialogData是LpCreateParams的自定义数据结构
 			dialogData = (*DialogData)(unsafe.Pointer(createStruct.LpCreateParams))
 
 			dialogMutex.Lock()

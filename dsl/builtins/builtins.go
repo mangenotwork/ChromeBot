@@ -38,5 +38,8 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 
 	// 注册 host
 	registerHost(interp)
+	for name, fn := range hostFn {
+		interp.Global().SetFunc(name, fn)
+	}
 
 }

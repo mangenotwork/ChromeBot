@@ -806,7 +806,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 
 	// 遍历所有调用
 	for callIndex, call := range chain.Calls {
-		utils.Debug("执行链式调用第 %d 个调用: %s", callIndex+1, call.Function.Name)
+		utils.Debugf("执行链式调用第 %d 个调用: %s", callIndex+1, call.Function.Name)
 
 		// 处理第一个调用
 		if callIndex == 0 {
@@ -815,7 +815,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 				// 这是值包装，直接取值
 				if len(call.Args) == 1 {
 					lastResult = i.evaluateExpr(call.Args[0], ctx, hang)
-					utils.Debug("第一个是值: %v", lastResult)
+					utils.Debugf("第一个是值: %v", lastResult)
 				} else {
 					i.errors = append(i.errors, fmt.Errorf("值包装应该有1个参数，得到 %d 个", len(call.Args)))
 					return nil
@@ -828,7 +828,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 					// 可能是变量
 					if val, ok := ctx.GetVar(call.Function.Name); ok {
 						lastResult = val
-						utils.Debug("第一个是变量 %s: %v", call.Function.Name, lastResult)
+						utils.Debugf("第一个是变量 %s: %v", call.Function.Name, lastResult)
 					} else {
 						i.errors = append(i.errors, fmt.Errorf("未定义的函数或变量: %s", call.Function.Name))
 						return nil
@@ -849,7 +849,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 					}
 
 					lastResult = result
-					utils.Debug("函数 %s 返回: %v", call.Function.Name, result)
+					utils.Debugf("函数 %s 返回: %v", call.Function.Name, result)
 				}
 			}
 		} else {
@@ -871,7 +871,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 			newArgs[0] = lastResult
 			copy(newArgs[1:], args)
 
-			utils.Debug("调用 %s 参数: %v", call.Function.Name, newArgs)
+			utils.Debugf("调用 %s 参数: %v", call.Function.Name, newArgs)
 
 			// 执行函数
 			result, err := fn(newArgs)
@@ -881,7 +881,7 @@ func (i *Interpreter) evaluateChainCall(chain *ast.ChainCallExpr, ctx *Context, 
 			}
 
 			lastResult = result
-			utils.Debug("函数 %s 返回: %v", call.Function.Name, result)
+			utils.Debugf("函数 %s 返回: %v", call.Function.Name, result)
 		}
 	}
 
@@ -928,7 +928,7 @@ func (i *Interpreter) evaluateSwitchStmt(stmt *ast.SwitchStmt, ctx *Context, han
 
 // 添加evaluatePostfixExpr函数
 func (i *Interpreter) evaluatePostfixExpr(expr *ast.PostfixExpr, ctx *Context, hang int) Value {
-	utils.Debug("evaluatePostfixExpr: 开始，表达式=%v", expr)
+	utils.Debugf("evaluatePostfixExpr: 开始，表达式=%v", expr)
 
 	// 先获取原始值
 	var originalValue Value
@@ -1001,7 +1001,7 @@ func (i *Interpreter) evaluatePostfixExpr(expr *ast.PostfixExpr, ctx *Context, h
 		return nil
 	}
 
-	utils.Debug("原始值: %v, 操作符: %s", originalValue, expr.Op)
+	utils.Debugf("原始值: %v, 操作符: %s", originalValue, expr.Op)
 
 	// 根据操作符计算新值
 	var newValue Value
@@ -1029,11 +1029,11 @@ func (i *Interpreter) evaluatePostfixExpr(expr *ast.PostfixExpr, ctx *Context, h
 				idx := t.index.(int64)
 				container := t.container.([]Value)
 				container[idx] = newValue
-				utils.Debug("更新列表元素[%d]: %v -> %v", idx, originalValue, newValue)
+				utils.Debugf("更新列表元素[%d]: %v -> %v", idx, originalValue, newValue)
 			} else if t.isDict {
 				container := t.container.(DictType)
 				container[t.index] = newValue
-				utils.Debug("更新字典元素[%v]: %v -> %v", t.index, originalValue, newValue)
+				utils.Debugf("更新字典元素[%v]: %v -> %v", t.index, originalValue, newValue)
 			}
 		}
 	}
@@ -1094,7 +1094,7 @@ func (i *Interpreter) evaluateForInStmt(stmt *ast.ForInStmt, ctx *Context, hang 
 		return nil
 	}
 
-	utils.Debug("for...in: 容器类型 = %T, 变量数 = %d", container, len(stmt.VarNames))
+	utils.Debugf("for...in: 容器类型 = %T, 变量数 = %d", container, len(stmt.VarNames))
 
 	// 遍历容器
 	switch c := container.(type) {
@@ -1150,7 +1150,7 @@ func (i *Interpreter) executeForInIteration(stmt *ast.ForInStmt, ctx *Context, h
 	for idx, varName := range stmt.VarNames {
 		if idx < len(values) {
 			loopCtx.SetVar(varName.Name, values[idx])
-			utils.Debug("设置循环变量 %s = %v", varName.Name, values[idx])
+			utils.Debugf("设置循环变量 %s = %v", varName.Name, values[idx])
 
 			// 同时设置到父作用域，以便内层循环可以访问
 			ctx.SetVar(varName.Name, values[idx])
@@ -1198,7 +1198,7 @@ func (i *Interpreter) executeForInIteration(stmt *ast.ForInStmt, ctx *Context, h
 		}
 		if !isLoopVar {
 			ctx.SetVar(k, v)
-			utils.Debug("同步变量到父作用域: %s = %v", k, v)
+			utils.Debugf("同步变量到父作用域: %s = %v", k, v)
 		}
 	}
 

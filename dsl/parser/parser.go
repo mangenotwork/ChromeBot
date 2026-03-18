@@ -142,7 +142,7 @@ func (p *Parser) recoverFromError() {
 			p.curTokenIs(lexer.TokenVar) {
 
 			// 找到了语句边界，停止恢复
-			utils.Debug("错误恢复: 在 %d:%d 找到语句边界 %s", p.curTok.Line, p.curTok.Column, p.curTok.Type)
+			utils.Debugf("错误恢复: 在 %d:%d 找到语句边界 %s", p.curTok.Line, p.curTok.Column, p.curTok.Type)
 			break
 		}
 
@@ -151,7 +151,7 @@ func (p *Parser) recoverFromError() {
 
 	// 如果跳过了很多token，添加一个信息
 	if p.curTok.Line > startLine || (p.curTok.Line == startLine && p.curTok.Column > startColumn+10) {
-		utils.Debug("错误恢复: 从 %d:%d 跳到 %d:%d", startLine, startColumn, p.curTok.Line, p.curTok.Column)
+		utils.Debugf("错误恢复: 从 %d:%d 跳到 %d:%d", startLine, startColumn, p.curTok.Line, p.curTok.Column)
 	}
 }
 
@@ -730,7 +730,7 @@ func (p *Parser) parseExpression() ast.Expression {
 		return nil
 	}
 
-	utils.Debug("parseExpression: 开始解析表达式，当前token: %v", p.curTok)
+	utils.Debugf("parseExpression: 开始解析表达式，当前token: %v", p.curTok)
 
 	p.enter()
 	defer p.leave()
@@ -1045,7 +1045,7 @@ func (p *Parser) parseIdentifierOrCall() ast.Expression {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parseIdentifierOrCall: 当前token: %v", p.curTok)
+	utils.Debugf("parseIdentifierOrCall: 当前token: %v", p.curTok)
 
 	// 保存标识符位置
 	line := p.curTok.Line
@@ -1064,7 +1064,7 @@ func (p *Parser) parseIdentifierOrCall() ast.Expression {
 	// 跳过标识符
 	p.nextToken()
 
-	utils.Debug("parseIdentifierOrCall: 返回标识符: %s", name)
+	utils.Debugf("parseIdentifierOrCall: 返回标识符: %s", name)
 	return ident
 
 }
@@ -1246,7 +1246,7 @@ func (p *Parser) parseCallOrIndex() ast.Expression {
 		return nil
 	}
 
-	utils.Debug("parseCallOrIndex: 基本表达式: %T(%v)", expr, expr)
+	utils.Debugf("parseCallOrIndex: 基本表达式: %T(%v)", expr, expr)
 
 	// 处理后续的调用、下标或链式调用
 	return p.parsePostfix(expr)
@@ -1260,14 +1260,14 @@ func (p *Parser) parsePostfix(expr ast.Expression) ast.Expression {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parsePostfix: 开始，expr=%T(%v), curTok=%v", expr, expr, p.curTok)
+	utils.Debugf("parsePostfix: 开始，expr=%T(%v), curTok=%v", expr, expr, p.curTok)
 
 	for {
 		switch p.curTok.Type {
 		case lexer.TokenLParen:
 			// 函数调用
 			expr = p.parseCall(expr)
-			utils.Debug("parsePostfix: 解析调用后，expr=%T(%v)", expr, expr)
+			utils.Debugf("parsePostfix: 解析调用后，expr=%T(%v)", expr, expr)
 
 		case lexer.TokenLBracket:
 			// 下标表达式
@@ -1283,7 +1283,7 @@ func (p *Parser) parsePostfix(expr ast.Expression) ast.Expression {
 				chain := p.parseChainCall(expr)
 				if chain != nil {
 					expr = chain
-					utils.Debug("parsePostfix: 解析链式调用后，expr=%T(%v)", expr, expr)
+					utils.Debugf("parsePostfix: 解析链式调用后，expr=%T(%v)", expr, expr)
 					continue
 				} else {
 					return expr
@@ -1293,7 +1293,7 @@ func (p *Parser) parsePostfix(expr ast.Expression) ast.Expression {
 			// 自增自减表达式
 			expr = p.parsePostfixExpr(expr)
 		default:
-			utils.Debug("parsePostfix: 返回表达式: %T(%v)", expr, expr)
+			utils.Debugf("parsePostfix: 返回表达式: %T(%v)", expr, expr)
 			return expr
 		}
 	}
@@ -1307,7 +1307,7 @@ func (p *Parser) parseCall(left ast.Expression) ast.Expression {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parseCall: 开始解析调用，left=%T(%v)", left, left)
+	utils.Debugf("parseCall: 开始解析调用，left=%T(%v)", left, left)
 
 	// 检查左边是否是标识符
 	ident, ok := left.(*ast.Identifier)
@@ -1316,7 +1316,7 @@ func (p *Parser) parseCall(left ast.Expression) ast.Expression {
 		return nil
 	}
 
-	utils.Debug("parseCall: 函数名: %s", ident.Name)
+	utils.Debugf("parseCall: 函数名: %s", ident.Name)
 	p.nextToken() // 跳过 (
 
 	var args []ast.Expression
@@ -1326,7 +1326,7 @@ func (p *Parser) parseCall(left ast.Expression) ast.Expression {
 		for {
 			// 解析参数
 			arg := p.parseExpression()
-			utils.Debug("parseCall: 解析参数: %v", arg)
+			utils.Debugf("parseCall: 解析参数: %v", arg)
 			if arg != nil {
 				args = append(args, arg)
 			} else {
@@ -1454,7 +1454,7 @@ func (p *Parser) parseDictLiteral() *ast.Dict {
 	// 解析字典键值对
 	for {
 		// 调试：记录当前位置
-		utils.Debug("解析字典键，当前位置: 行=%d, 列=%d, token=%v, literal=%q",
+		utils.Debugf("解析字典键，当前位置: 行=%d, 列=%d, token=%v, literal=%q",
 			p.curTok.Line, p.curTok.Column, p.curTok.Type, p.curTok.Literal)
 
 		// 解析键
@@ -1471,7 +1471,7 @@ func (p *Parser) parseDictLiteral() *ast.Dict {
 			return nil
 		}
 
-		utils.Debug("键解析成功: %v", key)
+		utils.Debugf("键解析成功: %v", key)
 
 		// 期望冒号
 		if !p.expect(lexer.TokenColon, "字典键后期望冒号") {
@@ -1521,8 +1521,8 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 	defer p.leave()
 
 	utils.Debug("parseChainCall 开始 ====> ")
-	utils.Debug("左边表达式: %T(%v)", left, left)
-	utils.Debug("当前token: %v", p.curTok)
+	utils.Debugf("左边表达式: %T(%v)", left, left)
+	utils.Debugf("当前token: %v", p.curTok)
 
 	// 创建一个链式调用节点
 	chain := &ast.ChainCallExpr{
@@ -1534,7 +1534,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 	if existingChain, ok := left.(*ast.ChainCallExpr); ok {
 		// 如果左边已经是链式调用，复用它的调用列表
 		chain.Calls = existingChain.Calls
-		utils.Debug("parseChainCall: 复用已有链式调用，包含 %d 个调用", len(chain.Calls))
+		utils.Debugf("parseChainCall: 复用已有链式调用，包含 %d 个调用", len(chain.Calls))
 	} else {
 		// 左边不是链式调用
 		firstCall := p.createFirstChainCall(left)
@@ -1543,12 +1543,12 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 			return nil
 		}
 		chain.Calls = append(chain.Calls, firstCall)
-		utils.Debug("parseChainCall: 添加第一个调用: %s", firstCall.Function.Name)
+		utils.Debugf("parseChainCall: 添加第一个调用: %s", firstCall.Function.Name)
 	}
 
 	// 当前token应该是点号（调用者应该已经确保）
 	if !p.curTokenIs(lexer.TokenDot) {
-		utils.Debug("parseChainCall: 当前token不是点号: %v", p.curTok)
+		utils.Debugf("parseChainCall: 当前token不是点号: %v", p.curTok)
 		// 但可能我们只有一个调用
 		if len(chain.Calls) == 1 {
 			if chain.Calls[0].Function.Name == "_value" {
@@ -1564,7 +1564,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 
 		// 跳过当前点号
 		p.nextToken()
-		utils.Debug("parseChainCall: 跳过了点号，当前token: %v", p.curTok)
+		utils.Debugf("parseChainCall: 跳过了点号，当前token: %v", p.curTok)
 
 		// 解析方法名
 		if !p.curTokenIs(lexer.TokenIdent) {
@@ -1573,7 +1573,7 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 		}
 
 		methodName := p.curTok.Literal
-		utils.Debug("parseChainCall: 方法名: %s", methodName)
+		utils.Debugf("parseChainCall: 方法名: %s", methodName)
 
 		// 创建方法标识符
 		methodIdent := &ast.Identifier{
@@ -1603,13 +1603,13 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 		// 添加到链中
 		if callExpr, ok := methodCall.(*ast.CallExpr); ok {
 			chain.Calls = append(chain.Calls, callExpr)
-			utils.Debug("parseChainCall: 添加方法调用: %s", callExpr.Function.Name)
+			utils.Debugf("parseChainCall: 添加方法调用: %s", callExpr.Function.Name)
 		} else {
 			p.addError("链式调用中的元素必须是函数调用")
 			return nil
 		}
 
-		utils.Debug("parseChainCall: 当前链有 %d 个调用", len(chain.Calls))
+		utils.Debugf("parseChainCall: 当前链有 %d 个调用", len(chain.Calls))
 	}
 
 	// 如果只有一个调用，直接返回它
@@ -1622,13 +1622,13 @@ func (p *Parser) parseChainCall(left ast.Expression) ast.Expression {
 		return chain.Calls[0]
 	}
 
-	utils.Debug("parseChainCall: 返回链式调用，包含 %d 个调用", len(chain.Calls))
+	utils.Debugf("parseChainCall: 返回链式调用，包含 %d 个调用", len(chain.Calls))
 	return chain
 }
 
 // 创建链式调用的第一个调用
 func (p *Parser) createFirstChainCall(expr ast.Expression) *ast.CallExpr {
-	utils.Debug("createFirstChainCall: expr=%T(%v)", expr, expr)
+	utils.Debugf("createFirstChainCall: expr=%T(%v)", expr, expr)
 
 	switch v := expr.(type) {
 	case *ast.CallExpr: // 已经是函数调用
@@ -1885,7 +1885,7 @@ func (p *Parser) parsePostfixExpr(left ast.Expression) ast.Expression {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parsePostfixExpr: 开始解析，left=%T(%v), op=%s", left, left, p.curTok.Literal)
+	utils.Debugf("parsePostfixExpr: 开始解析，left=%T(%v), op=%s", left, left, p.curTok.Literal)
 
 	// 保存操作符
 	op := p.curTok.Literal
@@ -1926,7 +1926,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parseForInStatement: 开始，当前token = %v", p.curTok)
+	utils.Debugf("parseForInStatement: 开始，当前token = %v", p.curTok)
 
 	stmt := &ast.ForInStmt{
 		StartPos: ast.Position{
@@ -1938,7 +1938,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 
 	// 跳过 for
 	p.expect(lexer.TokenFor, "for...in语句开始")
-	utils.Debug("parseForInStatement: 跳过for后，当前token = %v", p.curTok)
+	utils.Debugf("parseForInStatement: 跳过for后，当前token = %v", p.curTok)
 
 	// 解析第一个变量名
 	if !p.curTokenIs(lexer.TokenIdent) {
@@ -1955,14 +1955,14 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 		Name: p.curTok.Literal,
 	})
 
-	utils.Debug("parseForInStatement: 第一个变量名 = %s", p.curTok.Literal)
+	utils.Debugf("parseForInStatement: 第一个变量名 = %s", p.curTok.Literal)
 	p.nextToken() // 跳过第一个变量名
-	utils.Debug("parseForInStatement: 跳过第一个变量名后，当前token = %v", p.curTok)
+	utils.Debugf("parseForInStatement: 跳过第一个变量名后，当前token = %v", p.curTok)
 
 	// 检查是否有第二个变量（逗号分隔）
 	if p.curTokenIs(lexer.TokenComma) {
 		p.nextToken() // 跳过逗号
-		utils.Debug("parseForInStatement: 跳过逗号后，当前token = %v", p.curTok)
+		utils.Debugf("parseForInStatement: 跳过逗号后，当前token = %v", p.curTok)
 
 		if !p.curTokenIs(lexer.TokenIdent) {
 			p.addError(fmt.Sprintf("第%d行第%d列: 期望第二个标识符作为循环变量，得到: %s", p.curTok.Line, p.curTok.Column, p.curTok.Type))
@@ -1978,9 +1978,9 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 			Name: p.curTok.Literal,
 		})
 
-		utils.Debug("parseForInStatement: 第二个变量名 = %s", p.curTok.Literal)
+		utils.Debugf("parseForInStatement: 第二个变量名 = %s", p.curTok.Literal)
 		p.nextToken() // 跳过第二个变量名
-		utils.Debug("parseForInStatement: 跳过第二个变量名后，当前token = %v", p.curTok)
+		utils.Debugf("parseForInStatement: 跳过第二个变量名后，当前token = %v", p.curTok)
 	}
 
 	// 期望 in
@@ -1991,7 +1991,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 	}
 
 	p.nextToken() // 跳过 in
-	utils.Debug("parseForInStatement: 跳过in后，当前token = %v", p.curTok)
+	utils.Debugf("parseForInStatement: 跳过in后，当前token = %v", p.curTok)
 
 	// 解析容器表达式
 	stmt.Container = p.parseExpression()
@@ -2000,8 +2000,8 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 		return nil
 	}
 
-	utils.Debug("parseForInStatement: 容器表达式 = %v", stmt.Container)
-	utils.Debug("parseForInStatement: 解析容器后，当前token = %v", p.curTok)
+	utils.Debugf("parseForInStatement: 容器表达式 = %v", stmt.Container)
+	utils.Debugf("parseForInStatement: 解析容器后，当前token = %v", p.curTok)
 
 	// 解析循环体
 	stmt.Body = p.parseBlockStatement()
@@ -2010,7 +2010,7 @@ func (p *Parser) parseForInStatement() *ast.ForInStmt {
 		return nil
 	}
 
-	utils.Debug("parseForInStatement: 解析成功，变量数 = %d", len(stmt.VarNames))
+	utils.Debugf("parseForInStatement: 解析成功，变量数 = %d", len(stmt.VarNames))
 	return stmt
 }
 
@@ -2106,7 +2106,7 @@ func (p *Parser) parseForOrForIn() ast.Statement {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parseForOrForIn: 开始，当前token = %v", p.curTok)
+	utils.Debugf("parseForOrForIn: 开始，当前token = %v", p.curTok)
 
 	// 保存当前位置
 	savedLexer := *p.lexer
@@ -2124,7 +2124,7 @@ func (p *Parser) parseForOrForIn() ast.Statement {
 	for tokenCount < maxTokens && !p.curTokenIs(lexer.TokenEOF) {
 		tokenCount++
 
-		utils.Debug("parseForOrForIn: 检查token[%d] = %v", tokenCount, p.curTok)
+		utils.Debugf("parseForOrForIn: 检查token[%d] = %v", tokenCount, p.curTok)
 
 		// 检查是否遇到 in
 		if p.curTokenIs(lexer.TokenIn) {
@@ -2173,7 +2173,7 @@ func (p *Parser) parseWhileOrWhileIn() ast.Statement {
 	p.enter()
 	defer p.leave()
 
-	utils.Debug("parseWhileOrWhileIn: 开始，当前token = %v", p.curTok)
+	utils.Debugf("parseWhileOrWhileIn: 开始，当前token = %v", p.curTok)
 
 	// 保存当前位置
 	savedLexer := *p.lexer
@@ -2191,7 +2191,7 @@ func (p *Parser) parseWhileOrWhileIn() ast.Statement {
 	for tokenCount < maxTokens && !p.curTokenIs(lexer.TokenEOF) {
 		tokenCount++
 
-		utils.Debug("parseWhileOrWhileIn: 检查token[%d] = %v", tokenCount, p.curTok)
+		utils.Debugf("parseWhileOrWhileIn: 检查token[%d] = %v", tokenCount, p.curTok)
 
 		// 检查是否遇到 in
 		if p.curTokenIs(lexer.TokenIn) {

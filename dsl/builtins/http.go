@@ -7,8 +7,9 @@ import (
 	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"strings"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 /*
@@ -41,11 +42,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["url"]; ok {
 			utils.Debugf("http val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				req.Url = val.(string)
+				req.Url = val
 			case *ast.String:
-				req.Url = val.(*ast.String).Value
+				req.Url = val.Value
 			default:
 				interp.ErrorMessage("url参数要求类型是str")
 				return nil, nil
@@ -54,11 +55,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["body"]; ok {
 			utils.Debugf("http body T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				req.Body = []byte(val.(string))
+				req.Body = []byte(val)
 			case *ast.String:
-				req.Body = []byte(val.(*ast.String).Value)
+				req.Body = []byte(val.Value)
 			case interpreter.DictType, []interpreter.Value: // 需要处理为json // todo 根据 cType来决定val类型
 				valJson, err := json.Marshal(val)
 				if err != nil {
@@ -74,10 +75,10 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["header"]; ok {
 			utils.Debugf("http header T : %T  %s \n", val, val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
 				vMap := make(map[string]interface{})
-				err := json.Unmarshal([]byte(val.(string)), &vMap)
+				err := json.Unmarshal([]byte(val), &vMap)
 				if err != nil {
 					utils.Debug("解析header err :", err)
 				}
@@ -87,7 +88,7 @@ func registerHttp(interp *interpreter.Interpreter) {
 				}
 			case *ast.String:
 				vMap := make(map[string]interface{})
-				err := json.Unmarshal([]byte(val.(*ast.String).Value), &vMap)
+				err := json.Unmarshal([]byte(val.Value), &vMap)
 				if err != nil {
 					utils.Debug("解析header err :", err)
 				}
@@ -95,7 +96,7 @@ func registerHttp(interp *interpreter.Interpreter) {
 					req.Header[gt.Any2String(k)] = gt.Any2String(v)
 				}
 			case interpreter.DictType:
-				for k, v := range val.(interpreter.DictType) {
+				for k, v := range val {
 					req.Header[gt.Any2String(k)] = gt.Any2String(v)
 				}
 			default:
@@ -106,11 +107,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["ctype"]; ok {
 			utils.Debugf("ctype val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				req.Ctype = val.(string)
+				req.Ctype = val
 			case *ast.String:
-				req.Ctype = val.(*ast.String).Value
+				req.Ctype = val.Value
 			default:
 				interp.ErrorMessage("ctype参数要求类型是str")
 				return nil, nil
@@ -119,9 +120,9 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["cookie"]; ok {
 			utils.Debugf("cookie val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				vList := strings.Split(val.(string), ";")
+				vList := strings.Split(val, ";")
 				utils.Debug("vList = ", vList)
 				for _, items := range vList {
 					item := strings.Split(items, "=")
@@ -130,7 +131,7 @@ func registerHttp(interp *interpreter.Interpreter) {
 					}
 				}
 			case *ast.String:
-				vList := strings.Split(val.(*ast.String).Value, ";")
+				vList := strings.Split(val.Value, ";")
 				utils.Debug("vList = ", vList)
 				for _, items := range vList {
 					item := strings.Split(items, "=")
@@ -139,11 +140,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 					}
 				}
 			case interpreter.DictType:
-				for k, v := range val.(interpreter.DictType) {
+				for k, v := range val {
 					req.Cookie[gt.Any2String(k)] = gt.Any2String(v)
 				}
 			case []interpreter.Value:
-				for _, v := range val.([]interpreter.Value) {
+				for _, v := range val {
 					vStr := gt.Any2String(v)
 					vItems := strings.Split(vStr, "=")
 					if len(vItems) == 2 {
@@ -161,15 +162,15 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["timeout"]; ok {
 			utils.Debugf("timeout val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
 				req.Timeout = gt.ReqTimeOut(gt.Any2Int(val))
 			case *ast.String:
-				req.Timeout = gt.ReqTimeOut(gt.Any2Int(val.(*ast.String).Value))
+				req.Timeout = gt.ReqTimeOut(gt.Any2Int(val.Value))
 			case int, int64, float64:
 				req.Timeout = gt.ReqTimeOut(gt.Any2Int(val))
 			case *ast.Integer:
-				req.Timeout = gt.ReqTimeOut(val.(*ast.Integer).Value)
+				req.Timeout = gt.ReqTimeOut(val.Value)
 			default:
 				interp.ErrorMessage("timeout参数要求类型是数值类型，单位为毫秒")
 				return nil, nil
@@ -178,11 +179,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["proxy"]; ok {
 			utils.Debugf("proxy val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				req.Proxy = gt.ProxyUrl(val.(string))
+				req.Proxy = gt.ProxyUrl(val)
 			case *ast.String:
-				req.Proxy = gt.ProxyUrl(val.(*ast.String).Value)
+				req.Proxy = gt.ProxyUrl(val.Value)
 			default:
 				interp.ErrorMessage("proxy参数要求类型是str")
 				return nil, nil
@@ -191,13 +192,13 @@ func registerHttp(interp *interpreter.Interpreter) {
 
 		if val, ok := argMap["stress"]; ok {
 			utils.Debugf("stress val T : %T \n", val)
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
 				req.Stress = gt.Any2Int(val)
 			case *ast.String:
-				req.Stress = gt.Any2Int(val.(*ast.String).Value)
+				req.Stress = gt.Any2Int(val.Value)
 			case *ast.Integer:
-				req.Stress = val.(int)
+				req.Stress = int(val.Value)
 			default:
 				interp.ErrorMessage("stress参数要求类型是数值")
 				return nil, nil
@@ -226,11 +227,11 @@ func registerHttp(interp *interpreter.Interpreter) {
 		if val, ok := argMap["save"]; ok {
 			utils.Debugf("save val T : %T \n", val)
 			savePath := ""
-			switch val.(type) {
+			switch val := val.(type) {
 			case string:
-				savePath = val.(string)
+				savePath = val
 			case *ast.String:
-				savePath = val.(*ast.String).Value
+				savePath = val.Value
 			default:
 				interp.ErrorMessage("save参数要求类型是字符串")
 				return nil, nil
