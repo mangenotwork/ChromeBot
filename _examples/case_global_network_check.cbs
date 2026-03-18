@@ -1,0 +1,2 @@
+@network_check "www.baidu.com"
+print("okok")

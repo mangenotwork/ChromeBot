@@ -4,6 +4,7 @@ import (
 	"ChromeBot/global"
 	"ChromeBot/utils"
 	"fmt"
+	"net"
 	"os"
 	"regexp"
 	"strings"
@@ -111,7 +112,71 @@ func globalAnalysis(line string) {
 				global.ReadINIToConf(path, as)
 			}
 
+		case global.ChromeCheck:
+			global.ChromeCheckImplement()
+
+		case global.NetworkCheck:
+			if len(lineList) < 2 {
+				fmt.Println(`[Wrong]@network_check缺少参数,参考语法 @network_check "254.254.254.254"  `)
+				os.Exit(0)
+			}
+			arg := lineList[1]
+
+			if !IsDomainOrIP(arg) {
+				fmt.Println(`[Wrong]@network_check参数应该是ip或域名,参考语法 @network_check "254.254.254.254"  `)
+				os.Exit(0)
+			}
+
+			global.NetworkCheckImplement(arg)
+
 		}
 	}
 
+}
+
+func IsDomainOrIP(s string) bool {
+	if net.ParseIP(s) != nil {
+		return true
+	}
+
+	// 移除协议前缀
+	if strings.Contains(s, "://") {
+		s = s[strings.Index(s, "://")+3:]
+	}
+
+	// 移除端口
+	if idx := strings.Index(s, ":"); idx != -1 {
+		s = s[:idx]
+	}
+
+	// 移除路径
+	if idx := strings.Index(s, "/"); idx != -1 {
+		s = s[:idx]
+	}
+
+	// 移除首尾空格和点
+	s = strings.TrimSpace(s)
+	s = strings.Trim(s, ".")
+
+	if s == "" || len(s) > 253 {
+		return false
+	}
+
+	// 必须包含点
+	if !strings.Contains(s, ".") {
+		return false
+	}
+
+	// 简单检查：不包含空格，有合理结构
+	parts := strings.Split(s, ".")
+	if len(parts) < 2 {
+		return false
+	}
+
+	// 最后一个部分至少2个字符
+	if len(parts[len(parts)-1]) < 2 {
+		return false
+	}
+
+	return true
 }
