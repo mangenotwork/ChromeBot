@@ -1,0 +1,7 @@
+@conf_ini path="./_examples/case_conf.ini" as=conf
+print(conf)
+var conf = {"a":1}
+print(conf)
+print(conf["name"])
+print(conf["info.v"])
+print(conf["info.a1"])

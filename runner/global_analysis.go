@@ -72,7 +72,7 @@ func globalAnalysis(line string) {
 			os.Exit(0)
 		}
 
-		fmt.Println("arg = ", lineList[1:len(lineList)])
+		fmt.Println("arg = ", lineList[1:])
 
 		switch globalCommand {
 
@@ -80,12 +80,12 @@ func globalAnalysis(line string) {
 			if global.IsRegisterCron {
 				fmt.Println("[Wrong]已设置过@cron,只能设置一次。")
 			}
-			arg := strings.Join(lineList[1:len(lineList)], " ")
+			arg := strings.Join(lineList[1:], " ")
 			global.RegisterCron(arg)
 
 		case global.ConfJson, global.ConfYaml, global.ConfINI:
 			argMap := make(map[string]string)
-			for _, argItem := range lineList[1:len(lineList)] {
+			for _, argItem := range lineList[1:] {
 				argItemList := strings.SplitN(argItem, "=", 2)
 				argMap[argItemList[0]] = argItemList[1]
 			}

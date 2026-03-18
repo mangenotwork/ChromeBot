@@ -4,10 +4,13 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"gopkg.in/ini.v1"
+	"gopkg.in/yaml.v3"
 )
 
 func ReadJsonToConf(path, as string) {
@@ -32,6 +35,98 @@ func ReadJsonToConf(path, as string) {
 
 	interpreter.Const.Store(as, customMap)
 
+}
+
+func ReadYamlToConf(path, as string) {
+	fmt.Println("ReadYamlToConf ....", path, as)
+	absPath, _ := getAbsolutePath(path)
+	yamlFile, err := os.ReadFile(absPath)
+	if err != nil {
+		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
+		os.Exit(0)
+	}
+
+	var tempMap map[string]interface{}
+	err = yaml.Unmarshal(yamlFile, &tempMap)
+	if err != nil {
+		fmt.Printf("解析YAML失败：%v \n", err)
+		os.Exit(0)
+	}
+
+	customMap := convertToDictType(tempMap)
+	fmt.Printf("customMap = %v \n", customMap)
+
+	if _, ok := interpreter.Const.Load(as); ok {
+		fmt.Printf("[Wring] 全局常量%s已被定义. \n", as)
+		return
+	}
+
+	interpreter.Const.Store(as, customMap)
+
+}
+
+func ReadINIToConf(path, as string) {
+	fmt.Println("ReadINIToConf ....", path, as)
+	absPath, _ := getAbsolutePath(path)
+	cfg, err := ini.Load(absPath)
+	if err != nil {
+		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
+		os.Exit(0)
+	}
+
+	tempMap := make(map[string]interface{})
+
+	globalSection := cfg.Section("")
+	for _, key := range globalSection.Keys() {
+		keyName := key.Name()
+		value := parseValue(key.String()) // 自动解析值类型
+		tempMap[keyName] = value
+	}
+
+	for _, section := range cfg.Sections() {
+		sectionName := section.Name()
+		if sectionName == "" { // 跳过全局section（已处理）
+			continue
+		}
+
+		// 遍历section下的所有键值对
+		for _, key := range section.Keys() {
+			keyName := fmt.Sprintf("%s.%s", sectionName, key.Name()) // 拼接为 section.key
+			value := parseValue(key.String())                        // 自动解析值类型
+			tempMap[keyName] = value
+		}
+	}
+
+	customMap := convertToDictType(tempMap)
+	fmt.Printf("customMap = %v \n", customMap)
+
+	if _, ok := interpreter.Const.Load(as); ok {
+		fmt.Printf("[Wring] 全局常量%s已被定义. \n", as)
+		return
+	}
+
+	interpreter.Const.Store(as, customMap)
+}
+
+func cleanPath(path string) string {
+	// 移除首尾的引号
+	path = strings.Trim(path, `"'`)
+
+	// 如果是Windows路径，移除额外的转义
+	if filepath.Separator == '\\' { // Windows
+		path = strings.ReplaceAll(path, `\"`, `"`)
+		path = strings.ReplaceAll(path, `\\`, `\`)
+	}
+
+	return path
+}
+
+func getAbsolutePath(path string) (string, error) {
+	// 清理路径
+	clean := cleanPath(path)
+
+	// 转换为绝对路径
+	return filepath.Abs(clean)
 }
 
 func convertToDictType(data interface{}) interpreter.Value {
@@ -64,58 +159,34 @@ func convertToDictType(data interface{}) interpreter.Value {
 	}
 }
 
-func ReadYamlToConf(path, as string) {
-	fmt.Println("ReadYamlToConf ....", path, as)
-	absPath, _ := getAbsolutePath(path)
-	yamlFile, err := os.ReadFile(absPath)
-	if err != nil {
-		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
-		os.Exit(0)
+func parseValue(valueStr string) interface{} {
+	// 去除首尾空格
+	valueStr = strings.TrimSpace(valueStr)
+
+	// 空值返回空字符串
+	if valueStr == "" {
+		return ""
 	}
 
-	// 2. 定义自定义Map（支持任意嵌套结构）
-	var customMap interpreter.DictType
-
-	// 3. 解析YAML内容到Map
-	err = yaml.Unmarshal(yamlFile, &customMap)
-	if err != nil {
-		fmt.Printf("解析YAML失败：%v \n", err)
-		os.Exit(0)
+	// 尝试解析为bool
+	lowerVal := strings.ToLower(valueStr)
+	if lowerVal == "true" || lowerVal == "false" {
+		boolVal, _ := strconv.ParseBool(lowerVal)
+		return boolVal
 	}
 
-	fmt.Printf("customMap = %v \n", customMap)
-
-	if _, ok := interpreter.Const.Load(as); ok {
-		fmt.Printf("[Wring] 全局常量%s已被定义. \n", as)
-		return
+	// 尝试解析为int
+	intVal, err := strconv.Atoi(valueStr)
+	if err == nil {
+		return intVal
 	}
 
-	interpreter.Const.Store(as, customMap)
-
-}
-
-func ReadINIToConf(path, as string) {
-	fmt.Println("ReadINIToConf ....", path, as)
-
-}
-
-func cleanPath(path string) string {
-	// 移除首尾的引号
-	path = strings.Trim(path, `"'`)
-
-	// 如果是Windows路径，移除额外的转义
-	if filepath.Separator == '\\' { // Windows
-		path = strings.ReplaceAll(path, `\"`, `"`)
-		path = strings.ReplaceAll(path, `\\`, `\`)
+	// 尝试解析为float64
+	floatVal, err := strconv.ParseFloat(valueStr, 64)
+	if err == nil {
+		return floatVal
 	}
 
-	return path
-}
-
-func getAbsolutePath(path string) (string, error) {
-	// 清理路径
-	clean := cleanPath(path)
-
-	// 转换为绝对路径
-	return filepath.Abs(clean)
+	// 都解析失败则返回原始字符串
+	return valueStr
 }

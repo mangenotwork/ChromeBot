@@ -1,0 +1,7 @@
+@conf_yaml path="./_examples/case_conf.yaml" as=conf
+print(conf)
+var conf = {"a":1}
+print(conf)
+print(conf["info"])
+print(conf["info"]["v"])
+print(conf["info"]["a"][1]["a2"])
