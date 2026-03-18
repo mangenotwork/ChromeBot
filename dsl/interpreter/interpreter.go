@@ -5,10 +5,11 @@ import (
 	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"os"
 	"strconv"
 	"sync"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 var IsREPL = false
@@ -283,6 +284,8 @@ func (i *Interpreter) evaluateStmt(stmt ast.Statement, ctx *Context, hang int) V
 		return i.evaluateWhileInStmt(s, ctx, hang)
 	case *ast.HttpStmt:
 		return i.evaluateHttpStmt(s, ctx, hang)
+	case *ast.HostStmt:
+		return i.evaluateHostStmt(s, ctx, hang)
 	default:
 		fmt.Println("[ERROR] len:", hang, " | ", fmt.Errorf("不支持的语句类型: %T", stmt))
 		if !IsREPL {

@@ -86,14 +86,14 @@
 
 #### v0.0.7
 - chrome  CSS ： 此域公开 CSS 的读写操作。
-- chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
+- chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。 // 预计周六完成
 
 #### v0.0.6
 - 支持excel操作
 - 支持json与字典互转
 - 支持相关json的操作方法
 - 查找文件
-- 筛选文件内容   // 预计周五完成
+- 筛选文件内容   // 预计周四完成
 - 示例, http接口请求相关
 - 示例，系统脚本相关
 - 示例，定时任务脚本相关
@@ -108,6 +108,7 @@
 - 实现全局 @redis  全局声明并连接redis as到指定对象 todo 只设计语法
 - http代理
 - websocket客户端
+- host 新增其他的方法（思考系统相关需要什么自动化方法），  // 预计周五完成
 
 #### v0.0.5
 - [] 设计脚本配置 以 @ 开头, 全局的程序执行前就需要处理，优先解析并保存在全局常量，只有脚本模式下才有
@@ -116,21 +117,20 @@
   [ok] 2. @conf_json 设置外部配置文件json,读取json文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用  @conf_json path="" as=conf
   [ok] 3. @conf_yaml 设置外部配置文件yaml,读取yaml文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用  @conf_ini path="" as=conf
   [ok] 4. @conf_ini 设置外部配置文件ini,读取ini文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用   @conf_ini path="" as=conf
-  [] 5. @chrome_check 全局检查是否支持chrome浏览器，提取检查，如果宿主机未安装会提前检查出来 语法 : 直接使用  @chrome_check
-  [] 6. @network_check 全局检查网络是否OK, 如果当前宿主机未网络会提前检查出来 语法: 请求地址可以是ip也可以是域名 如: @network_check "www.baidu.com"   @network_check "254.254.254.254" 
+  [ok] 5. @chrome_check 全局检查是否支持chrome浏览器，提取检查，如果宿主机未安装会提前检查出来 语法 : 直接使用  @chrome_check
+  [ok] 6. @network_check 全局检查网络是否OK, 如果当前宿主机未网络会提前检查出来 语法: 请求地址可以是ip也可以是域名 如: @network_check "www.baidu.com"   @network_check "254.254.254.254" 
 
 - [ok] 实现全局定时任务
 - [ok] 实现全局配置 @conf_json, @conf_yaml, @conf_ini
-- [] 实现全局 @chrome_check
-- [] 实现全局 @network_check
-- [] host 宿主机的相关方法 增加 host 关键字
+- [ok] 实现全局 @chrome_check
+- [ok] 实现全局 @network_check
+- [ok] host 宿主机的相关方法 增加 host 关键字
   1. host name
   2. host ip
   3. host info
-  4. DNS查询
-  5. 端口扫描
-  6. todo 思考系统相关需要什么自动化方法
-  7. 文件IO相关的方法   // 预计周三完成
+  4. host disk
+- [] DNS查询方法
+- [] 端口扫描方法
 - [] 网站死链检查
 - [] 网站证书信息检查
 - [] 示例
@@ -140,7 +140,7 @@
   4. case_cron.cbs 定期chrome交互网站
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档   // 预计周四完成
+- [] 更新文档 (主要是host,和几个新增的方法)  // 预计周三完成
 
 #### v0.0.4
 - [ok] 系统级别的交互确认弹窗

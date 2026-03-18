@@ -82,6 +82,7 @@ const (
 
 	TokenChrome // chrome
 	TokenHttp   // http
+	TokenHost   // host
 )
 
 var tokenTypeStrings = map[TokenType]string{
@@ -136,6 +137,7 @@ var tokenTypeStrings = map[TokenType]string{
 	TokenIn:        "in",
 	TokenChrome:    "chrome",
 	TokenHttp:      "http",
+	TokenHost:      "host",
 }
 
 func (t TokenType) String() string {
@@ -577,6 +579,8 @@ func (l *Lexer) lookupIdent(ident string) TokenType {
 		return TokenChrome
 	case "http":
 		return TokenHttp
+	case "host":
+		return TokenHost
 	default:
 		return TokenIdent
 	}

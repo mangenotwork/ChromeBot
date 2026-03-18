@@ -5,10 +5,11 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/utils"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"log"
 	"strings"
 	"time"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 // 一个带timeout的锁
@@ -148,25 +149,25 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["size"]; ok {
-			if op != nil && op.opType == opInit {
+			if op.opType == opInit {
 				op.arg["size"] = val
 			}
 		}
 
 		if val, ok := argMap["proxy"]; ok {
-			if op != nil && op.opType == opInit {
+			if op.opType == opInit {
 				op.arg["proxy"] = val
 			}
 		}
 
 		if val, ok := argMap["userpath"]; ok {
-			if op != nil && op.opType == opInit {
+			if op.opType == opInit {
 				op.arg["userpath"] = val
 			}
 		}
 
 		if _, ok := argMap["new"]; ok {
-			if op != nil && op.opType == opInit {
+			if op.opType == opInit {
 				op.arg["new"] = 1
 			}
 		}
@@ -196,7 +197,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		}
 
 		if val, ok := argMap["xpath"]; ok {
-			if op != nil && op.opType == opInput {
+			if op.opType == opInput {
 				op.arg["xpath"] = val
 			}
 		}

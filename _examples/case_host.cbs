@@ -1,0 +1,5 @@
+host info
+host name to=name
+host ip to=ip
+print("name = ", name)
+print("ip = ", ip)

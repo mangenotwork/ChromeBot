@@ -36,4 +36,7 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 		interp.Global().SetFunc(name, fn)
 	}
 
+	// 注册 host
+	registerHost(interp)
+
 }

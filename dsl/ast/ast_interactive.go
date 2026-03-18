@@ -38,3 +38,19 @@ func (c *HttpStmt) String() string {
 	return fmt.Sprintf("http %s ", strings.Join(args, " "))
 }
 func (c *HttpStmt) stmtNode() {}
+
+// HostStmt host 关键字,host(系统)相关操作
+type HostStmt struct {
+	StartPos Position
+	Args     []Expression
+}
+
+func (c *HostStmt) Pos() Position { return c.StartPos }
+func (c *HostStmt) String() string {
+	args := make([]string, len(c.Args))
+	for i, arg := range c.Args {
+		args[i] = arg.String()
+	}
+	return fmt.Sprintf("host %s ", strings.Join(args, " "))
+}
+func (c *HostStmt) stmtNode() {}

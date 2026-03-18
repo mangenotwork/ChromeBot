@@ -116,3 +116,31 @@ func (i *Interpreter) evaluateHttpStmt(expr *ast.HttpStmt, ctx *Context, hang in
 
 	return result
 }
+
+// 解析 host 关键字语法
+func (i *Interpreter) evaluateHostStmt(expr *ast.HostStmt, ctx *Context, hang int) Value {
+	utils.Debug("evaluateHostStmt args = ", expr.Args)
+	fn, ok := ctx.GetFunc("host")
+	if !ok {
+		i.ErrorShow(hang, "未定义host")
+		return nil
+	}
+
+	if len(expr.Args) < 1 {
+		i.ErrorShow(hang, "host后面没有参数")
+		return nil
+	}
+	args := make([]Value, len(expr.Args))
+	for idx, arg := range expr.Args {
+		args[idx] = i.evaluateExpr(arg, ctx, hang)
+	}
+
+	fmt.Println("args = ", args)
+
+	result, err := fn(args)
+	if err != nil {
+		i.errors = append(i.errors, fmt.Errorf("host调用错误: %v", err))
+		return nil
+	}
+	return result
+}

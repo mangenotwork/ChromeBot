@@ -213,6 +213,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseChromeStatement()
 	case lexer.TokenHttp:
 		return p.parseHttpStatement()
+	case lexer.TokenHost:
+		return p.parseHostStatement()
 	default:
 		return p.parseSimpleStatement()
 	}
