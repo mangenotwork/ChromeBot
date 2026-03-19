@@ -17,7 +17,7 @@ func (p *Parser) parseChromeStatement() *ast.ChromeStmt {
 	defer p.leave()
 
 	utils.Debug("======= parseChromeStatement 开始 =======")
-	utils.Debug("当前token: %v", p.curTok)
+	utils.Debugf("当前token: %v", p.curTok)
 
 	// 保存起始位置
 	startPos := ast.Position{
@@ -27,14 +27,14 @@ func (p *Parser) parseChromeStatement() *ast.ChromeStmt {
 
 	// 跳过 chrome 关键字
 	p.nextToken()
-	utils.Debug("跳过chrome后: %v", p.curTok)
+	utils.Debugf("跳过chrome后: %v", p.curTok)
 
 	var args []ast.Expression
 	startLine := p.curTok.Line
 
 	// 读取chrome参数
 	for p.curTok.Line == startLine && !p.curTokenIs(lexer.TokenEOF) {
-		utils.Debug("解析参数，当前token: %v", p.curTok)
+		utils.Debugf("解析参数，当前token: %v", p.curTok)
 
 		// 构建参数字符串
 		argStr := p.readChromeArgs()

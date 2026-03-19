@@ -33,6 +33,14 @@ chromeBot.exe case.cbs
 - [新华网获取要闻聚焦，点击每个要闻访问文章内容并截图保存在本地](_examples/xinhuanet_1.cbs)
 - [央视新闻网，获取每个分类标签下的新闻列表打印新闻的标题出来](_examples/newscctv_1.cbs)
 - [阳光高考获取全部的学校信息](_examples/gaokaochsi_1.cbs)
+- [交互豆包问豆包问题](_examples/doubao_1.cbs)
+- [交互网站手机号随机生成，采集将生成的手机号](_examples/zzttop_1.cbs)
+- [头条采集今日要闻访问后截图保存到本地](_examples/toutiao_1.cbs)
+- [抖音交互下滑视频](_examples/douyin_1.cbs)
+- [定期监控网站证书到期时间](_examples/check_domain_ssl.cbs)
+- [定期对网站进行死链检查](_examples/check_domain_badlink.cbs)
+- [定期扫描端口](_examples/search_port.cbs)
+- [定期chrome交互网站](_examples/case_cron.cbs)
 - todo...
 
 例子

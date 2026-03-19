@@ -153,6 +153,39 @@ while true {
 }
 ```
 
+### 全局指令与全局常量
+
+- @cron 设置定时执行脚本,语法参考 cron 核心定时参数总览
+```
+@cron 0 0 0 * * *
+```
+
+- @conf_json 设置外部配置文件json,读取json文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用  @conf_json path="" as=conf
+```
+@conf_json path="./_examples/case_conf.json" as=conf
+```
+
+- @conf_yaml 设置外部配置文件yaml,读取yaml文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用  @conf_ini path="" as=conf
+```
+@conf_yaml path="./_examples/case_conf.yaml" as=conf
+```
+
+- @conf_ini 设置外部配置文件ini,读取ini文件后将值存储到 as到指定的全局字典常量,以供脚本全局使用   @conf_ini path="" as=conf
+```
+@conf_ini path="./_examples/case_conf.ini" as=conf
+```
+
+- @chrome_check 全局检查是否支持chrome浏览器，提取检查，如果宿主机未安装会提前检查出来 语法 : 直接使用  @chrome_check
+```
+@chrome_check
+```
+
+- @network_check 全局检查网络是否OK, 如果当前宿主机未网络会提前检查出来 语法: 请求地址可以是ip也可以是域名 
+```
+@network_check "www.baidu.com" 
+@network_check "254.254.254.254"
+```
+
 
 ### 链式调用
 
@@ -163,6 +196,8 @@ var s = "test";
 var s1 = upper(s).repeat(2)
 print(s1)
 ```
+
+
 
 ### 内置函数
 
@@ -795,6 +830,68 @@ NowTabGetPointIDHTML(label, val) // label:标签 id的val:属性值
 - NowTabGetPointClassHTML 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
 ```
 NowTabGetPointClassHTML(label, val) // label:标签 class的val:属性值
+```
+
+### host 系统方法关键字
+
+host 系统方法关键字,主要编写系统脚本所用到，如文件管理，系统信息查询，系统相关的等等方法，与系统bat文件脚本一样; 
+注意一个命令只执行一个参数。
+
+参数说明：
+
+info : 获取系统的信息
+name : 获取系统的名称
+ip : 获取系统的ip
+to : 将当前操作返回的值存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
+disk : todo 系统的磁盘信息
+
+```
+host info
+```
+
+### 网站站点相关方法
+
+- WebSiteScanBadLink(domain, depth) 网站死链检查, depth是遍历网站的深度
+```
+WebSiteScanBadLink("www.baidu.com", 1)
+```    
+
+- WebCertificateInfo(domain) 网站证书信息
+```
+WebCertificateInfo("www.baidu.com")
+```
+
+- WebScanUrl(domain, depth) NewHostScanUrl 创建扫描站点
+```
+WebScanUrl("www.baidu.com", 1)
+```
+
+- WebScanExtLinks(domain, depth) 创建站点链接采集，只支持get请求
+```
+- WebScanExtLinks("www.baidu.com", 1) 
+```
+
+- WebPageSpeedCheck(domain, depth) 创建站点所有url测速，只支持get请求
+```
+WebPageSpeedCheck("www.baidu.com", 1)
+```
+
+
+### 网络相关的方法
+
+- NsLookUp(host) DNS查询方法
+```
+NsLookUp("www.baidu.com")
+```
+
+- Whois(host) Whois查询方法
+```
+Whois("www.baidu.com")
+```
+
+- SearchPort(ip) 端口扫描方法
+```
+SearchPort("192.168.1.1")
 ```
 
 ### todo....
