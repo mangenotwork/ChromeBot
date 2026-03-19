@@ -163,7 +163,23 @@ func hostWebCertificateInfo(args []interpreter.Value) (interpreter.Value, error)
 	fmt.Println("证书 版本 : ", certificateInfo.Version)
 	fmt.Println("证书 证书算法 : ", certificateInfo.SignatureAlgorithm)
 
-	return nil, nil
+	res := interpreter.DictType{
+		"Url":                   certificateInfo.Url,
+		"EffectiveTime":         certificateInfo.EffectiveTime,
+		"NotBefore":             certificateInfo.NotBefore,
+		"NotAfter":              certificateInfo.NotAfter,
+		"DNSName":               certificateInfo.DNSName,
+		"OCSPServer":            certificateInfo.OCSPServer,
+		"CRLDistributionPoints": certificateInfo.CRLDistributionPoints,
+		"Issuer":                certificateInfo.Issuer,
+		"IssuingCertificateURL": certificateInfo.IssuingCertificateURL,
+		"PublicKeyAlgorithm":    certificateInfo.PublicKeyAlgorithm,
+		"Subject":               certificateInfo.Subject,
+		"Version":               certificateInfo.Version,
+		"SignatureAlgorithm":    certificateInfo.SignatureAlgorithm,
+	}
+
+	return res, nil
 }
 
 func hostWebScanUrl(args []interpreter.Value) (interpreter.Value, error) {

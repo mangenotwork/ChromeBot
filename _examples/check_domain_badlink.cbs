@@ -1,0 +1,3 @@
+// @cron  0 8 * * *  // 每天8点
+
+WebSiteScanBadLink("https://www.ecosmos.cc/", 4)

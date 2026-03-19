@@ -1,0 +1,12 @@
+@cron  0 8 * * *  // 每天8点
+
+var info = WebCertificateInfo("https://www.ecosmos.cc/")
+var diff = DayDiffAtUnix(Timestamp(), info["NotAfter"])
+var content = "日常巡检，证书检查： https://www.ecosmos.cc/ "+"距离过期还有: "+ diff+ "天； 过期时间: "+ TimestampToDate(info["NotAfter"])
+var nurl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+var data =  {
+    "msgtype": "text",
+    "text": { "content": content }
+}
+
+http post url=nurl body=data

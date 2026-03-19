@@ -172,13 +172,13 @@
 - [ok] 网站死链检查
 - [ok] 网站证书信息检查
 - [ok] 扫描网站的url, 扫描网站的外链
-- [] 示例
-  1. 定期监控网站证书到期时间
-  2. 定期对网站进行死链检查
-  3. 定期扫描端口
+- [ok] 示例
+  1. check_domain_ssl.cbs 定期监控网站证书到期时间
+  2. check_domain_badlink.cbs 定期对网站进行死链检查
+  3. search_port.cbs 定期扫描端口
   4. case_cron.cbs 定期chrome交互网站
-- [] 改测试的bug和优化
-- [] bug和优化验收
+- [ok] 改测试的bug和优化
+- [ok] bug和优化验收
 - [] 更新文档 (主要是host,和几个新增的方法)  
 
 #### v0.0.4

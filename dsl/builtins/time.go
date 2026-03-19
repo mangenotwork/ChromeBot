@@ -4,10 +4,11 @@ import (
 	"ChromeBot/dsl/ast"
 	"ChromeBot/dsl/interpreter"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"regexp"
 	"strings"
 	"time"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 // 时间相关的内置方法
@@ -281,10 +282,6 @@ func timeDayDiffAtUnix(args []interpreter.Value) (interpreter.Value, error) {
 		return nil, fmt.Errorf("DayDiffAtUnix(int, int) %s", err.Error())
 	}
 
-	fmt.Println("ms1 : ", ms1)
-	fmt.Println("ms2 : ", ms2)
-	fmt.Println(gt.DayDiffAtUnix(ms1, ms2))
-
 	return gt.DayDiffAtUnix(ms1, ms2), nil
 }
 
@@ -300,9 +297,7 @@ func timeDayDiff(args []interpreter.Value) (interpreter.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("DayDiff(str, str) 参数要求是字符串 ")
 	}
-	fmt.Println("s1 : ", s1)
-	fmt.Println("s2 : ", s2)
-	fmt.Println(gt.DayDiff(s1, s2))
+
 	return gt.DayDiff(s1, s2), nil
 }
 
