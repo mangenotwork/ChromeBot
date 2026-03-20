@@ -42,4 +42,9 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 		interp.Global().SetFunc(name, fn)
 	}
 
+	// 注册 excel方法
+	for name, fn := range excelFn {
+		interp.Global().SetFunc(name, fn)
+	}
+
 }

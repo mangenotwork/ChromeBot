@@ -1,0 +1,23 @@
+// 1 写入 list
+var data1 = [1,2,3,4]
+ExcelSave(data1, "test1.xlsx")
+
+// 2 写入 二维list
+var data2 = [[1,2,3,4],[5,6,7,8]]
+ExcelSave(data2, "test2.xlsx")
+
+// 3 写入 map
+var data3 = {"姓名":"张三","年龄":"25"}
+ExcelSave(data3, "test3.xlsx")
+
+// 4 写入 数组map
+var data4 = [{"姓名":"张三","年龄":"25"}, {"姓名":"李四","年龄":"30"}]
+ExcelSave(data4, "test4.xlsx")
+
+// 5 写入 字符串
+var data5 = "55555"
+ExcelSave(data5, "test5.xlsx")
+
+// 6 写入 数字
+var data6 = 666666
+ExcelSave(data6, "test6.xlsx")

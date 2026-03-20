@@ -268,3 +268,24 @@ func SanitizeFileName(fullPath string) string {
 	sanitizedFilename := timeColonRegex.ReplaceAllString(filename, "${1}-${2}-${3}")
 	return filepath.Join(dir, sanitizedFilename)
 }
+
+func GetAbsolutePath(path string) (string, error) {
+	// 清理路径
+	clean := cleanPath(path)
+
+	// 转换为绝对路径
+	return filepath.Abs(clean)
+}
+
+func cleanPath(path string) string {
+	// 移除首尾的引号
+	path = strings.Trim(path, `"'`)
+
+	// 如果是Windows路径，移除额外的转义
+	if filepath.Separator == '\\' { // Windows
+		path = strings.ReplaceAll(path, `\"`, `"`)
+		path = strings.ReplaceAll(path, `\\`, `\`)
+	}
+
+	return path
+}

@@ -129,7 +129,7 @@
 #### v0.0.6
 - [] 支持excel相关操作方法 底层使用 https://github.com/qax-os/excelize 库
   [] 1. 读取excel
-  [] 2. 写入excel
+  [ok] 2. 写入excel
   [] 3. 最小粒度的单元格操作
   [] 4. 图片插入
   [] 5. 单元格样式设置（字体、颜色、对齐）
@@ -147,9 +147,10 @@
 - [] excel转json
 
 - []示例
-  [] 1. 
-  [] 2. 
-  [] 3. 
+  [] 1. 采集东方财经网排名数据到excel文件
+  [] 2. 采集阳光高考的学习数据到excel文件
+  [] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
+  [] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart
 
 - [] 改测试的bug和优化
 - [] bug和优化验收

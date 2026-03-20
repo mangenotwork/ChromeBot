@@ -2,10 +2,10 @@ package global
 
 import (
 	"ChromeBot/dsl/interpreter"
+	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -14,7 +14,7 @@ import (
 )
 
 func ReadJsonToConf(path, as string) {
-	absPath, _ := getAbsolutePath(path)
+	absPath, _ := utils.GetAbsolutePath(path)
 	jsonFile, err := os.ReadFile(absPath)
 	if err != nil {
 		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
@@ -39,7 +39,7 @@ func ReadJsonToConf(path, as string) {
 
 func ReadYamlToConf(path, as string) {
 	fmt.Println("ReadYamlToConf ....", path, as)
-	absPath, _ := getAbsolutePath(path)
+	absPath, _ := utils.GetAbsolutePath(path)
 	yamlFile, err := os.ReadFile(absPath)
 	if err != nil {
 		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
@@ -67,7 +67,7 @@ func ReadYamlToConf(path, as string) {
 
 func ReadINIToConf(path, as string) {
 	fmt.Println("ReadINIToConf ....", path, as)
-	absPath, _ := getAbsolutePath(path)
+	absPath, _ := utils.GetAbsolutePath(path)
 	cfg, err := ini.Load(absPath)
 	if err != nil {
 		fmt.Printf("[Err]读取%s文件失败：%v \n", absPath, err)
@@ -106,27 +106,6 @@ func ReadINIToConf(path, as string) {
 	}
 
 	interpreter.Const.Store(as, customMap)
-}
-
-func cleanPath(path string) string {
-	// 移除首尾的引号
-	path = strings.Trim(path, `"'`)
-
-	// 如果是Windows路径，移除额外的转义
-	if filepath.Separator == '\\' { // Windows
-		path = strings.ReplaceAll(path, `\"`, `"`)
-		path = strings.ReplaceAll(path, `\\`, `\`)
-	}
-
-	return path
-}
-
-func getAbsolutePath(path string) (string, error) {
-	// 清理路径
-	clean := cleanPath(path)
-
-	// 转换为绝对路径
-	return filepath.Abs(clean)
 }
 
 func convertToDictType(data interface{}) interpreter.Value {
