@@ -1,7 +1,6 @@
 package excel
 
 import (
-	"ChromeBot/utils"
 	"fmt"
 	"path/filepath"
 	"strconv"
@@ -9,20 +8,18 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-// ReadExcel 读取ecxel
-func ReadExcel(path string) {
+// ShowExcel 读取ecxel并打印excel
+func ShowExcel(path, sheetName string) {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer func() {
-		if err := f.Close(); err != nil {
-			fmt.Println(err)
-		}
-	}()
+	defer f.Close()
 
-	rows, err := f.GetRows("Sheet1")
+	sheetName = getTargetSheetName(f, sheetName)
+
+	rows, err := f.GetRows(sheetName)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -33,16 +30,6 @@ func ReadExcel(path string) {
 		}
 		fmt.Println()
 	}
-}
-
-func saveAs(f *excelize.File, path string) error {
-	path, _ = utils.GetAbsolutePath(path)
-	fmt.Println("excel save path = ", path)
-	err := f.SaveAs(path)
-	if err != nil && err.Error() == "unsupported workbook file format" {
-		return fmt.Errorf("文件格式不支持：仅支持 .xlsx/.xlsm，不支持 .xls 或非 Excel 文件")
-	}
-	return err
 }
 
 // WriteListToExcel 将二维列表写入Excel
@@ -751,30 +738,4 @@ func ExcelToSql(path, sheetName, tableName string) ([]string, error) {
 		sqlList = append(sqlList, sql)
 	}
 	return sqlList, nil
-}
-
-// 获取目标sheet名称（无传入则取第一个），
-// 如果传入的sheet没有则创建 sheet
-func getTargetSheetName(f *excelize.File, sheetName string) string {
-	if sheetName == "" {
-		sheetList := f.GetSheetList()
-		if len(sheetList) > 0 {
-			sheetName = sheetList[0]
-		} else {
-			// 无任何sheet时，创建默认Sheet1
-			sheetName = "Sheet1"
-			f.NewSheet(sheetName)
-		}
-		return sheetName
-	}
-
-	sheetList := f.GetSheetList()
-	for _, s := range sheetList {
-		if s == sheetName {
-			return sheetName
-		}
-	}
-
-	f.NewSheet(sheetName)
-	return sheetName
 }

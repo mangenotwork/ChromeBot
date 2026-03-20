@@ -38,10 +38,13 @@ func builtinPrint(args []Value) (Value, error) {
 		if i > 0 {
 			fmt.Print(" ")
 		}
-		// 检查参数类型，如果是字典类型，特殊处理
-		if dict, ok := arg.(DictType); ok {
-			fmt.Print(dictToString(dict))
-		} else {
+
+		//fmt.Printf("%T \n", arg)
+		switch arg := arg.(type) {
+		case DictType, map[interface{}]interface{}, []map[interface{}]interface{}, []map[string]string:
+			fmt.Print(dictToString(arg))
+
+		default:
 			fmt.Print(arg)
 		}
 	}
@@ -55,61 +58,113 @@ func builtinPrint(args []Value) (Value, error) {
 }
 
 func dictToString(data Value) string {
-	// 场景1：nil值
 	if data == nil {
 		return "nil"
 	}
 
-	// 场景2：嵌套 DictType（map[Value]Value）
-	if nestedDict, ok := data.(DictType); ok {
-		if nestedDict == nil {
-			return "dict[]"
-		}
+	//fmt.Printf("%T \n", data)
 
-		var sb strings.Builder
-		sb.WriteString("dict[")
-
-		first := true
-		for key, value := range nestedDict {
-			if !first {
-				sb.WriteString(", ")
-			}
-			// 处理key（支持任意Value类型的key）
-			sb.WriteString(fmt.Sprint(key))
-			sb.WriteString(":")
-
-			// 递归处理value（可能是DictType/[]Value/基础类型）
-			sb.WriteString(dictToString(value))
-
-			first = false
-		}
-
-		sb.WriteString("]")
-		return sb.String()
+	switch data := data.(type) {
+	case DictType:
+		return formatMap(data)
+	case []map[string]string:
+		return formatStringMapArr(data)
+	case map[string]string:
+		return formatStringMap(data)
+	case []Value:
+		return formatSlice(data)
 	}
 
-	// 场景3：[]Value 数组
-	if arr, ok := data.([]Value); ok {
-		var sb strings.Builder
-		sb.WriteString("[")
-
-		first := true
-		for _, elem := range arr {
-			if !first {
-				sb.WriteString(", ")
-			}
-			// 递归处理数组元素（可能是DictType/[]Value/基础类型）
-			sb.WriteString(dictToString(elem))
-
-			first = false
-		}
-
-		sb.WriteString("]")
-		return sb.String()
-	}
-
-	// 场景4：基础类型（string/int/float64/bool等）
 	return fmt.Sprint(data)
+}
+
+// 辅助函数：处理 DictType
+func formatMap(data DictType) string {
+	if data == nil {
+		return "dict[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteString("dict[")
+
+	first := true
+	for key, value := range data {
+		if !first {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(fmt.Sprint(key))
+		sb.WriteString(":")
+		sb.WriteString(dictToString(value))
+		first = false
+	}
+
+	sb.WriteString("]")
+	return sb.String()
+}
+
+// 辅助函数：处理 map[string]string
+func formatStringMapArr(data []map[string]string) string {
+	if data == nil {
+		return "dict[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteString("dict[")
+
+	first := true
+	for key, value := range data {
+		if !first {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(fmt.Sprint(key))
+		sb.WriteString(":")
+		sb.WriteString(dictToString(value))
+		first = false
+	}
+
+	sb.WriteString("]")
+	return sb.String()
+}
+
+func formatStringMap(data map[string]string) string {
+	if data == nil {
+		return "dict[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteString("dict[")
+
+	first := true
+	for key, value := range data {
+		if !first {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(fmt.Sprint(key))
+		sb.WriteString(":")
+		sb.WriteString(dictToString(value))
+		first = false
+	}
+
+	sb.WriteString("]")
+	return sb.String()
+}
+
+// 辅助函数：处理切片
+func formatSlice(data []Value) string {
+	var sb strings.Builder
+	sb.WriteString("[")
+
+	first := true
+	for _, elem := range data {
+		if !first {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(dictToString(elem))
+		first = false
+	}
+
+	sb.WriteString("]")
+	return sb.String()
 }
 
 func builtinInt(args []Value) (Value, error) {
