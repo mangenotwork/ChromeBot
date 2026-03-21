@@ -453,9 +453,111 @@ func DeleteRow(path, sheetName string, rowNum int) error {
 // ReadColumn 读取指定列数据
 // path: 文件路径
 // sheetName: 工作表名称
+// col: 列数（如1代表A列，2代表B列...）
+// return: 列数据列表、错误
+func ReadColumn(path, sheetName string, col int) ([]string, error) {
+	f, err := excelize.OpenFile(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	sheetName = getTargetSheetName(f, sheetName)
+
+	// 校验列数合法性
+	if col < 1 {
+		return nil, excelize.ErrColumnNumber
+	}
+
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]string, 0, len(rows))
+	for _, row := range rows {
+		if col-1 < len(row) {
+			result = append(result, row[col-1])
+		} else {
+			result = append(result, "")
+		}
+	}
+	return result, nil
+}
+
+// WriteColumn 写入指定列数据
+// path: 文件路径
+// sheetName: 工作表名称
+// col: 列数（如1代表A列，2代表B列...）
+// values: 列数据列表
+// return: 错误
+func WriteColumn(path, sheetName string, col int, values []string) error {
+	f, err := excelize.OpenFile(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	sheetName = getTargetSheetName(f, sheetName)
+
+	// 校验列数合法性
+	if col < 1 {
+		return excelize.ErrColumnNumber
+	}
+
+	// 将列数转换为列名（如1->A，2->B）
+	colName, err := excelize.ColumnNumberToName(col)
+	if err != nil {
+		return err
+	}
+
+	for rowIdx, value := range values {
+		cell := colName + strconv.Itoa(rowIdx+1)
+		if err := f.SetCellValue(sheetName, cell, value); err != nil {
+			return err
+		}
+	}
+	return f.Save()
+}
+
+// DeleteColumn 删除指定列
+// path: 文件路径
+// sheetName: 工作表名称
+// col: 列数（如1代表A列，2代表B列...）
+// return: 错误
+func DeleteColumn(path, sheetName string, col int) error {
+	f, err := excelize.OpenFile(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	sheetName = getTargetSheetName(f, sheetName)
+
+	// 校验列数合法性
+	if col < 1 {
+		return excelize.ErrColumnNumber
+	}
+
+	// 将列数转换为列名（如1->A，2->B）
+	colName, err := excelize.ColumnNumberToName(col)
+	if err != nil {
+		return err
+	}
+
+	err = f.RemoveCol(sheetName, colName)
+	if err != nil {
+		return err
+	}
+	return f.Save()
+}
+
+// ReadColumnCell 读取指定列数据
+// path: 文件路径
+// sheetName: 工作表名称
 // colName: 列名（如"A"）
 // return: 列数据列表、错误
-func ReadColumn(path, sheetName, colName string) ([]string, error) {
+func ReadColumnCell(path, sheetName, colName string) ([]string, error) {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
 		return nil, err
@@ -486,13 +588,13 @@ func ReadColumn(path, sheetName, colName string) ([]string, error) {
 	return result, nil
 }
 
-// WriteColumn 写入指定列数据
+// WriteColumnCell 写入指定列数据
 // path: 文件路径
 // sheetName: 工作表名称
 // colName: 列名（如"A"）
 // values: 列数据列表
 // return: 错误
-func WriteColumn(path, sheetName, colName string, values []string) error {
+func WriteColumnCell(path, sheetName, colName string, values []string) error {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
 		return err
@@ -508,12 +610,12 @@ func WriteColumn(path, sheetName, colName string, values []string) error {
 	return f.Save()
 }
 
-// DeleteColumn 删除指定列
+// DeleteColumnCell 删除指定列
 // path: 文件路径
 // sheetName: 工作表名称
 // colName: 列名（如"A"）
 // return: 错误
-func DeleteColumn(path, sheetName, colName string) error {
+func DeleteColumnCell(path, sheetName, colName string) error {
 	f, err := excelize.OpenFile(path)
 	if err != nil {
 		return err

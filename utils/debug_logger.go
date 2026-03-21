@@ -84,11 +84,10 @@ func SetLogFile(dir, name string, maxDay int) {
 
 	go func() {
 		timer := time.NewTicker(std.clearLogSecond)
-		for {
-			select {
-			case <-timer.C:
-				clearLogFile()
-			}
+		defer timer.Stop()
+
+		for range timer.C {
+			clearLogFile()
 		}
 	}()
 }
@@ -159,7 +158,7 @@ func (l *logger) Log(level Level, args string, times int) {
 	fileList := strings.Split(file, "/")
 	// 最多显示两级路径
 	if len(fileList) > 3 {
-		fileList = fileList[len(fileList)-3 : len(fileList)]
+		fileList = fileList[len(fileList)-3:]
 	}
 
 	if times != -1 {
