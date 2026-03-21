@@ -80,11 +80,8 @@
 - chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。
 - chrome  DOMStorage  : 查询和修改 DOM 存储。
 
+
 #### v0.0.8
-- [] host 方法扩展  
-    获取窗口信息
-    操作鼠标键盘
-    系统层面操作软件等等...
 
 - 检查当前是否支持该协议域
 - chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
@@ -92,33 +89,30 @@
 - 完善 chrome Target : 目标对象
 - chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
 - chrome  CacheStorage ： 缓存存储域
-- 实现全局 @mysql  全局声明并连接mysql as到指定对象 todo 只设计语法
-- 实现全局 @redis  全局声明并连接redis as到指定对象 todo 只设计语法
-- http代理
-- websocket客户端
+
 - chrome  CSS ： 此域公开 CSS 的读写操作。
 - chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。 
 - chrome  DOM : 此域公开 DOM 读/写操作。
 - chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
 
 #### v0.0.7
-- [] 系统文件相关交互方法
-  [] 1. 查文件或目录
-  [] 2. 创建文件或目录
-  [] 3. 删除文件或目录
-  [] 4. 移动文件或目录
-  [] 5. 复制文件或目录
-  [] 6. 读写文件
-  [] 7. 文件或目录改名  
+- [] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，非要用相对请设定工作目录，path=工作目录+文件名
+  [] 1. file/dir s=<search word> 搜索文件或目录
+  [] 2. file/dir c=<path> 创建文件或目录
+  [] 3. file/dir d=<path> 删除文件或目录
+  [] 4. file/dir m=<path> goto=<path> 移动文件或目录
+  [] 5. file/dir cp=<path> goto=<path> 复制文件或目录
+  [] 6. file/dir r=<path> to=<arg> 读文件
+  [] 7. file/dir renm=<path> goto=<path> 文件或目录改名, 路径不同则移动
+  [] 8. ls=<path> 列出文件或目录
+  [] 9. file/dir info=<path> 文件或目录信息
+  [] 10. file/dir w=<path> from=<arg> 将文件内容写入文件
+  [] 11. file/dir a=<path> from=<arg> 将文件内容追加写入文件
 
 - [] host 方法扩展  
-  [] 1. disk 磁盘信息 使用率
-  [] 2. mem 内存信息 使用率
-  [] 3. cpu cpu信息 使用率
-  [] 4. ping 
-  [] 5. port 已开放的端口
-  [] 6. pid 进程信息
-  [] 7. zip 压缩解压文件
+  [] 1. ping 
+  [] 2. port 已开放的端口
+  [] 3. zip 压缩解压文件  // 预计0324完成
 
 - [] 示例
   [] 1. 循环ping ip
@@ -128,7 +122,7 @@
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档   
+- [] 更新文档    // 预计0325完成
 
 
 #### v0.0.6
@@ -140,13 +134,13 @@
   [ok] 5. 图片插入
   [ok] 6. 单元格样式设置（字体、颜色、对齐）
   [ok] 7. 合并单元格
-  [ok] 9. 设置单元格公式  // 预计周六完成
+  [ok] 9. 设置单元格公式  
   
 - [] 支持json与字典互转方法  
   [] 1. json转字典
   [] 2. 字典转json
   [] 3. json查找元素方法
-  [] 4. 读写json文件
+  [] 4. 读写json文件  // 预计周天完成
 
 - [] json转excel
 - [] excel转json
@@ -160,7 +154,7 @@
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档    // 预计周天完成
+- [] 更新文档    // 预计0323完成
 
 #### v0.0.5
 - [ok] 设计脚本配置 以 @ 开头, 全局的程序执行前就需要处理，优先解析并保存在全局常量，只有脚本模式下才有
@@ -288,6 +282,19 @@
 
 ## 需求池
 - 脚本命令式应该支持 output参数来指定数据输出到哪里（支持文件，数据库，远端服务等等）
+- [] host 方法扩展  
+  [] disk 磁盘信息 使用率
+  [] mem 内存信息 使用率
+  [] cpu cpu信息 使用率
+  [] pid 进程信息
+  [] 获取窗口信息
+  [] 操作鼠标键盘
+  [] 系统层面操作软件等等...
+- 实现全局 @mysql  全局声明并连接mysql as到指定对象 todo 只设计语法
+- 实现全局 @redis  全局声明并连接redis as到指定对象 todo 只设计语法
+- http代理
+- websocket客户端
+
 
 ----
  
