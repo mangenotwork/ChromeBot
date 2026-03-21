@@ -49,3 +49,5 @@ print(ExcelReadRow("D:\\test4.xlsx", 5))
 // 插入图片
 ExcelImg("D:\\test4.xlsx", "E2", "D:\\baidu-当前热点2026-03-17 14-49-00.png")
 
+// 修改单元格样式
+ExcelCellStyle("D:\\test4.xlsx", "A1", {"fontBold":true, "fontColor":"FF1234", "bgColor":"E0E0E0", "alignCenter":true})

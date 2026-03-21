@@ -32,6 +32,21 @@ var excelFn = map[string]interpreter.Function{
 	"ExcelWriteCell":   excelWriteCell,   // ExcelWriteCell(path, cell, list, 可选参数sheetName)  写入列 cell 标签 A B C ...
 	"ExcelDeleteCell":  excelDeleteCell,  // ExcelDeleteCell(path, cell, 可选参数sheetName)  删除指定列数据  cell 标签 A B C ...
 	"ExcelImg":         excelImg,         // ExcelImg(path, cell, imgPath, 可选参数sheetName)   插入图片 cell 标签 A1 B1 C1 ...
+
+	// ExcelCellStyle(path, cell, style, 可选参数sheetName) 设置单元格样式 cell 标签 A1 B1 C1 ...
+	// style {
+	//  	fontBold: 是否加粗
+	// 		fontColor: 字体颜色（十六进制，如"FF0000"）
+	// 		bgColor: 背景颜色（十六进制，如"E0E0E0"）
+	// 		alignCenter: 是否居中
+	// }
+	"ExcelCellStyle": excelCellStyle,
+
+	"ExcelMergeCells": excelMergeCells, // ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) 合并单元格 cell 标签 A1 B1 C1 ...
+	"ExcelSetFormula": excelSetFormula, // ExcelSetFormula(path, cell, formula, 可选参数sheetName) 给单元格设置公式 标签 A1 B1 C1 ...  formula公式 如"SUM(A1:A3)"
+
+	// todo AddChart 添加图表到单元格
+
 }
 
 func excelSave(args []interpreter.Value) (interpreter.Value, error) {
@@ -841,5 +856,121 @@ func excelImg(args []interpreter.Value) (interpreter.Value, error) {
 		return nil, err
 	}
 	fmt.Println("插入图片成功")
+	return nil, nil
+}
+
+func excelCellStyle(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("ExcelCellStyle(path, cell, style, 可选参数sheetName) 需要两个参数")
+	}
+
+	path, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelCellStyle(path, cell, style, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	cell, cellOK := args[1].(string)
+	if !cellOK {
+		return nil, fmt.Errorf("ExcelCellStyle(path, cell, style, 可选参数sheetName) cell 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 4 {
+		sheetName, sheetNameOK = args[3].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	style := args[2]
+	styleDict := style.(interpreter.DictType)
+	fontBold := styleDict["fontBold"].(bool)
+	fontColor := gt.Any2String(styleDict["fontColor"])
+	bgColor := gt.Any2String(styleDict["bgColor"])
+	alignCenter := styleDict["alignCenter"].(bool)
+
+	err := excel.SetCellStyle(path, sheetName, cell, fontBold, fontColor, bgColor, alignCenter)
+	if err != nil {
+		fmt.Println("[Err]设置样式失败 err = ", err.Error())
+		return nil, err
+	}
+	fmt.Println("设置样式成功")
+	return nil, nil
+}
+
+func excelMergeCells(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("ExcelMergeCells(path, startCell, endCell, 可选参数sheetName)  需要两个参数")
+	}
+
+	path, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	startCell, startCellOK := args[1].(string)
+	if !startCellOK {
+		return nil, fmt.Errorf("ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) startCell 参数要求是字符串 ")
+	}
+
+	endCell, endCellOK := args[2].(string)
+	if !endCellOK {
+		return nil, fmt.Errorf("ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) endCell 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 4 {
+		sheetName, sheetNameOK = args[3].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	err := excel.MergeCells(path, sheetName, startCell, endCell)
+	if err != nil {
+		fmt.Println("[Err]合并单元格失败 err = ", err.Error())
+		return nil, err
+	}
+	fmt.Println("合并单元格成功")
+	return nil, nil
+}
+
+func excelSetFormula(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName)  需要两个参数")
+	}
+
+	path, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	cell, cellOK := args[1].(string)
+	if !cellOK {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName) cell 参数要求是字符串 ")
+	}
+
+	formula, formulaOK := args[2].(string)
+	if !formulaOK {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName) formula 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 4 {
+		sheetName, sheetNameOK = args[3].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	err := excel.SetCellFormula(path, sheetName, cell, formula)
+	if err != nil {
+		fmt.Println("[Err]合并单元格失败 err = ", err.Error())
+		return nil, err
+	}
+	fmt.Println("合并单元格成功")
 	return nil, nil
 }
