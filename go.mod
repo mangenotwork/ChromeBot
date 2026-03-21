@@ -7,6 +7,7 @@ require (
 	github.com/mangenotwork/gathertool v0.4.8-0.20260227022011-16190caf5d2b
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/xuri/excelize/v2 v2.7.0
+	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69
 	golang.org/x/net v0.17.0
 	golang.org/x/sys v0.13.0
 	golang.org/x/text v0.13.0

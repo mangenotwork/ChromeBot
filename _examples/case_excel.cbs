@@ -35,4 +35,17 @@ print(a4)
 // 在终端显示excel
 ExcelShow("D:\\test4.xlsx")
 
+// 按单元格读取
+ExcelGetByCell("D:\\test4.xlsx", "B2")
+
+// 按行列读取
+ExcelGetByPos("D:\\test4.xlsx", 2,2)
+
+// 按行写入
+var a1 = [1,2,3,4,5,6,7,8]
+ExcelWriteRow("D:\\test4.xlsx", 5, a1)
+print(ExcelReadRow("D:\\test4.xlsx", 5))
+
+// 插入图片
+ExcelImg("D:\\test4.xlsx", "E2", "D:\\baidu-当前热点2026-03-17 14-49-00.png")
 

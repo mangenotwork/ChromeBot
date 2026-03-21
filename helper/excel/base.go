@@ -2,8 +2,13 @@ package excel
 
 import (
 	"fmt"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"path/filepath"
 	"strconv"
+
+	_ "golang.org/x/image/bmp"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -657,6 +662,8 @@ func InsertImage(path, sheetName, cell, imgPath string) error {
 	}
 	return f.Save()
 }
+
+// todo 读取并下载ecxel里的图片
 
 // SetCellStyle 设置单元格样式（字体、颜色、对齐、背景）
 // path: Excel文件路径

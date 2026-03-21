@@ -31,6 +31,7 @@ var excelFn = map[string]interpreter.Function{
 	"ExcelReadCell":    excelReadCell,    // ExcelReadCell(path, cell, 可选参数sheetName)  读取列 cell 标签 A B C ...
 	"ExcelWriteCell":   excelWriteCell,   // ExcelWriteCell(path, cell, list, 可选参数sheetName)  写入列 cell 标签 A B C ...
 	"ExcelDeleteCell":  excelDeleteCell,  // ExcelDeleteCell(path, cell, 可选参数sheetName)  删除指定列数据  cell 标签 A B C ...
+	"ExcelImg":         excelImg,         // ExcelImg(path, cell, imgPath, 可选参数sheetName)   插入图片 cell 标签 A1 B1 C1 ...
 }
 
 func excelSave(args []interpreter.Value) (interpreter.Value, error) {
@@ -706,7 +707,7 @@ func excelReadCell(args []interpreter.Value) (interpreter.Value, error) {
 
 	cell, cellOK := args[1].(string)
 	if !cellOK {
-		return nil, fmt.Errorf("ExcelReadCell(path, cell, 可选参数sheetName)  cell 参数要求是整数 ")
+		return nil, fmt.Errorf("ExcelReadCell(path, cell, 可选参数sheetName)  cell 参数要求是字符串 ")
 	}
 
 	sheetName := ""
@@ -738,7 +739,7 @@ func excelWriteCell(args []interpreter.Value) (interpreter.Value, error) {
 
 	cell, cellOK := args[1].(string)
 	if !cellOK {
-		return nil, fmt.Errorf("ExcelWriteCell(path, cell, list, 可选参数sheetName)  cell 参数要求是整数 ")
+		return nil, fmt.Errorf("ExcelWriteCell(path, cell, list, 可选参数sheetName)  cell 参数要求是字符串 ")
 	}
 
 	list := make([]string, 0)
@@ -783,7 +784,7 @@ func excelDeleteCell(args []interpreter.Value) (interpreter.Value, error) {
 
 	cell, cellOK := args[1].(string)
 	if !cellOK {
-		return nil, fmt.Errorf("ExcelDeleteCell(path, cell, 可选参数sheetName) cell 参数要求是整数 ")
+		return nil, fmt.Errorf("ExcelDeleteCell(path, cell, 可选参数sheetName) cell 参数要求是字符串 ")
 	}
 
 	sheetName := ""
@@ -803,4 +804,42 @@ func excelDeleteCell(args []interpreter.Value) (interpreter.Value, error) {
 	fmt.Println("删除行成功")
 
 	return nil, err
+}
+
+func excelImg(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName)  需要两个参数")
+	}
+
+	path, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	cell, cellOK := args[1].(string)
+	if !cellOK {
+		return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) cell 参数要求是字符串 ")
+	}
+
+	imgPath, imgPathOK := args[2].(string)
+	if !imgPathOK {
+		return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) imgPath 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 4 {
+		sheetName, sheetNameOK = args[3].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	err := excel.InsertImage(path, sheetName, cell, imgPath)
+	if err != nil {
+		fmt.Println("[Err]单元格插入图片失败 err = ", err.Error())
+		return nil, err
+	}
+	fmt.Println("插入图片成功")
+	return nil, nil
 }
