@@ -136,14 +136,14 @@
   [ok] 7. 合并单元格
   [ok] 9. 设置单元格公式  
   
-- [] 支持json与字典互转方法  
-  [] 1. json转字典
-  [] 2. 字典转json
-  [] 3. json查找元素方法
-  [] 4. 读写json文件  // 预计周天完成
+- [ok] 支持json与字典互转方法  
+  [ok] 1. json转字典
+  [ok] 2. 字典转json
+  [ok] 3. json查找元素方法
+  [ok] 4. 读写json文件  // 预计周天完成
 
-- [] json转excel
 - [] excel转json
+- [] json转excel
 - [] 将html table 直接转存到excel文件
 
 - []示例

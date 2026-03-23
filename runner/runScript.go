@@ -15,6 +15,7 @@ import (
 
 func runScript(source string) {
 
+	source = utils.RemoveNewlinesInBackticks(source)
 	source = utils.ProcessCommandLine(source)
 	source = utils.EscapeQuotesInBackticks(source)
 	source = globalAnalysisScript(source)

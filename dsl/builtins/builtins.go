@@ -47,4 +47,9 @@ func RegisterBuiltins(interp *interpreter.Interpreter) {
 		interp.Global().SetFunc(name, fn)
 	}
 
+	// 注册 json
+	for name, fn := range jsonFn {
+		interp.Global().SetFunc(name, fn)
+	}
+
 }

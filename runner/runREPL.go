@@ -32,8 +32,6 @@ func runREPL(sigChan chan os.Signal) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		//fmt.Println(line)
-
 		line = utils.ProcessCommandLine(line)
 		line = utils.EscapeQuotesInBackticks(line)
 		line = globalAnalysisLine(line)

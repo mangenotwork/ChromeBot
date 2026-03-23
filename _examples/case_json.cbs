@@ -1,0 +1,29 @@
+var s = `
+{  
+    "name": "John", 
+    "age": 30, 
+    "car": null 
+}`
+print(s)
+
+// jsonDict(str) 将json字符串转换成字典
+var s2 = `{ "name": "John", "age": 30 }`
+var s3 = json(s2)
+print(s3) // dict {name: "John", age: 30}
+
+// json(arg) 将字典转换成json字符串
+var s4 = json(s3)
+print(s4) // string {"name": "John", "age": 30}
+
+// jsonFind(str, find) 查找json字符串  find是查询节点 如： {a:[{b:1},{b:2}]}  find=/a/[0]  =>   {b:1}   find=a/[0]/b  =>  1
+var s5 = `{ "name": "John", "age": 30, "city": "New York", "hobbies": ["reading", "swimming", "gaming"] }`
+var s6 = jsonFind(s5, "/city")
+print(s6) // string New York
+var s7 = jsonFind(s5, "/hobbies/[0]")
+print(s7) // string reading
+
+// jsonIS(str) 判断是否是json字符串
+print(jsonIS(s4))
+
+// jsonSave(arg, path) 将变量转存到本地文件，数据内容为json(格式化输出)
+jsonSave(s3, "json.txt")

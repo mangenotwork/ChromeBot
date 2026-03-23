@@ -15,21 +15,20 @@ import (
 func EscapeQuotesInBackticks(input string) string {
 
 	lines := strings.Split(input, "\n")
-	// 预编译正则（提升性能）
 	reBacktick := regexp.MustCompile("`([^`]*)`")    // 匹配`包裹的内容
 	reDoubleQuote := regexp.MustCompile(`"([^"]*)"`) // 匹配"包裹的内容
-
-	// 步骤2：遍历每行处理
 	processedLines := make([]string, len(lines))
-	for i, line := range lines {
-		trimmedLine := strings.TrimLeft(line, " \t")
-		if trimmedLine == "" || !strings.HasPrefix(trimmedLine, "chrome") {
-			Debug("没 chrome 不需要处理 -> ", line)
-			processedLines[i] = line
-			continue
-		}
 
-		// 处理1：反引号` `内的"→\"、'→\"（新增单引号转义）
+	for i, line := range lines {
+
+		// trimmedLine := strings.TrimLeft(line, " \t")
+		// if trimmedLine == "" || !strings.HasPrefix(trimmedLine, "chrome") {
+		// 	Debug("没 chrome 不需要处理 -> ", line)
+		// 	processedLines[i] = line
+		// 	continue
+		// }
+
+		// 处理反引号` `内的"→\"、'→\"（新增单引号转义）
 		line = reBacktick.ReplaceAllStringFunc(line, func(match string) string {
 			content := match[1 : len(match)-1] // 去掉首尾`
 			// 先替换双引号，再替换单引号（顺序不影响）
@@ -38,7 +37,7 @@ func EscapeQuotesInBackticks(input string) string {
 			return "`" + escaped + "`"
 		})
 
-		// 处理2：双引号""内的'→\'
+		// 处理双引号""内的'→\'
 		line = reDoubleQuote.ReplaceAllStringFunc(line, func(match string) string {
 			content := match[1 : len(match)-1] // 去掉首尾"
 			escaped := strings.ReplaceAll(content, `'`, `\'`)
@@ -48,7 +47,6 @@ func EscapeQuotesInBackticks(input string) string {
 		processedLines[i] = line
 	}
 
-	// 步骤3：还原换行结构
 	result := strings.Join(processedLines, "\n")
 	Debug("处理完成，总行数：", len(processedLines))
 	Debug("result：", result)
@@ -288,4 +286,21 @@ func cleanPath(path string) string {
 	}
 
 	return path
+}
+
+func RemoveNewlinesInBackticks(input string) string {
+	reBacktick := regexp.MustCompile(`(` + "`" + `)([\s\S]*?)(` + "`" + `)`)
+
+	result := reBacktick.ReplaceAllStringFunc(input, func(match string) string {
+		content := match[1 : len(match)-1]
+		// 移除所有换行符（\n、\r\n、\r）
+		noNewlines := strings.ReplaceAll(content, "\r\n", "")
+		noNewlines = strings.ReplaceAll(noNewlines, "\n", "")
+		noNewlines = strings.ReplaceAll(noNewlines, "\r", "")
+		noNewlines = regexp.MustCompile(`\s+`).ReplaceAllString(noNewlines, " ")
+		noNewlines = strings.TrimSpace(noNewlines)
+		return "`" + noNewlines + "`"
+	})
+
+	return result
 }
