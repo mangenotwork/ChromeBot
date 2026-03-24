@@ -1,0 +1,8 @@
+// 采集东方财经网排名数据到excel文件
+// 东方财经网 ： https://fund.eastmoney.com/data/fundranking.html
+
+chrome init
+chrome req="https://fund.eastmoney.com/data/fundranking.html"
+chrome pause=2
+var res=NowTabGetPointIDHTML("table", "dbtable")
+HtmlToTableSaveExcel(res[0], "D:\\test_eastmoney_1.xlsx")

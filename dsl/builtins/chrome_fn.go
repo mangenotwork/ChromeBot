@@ -4,8 +4,9 @@ import (
 	"ChromeBot/browser"
 	"ChromeBot/dsl/interpreter"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"time"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 var chromeFn = map[string]interpreter.Function{
@@ -17,6 +18,7 @@ var chromeFn = map[string]interpreter.Function{
 	"NowTabGetPointHTML":       chromeNowTabGetPointHTML,       // NowTabGetPointHTML(label, attr, val)  获取指定位置的HTML， 用标签， 标签属性， 属性值来定位
 	"NowTabGetPointIDHTML":     chromeNowTabGetPointIDHTML,     // NowTabGetPointIDHTML(label, val) 获取指定位置的HTML， 用标签， 标签属性为id， 属性值来定位
 	"NowTabGetPointClassHTML":  chromeNowTabGetPointClassHTML,  // NowTabGetPointClassHTML(label, val) 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
+	"HtmlToTableSaveExcel":     chromeHtmlToTableSaveExcel,     // HtmlToTableSaveExcel(html, path, 可选参数sheetName) 提取html内的表格数据保存为Excel
 }
 
 func chromeShowDemoTree(args []interpreter.Value) (interpreter.Value, error) {
@@ -138,8 +140,13 @@ func chromeNowTabGetPointHTML(args []interpreter.Value) (interpreter.Value, erro
 		fmt.Println("NowTabGetPointHTML 函数运行错误: ", err.Error())
 	}
 
-	fmt.Println("NowTabGetPointHTML 结果: ", res)
-	return res, err
+	//fmt.Println("NowTabGetPointHTML 结果: ", res)
+
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, interpreter.Value(v))
+	}
+	return resVal, err
 }
 
 func chromeNowTabGetPointIDHTML(args []interpreter.Value) (interpreter.Value, error) {
@@ -168,7 +175,8 @@ func chromeNowTabGetPointIDHTML(args []interpreter.Value) (interpreter.Value, er
 		fmt.Println("NowTabGetPointIDHTML 函数运行错误: ", err.Error())
 	}
 
-	fmt.Println("NowTabGetPointIDHTML 结果: ", res)
+	//fmt.Println("NowTabGetPointIDHTML 结果: ", res)
+
 	resVal := make([]interpreter.Value, 0)
 	for _, v := range res {
 		resVal = append(resVal, v)
@@ -202,6 +210,72 @@ func chromeNowTabGetPointClassHTML(args []interpreter.Value) (interpreter.Value,
 		fmt.Println("NowTabGetPointClassHTML 函数运行错误: ", err.Error())
 	}
 
-	fmt.Println("NowTabGetPointClassHTML 结果: ", res)
-	return res, err
+	//fmt.Println("NowTabGetPointClassHTML 结果: ", res)
+
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, interpreter.Value(v))
+	}
+
+	return resVal, err
+}
+
+func chromeHtmlToTableSaveExcel(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) < 2 {
+		return nil, fmt.Errorf("HtmlToTableSaveExcel(html, path, 可选参数sheetName) 需要两个参数")
+	}
+
+	htmlStr, htmlStrOK := args[0].(string)
+	if !htmlStrOK {
+		return nil, fmt.Errorf("HtmlToTableSaveExcel(html, path, 可选参数sheetName) html 参数要求是字符串 ")
+	}
+
+	path, pathOK := args[1].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("HtmlToTableSaveExcel(html, path, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 3 {
+		sheetName, sheetNameOK = args[2].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	res := gt.RegHtmlTable(htmlStr)
+	if len(res) == 0 {
+		res = gt.RegHtmlTableOnly(htmlStr)
+	}
+
+	if len(res) == 0 {
+		return nil, fmt.Errorf("HtmlToTableSaveExcel(html, path, 可选参数sheetName) html 中没有table标签 ")
+	}
+
+	tableStr := res[0]
+
+	inputData := make([]interpreter.Value, 0)
+	trList := gt.RegHtmlTr(tableStr)
+	for _, v := range trList {
+		trList := gt.RegHtmlTr(v)
+		for _, v := range trList {
+			inputDataItem := make([]interpreter.Value, 0)
+			tdList := gt.RegHtmlTdTxt(v)
+			for _, item := range tdList {
+				item := gt.RegDelHtml(item)
+				inputDataItem = append(inputDataItem, item)
+			}
+			if len(inputDataItem) > 0 {
+				inputData = append(inputData, inputDataItem)
+			}
+		}
+	}
+
+	// fmt.Println(" len(inputData) ", len(inputData))
+	// fmt.Println(" len(inputData)[0] ", inputData[0])
+
+	saveArgs := []interpreter.Value{path, inputData, sheetName}
+
+	return excelSave(saveArgs)
 }

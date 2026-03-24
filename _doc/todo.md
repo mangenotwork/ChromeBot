@@ -145,10 +145,10 @@
 
 - [ok] excel转json
 - [ok] json转excel
-- [] 将html table 直接转存到excel文件
+- [ok] 将html table 直接转存到excel文件
 
 - []示例
-  [] 1. 采集东方财经网排名数据到excel文件
+  [ok] 1. 采集东方财经网排名数据到excel文件
   [] 2. 采集阳光高考的学习数据到excel文件
   [] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
   [] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart

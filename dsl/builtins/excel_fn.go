@@ -53,7 +53,7 @@ var excelFn = map[string]interpreter.Function{
 }
 
 func excelSave(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) <= 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelSave(arg, path) 需要两个参数")
 	}
 
@@ -131,7 +131,7 @@ func excelSave(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelReadList(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelReadList(path, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -158,7 +158,7 @@ func excelReadList(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelReadDict(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelReadDict(path, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -186,7 +186,7 @@ func excelReadDict(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelShow(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelShow(path, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -209,7 +209,7 @@ func excelShow(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelInfo(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelInfo(path) 需要一个参数")
 	}
 
@@ -230,7 +230,7 @@ func excelInfo(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelSheetInfo(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelSheetInfo(path, sheetName) 需要两个参数")
 	}
 
@@ -260,7 +260,7 @@ func excelSheetInfo(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelSheet(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return nil, fmt.Errorf("ExcelSheet(path) 需要一个参数")
 	}
 
@@ -281,7 +281,7 @@ func excelSheet(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelGetByCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelGetByCell(path, cell, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -312,7 +312,7 @@ func excelGetByCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelGetByPos(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelGetByPos(path, row, col, 可选参数sheetName) 需要三个参数")
 	}
 
@@ -348,7 +348,7 @@ func excelGetByPos(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelSetByCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelSetByCell(path, cell, value, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -383,7 +383,7 @@ func excelSetByCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelSetByPos(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 4 {
+	if len(args) < 4 {
 		return nil, fmt.Errorf("ExcelSetByPos(path, row, col, value, 可选参数sheetName) 需要四个参数")
 	}
 
@@ -423,7 +423,7 @@ func excelSetByPos(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelClearByCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelClearByCell(path, cell, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -455,7 +455,7 @@ func excelClearByCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelClearByPos(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelClearByPos(path, row, col, 可选参数sheetName)  需要三个参数")
 	}
 
@@ -492,7 +492,7 @@ func excelClearByPos(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelReadRow(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelReadRow(path, row, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -524,7 +524,7 @@ func excelReadRow(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelWriteRow(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelWriteRow(path, row, list, 可选参数sheetName) 需要三个参数")
 	}
 
@@ -569,7 +569,7 @@ func excelWriteRow(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelDeleteRow(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelDeleteRow(path, row, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -603,7 +603,7 @@ func excelDeleteRow(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelReadCol(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelReadCol(path, col, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -635,7 +635,7 @@ func excelReadCol(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelWriteCol(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelWriteCol(path, col, list, 可选参数sheetName) 需要三个参数")
 	}
 
@@ -680,7 +680,7 @@ func excelWriteCol(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelDeleteCol(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelDeleteCol(path, col, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -714,7 +714,7 @@ func excelDeleteCol(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelReadCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelReadCell(path, cell, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -746,7 +746,7 @@ func excelReadCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelWriteCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelWriteCell(path, cell, list, 可选参数sheetName) 需要三个参数")
 	}
 
@@ -791,7 +791,7 @@ func excelWriteCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelDeleteCell(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelDeleteCell(path, cell, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -825,7 +825,7 @@ func excelDeleteCell(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelImg(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -863,7 +863,7 @@ func excelImg(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelCellStyle(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelCellStyle(path, cell, style, 可选参数sheetName) 需要两个参数")
 	}
 
@@ -903,7 +903,7 @@ func excelCellStyle(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelMergeCells(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelMergeCells(path, startCell, endCell, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -941,7 +941,7 @@ func excelMergeCells(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelSetFormula(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 3 {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -979,7 +979,7 @@ func excelSetFormula(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelToJson(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelToJson(path, rowHead, 可选参数sheetName)  需要两个参数")
 	}
 
@@ -1027,7 +1027,7 @@ func excelToJson(args []interpreter.Value) (interpreter.Value, error) {
 }
 
 func excelFromJson(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		return nil, fmt.Errorf("ExcelFromJson(path, json, 可选参数sheetName) 需要两个参数")
 	}
 
