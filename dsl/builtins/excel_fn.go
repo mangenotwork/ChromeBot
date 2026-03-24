@@ -3,13 +3,14 @@ package builtins
 import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/helper/excel"
+	"encoding/json"
 	"fmt"
 
 	gt "github.com/mangenotwork/gathertool"
 )
 
 var excelFn = map[string]interpreter.Function{
-	"ExcelSave":        excelSave,        // ExcelSave(arg, path, 可选参数sheetName) 将变量保存到excel
+	"ExcelSave":        excelSave,        // ExcelSave(path, arg, 可选参数sheetName) 将变量保存到excel
 	"ExcelReadList":    excelReadList,    // ExcelReadList(path, 可选参数sheetName) 读取excel返回二维列表
 	"ExcelReadDict":    excelReadDict,    // ExcelReadDict(path, 可选参数sheetName) 读取excel返回字典
 	"ExcelShow":        excelShow,        // ExcelShow(path, 可选参数sheetName) 显示excel
@@ -44,17 +45,19 @@ var excelFn = map[string]interpreter.Function{
 
 	"ExcelMergeCells": excelMergeCells, // ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) 合并单元格 cell 标签 A1 B1 C1 ...
 	"ExcelSetFormula": excelSetFormula, // ExcelSetFormula(path, cell, formula, 可选参数sheetName) 给单元格设置公式 标签 A1 B1 C1 ...  formula公式 如"SUM(A1:A3)"
+	"ExcelToJson":     excelToJson,     // ExcelToJson(path, rowHead, 可选参数sheetName) rowHead:第几行作为key 如果是0key默认为 标签 A1 B1 C1 ...
+	"ExcelFromJson":   excelFromJson,   // ExcelFromJson(path, json, 可选参数sheetName) json:json字符串数据
 
 	// todo AddChart 添加图表到单元格
 
 }
 
 func excelSave(args []interpreter.Value) (interpreter.Value, error) {
-	if len(args) != 2 {
+	if len(args) <= 2 {
 		return nil, fmt.Errorf("ExcelSave(arg, path) 需要两个参数")
 	}
 
-	path, pathOK := args[1].(string)
+	path, pathOK := args[0].(string)
 	if !pathOK {
 		return nil, fmt.Errorf("ExcelSave(arg, path)  path 参数要求是字符串 ")
 	}
@@ -68,15 +71,15 @@ func excelSave(args []interpreter.Value) (interpreter.Value, error) {
 		}
 	}
 
-	fmt.Printf("%T", args[0])
+	fmt.Printf("%T", args[1])
 
 	dataType := "list"
 	dataList := make([][]string, 0)
 	dataMap := make([]map[string]string, 0)
 
-	switch args[0].(type) {
+	switch args[1].(type) {
 	case []interpreter.Value:
-		for _, v := range args[0].([]interpreter.Value) {
+		for _, v := range args[1].([]interpreter.Value) {
 			switch v := v.(type) {
 			case []interpreter.Value:
 				dataItem := make([]string, 0)
@@ -102,14 +105,14 @@ func excelSave(args []interpreter.Value) (interpreter.Value, error) {
 	case interpreter.DictType:
 		dataType = "dict"
 		dataMapItem := make(map[string]string)
-		for k, vv := range args[0].(interpreter.DictType) {
+		for k, vv := range args[1].(interpreter.DictType) {
 			dataMapItem[gt.Any2String(k)] = gt.Any2String(vv)
 		}
 		dataMap = append(dataMap, dataMapItem)
 
 	default:
 		dataList = append(dataList, make([]string, 0))
-		dataList[0] = append(dataList[0], gt.Any2String(args[0]))
+		dataList[0] = append(dataList[0], gt.Any2String(args[1]))
 
 	}
 
@@ -973,4 +976,93 @@ func excelSetFormula(args []interpreter.Value) (interpreter.Value, error) {
 	}
 	fmt.Println("合并单元格成功")
 	return nil, nil
+}
+
+func excelToJson(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("ExcelToJson(path, rowHead, 可选参数sheetName)  需要两个参数")
+	}
+
+	path, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	rowHead, rowHeadOK := args[1].(int64)
+	if !rowHeadOK {
+		return nil, fmt.Errorf("ExcelSetFormula(path, cell, formula, 可选参数sheetName) rowHeadOK 参数要求是正整数 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 3 {
+		sheetName, sheetNameOK = args[2].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	jsonStr := "{}"
+
+	if rowHead == 0 {
+		data, err := excel.ReadExcelToList(path, sheetName)
+		if err != nil {
+			fmt.Println("[Err]读取Excel文件失败:", err)
+			return nil, err
+		}
+
+		jsonB, _ := json.Marshal(data)
+		jsonStr = string(jsonB)
+	} else {
+		data, err := excel.ReadExcelToMapRowHead(path, sheetName, int(rowHead))
+		if err != nil {
+			fmt.Println("[Err]读取Excel文件失败:", err)
+			return nil, err
+		}
+		jsonB, _ := json.Marshal(data)
+		jsonStr = string(jsonB)
+	}
+
+	return jsonStr, nil
+}
+
+func excelFromJson(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("ExcelFromJson(path, json, 可选参数sheetName) 需要两个参数")
+	}
+
+	_, pathOK := args[0].(string)
+	if !pathOK {
+		return nil, fmt.Errorf("ExcelFromJson(path, json, 可选参数sheetName) path 参数要求是字符串 ")
+	}
+
+	jsonStr, jsonStrOK := args[1].(string)
+	if !jsonStrOK {
+		return nil, fmt.Errorf("ExcelFromJson(path, json, 可选参数sheetName) json 参数要求是字符串 ")
+	}
+
+	sheetName := ""
+	sheetNameOK := false
+	if len(args) == 3 {
+		sheetName, sheetNameOK = args[2].(string)
+		if !sheetNameOK {
+			return nil, fmt.Errorf("ExcelImg(path, cell, imgPath, 可选参数sheetName) 可选参数 sheetName 参数要求是字符串 ")
+		}
+	}
+
+	fmt.Println("jsonStr = ", jsonStr)
+
+	if !gt.IsJson(jsonStr) {
+		fmt.Println("[Err]不是json字符串")
+		return false, nil
+	}
+
+	dataMap, err := gt.Json2Map(jsonStr)
+	if err != nil {
+		fmt.Println("[Err]不是合法的json字符串")
+		return nil, fmt.Errorf("[Err]不是合法的json字符串")
+	}
+
+	saveArgs := []interpreter.Value{args[0], convertToDictType(dataMap), sheetName}
+	return excelSave(saveArgs)
 }

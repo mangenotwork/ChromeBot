@@ -149,6 +149,54 @@ func ReadExcelToMap(path, sheetName string) ([]map[string]string, error) {
 	return result, nil
 }
 
+// ReadExcelToMapRowHead 读取Excel全部数据到字典列表指定rowHead（表头为key）
+// path: 文件路径
+// sheetName: 工作表名称
+// return: 字典列表、错误
+func ReadExcelToMapRowHead(path, sheetName string, rowHead int) ([]map[string]string, error) {
+	f, err := excelize.OpenFile(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	sheetName = getTargetSheetName(f, sheetName)
+
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return nil, fmt.Errorf("工作表无数据")
+	}
+	if rowHead < 0 {
+		rowHead = 0
+	}
+	if rowHead > len(rows) {
+		rowHead = len(rows) - 1
+	}
+
+	headers := rows[rowHead-1]
+	result := make([]map[string]string, 0, len(rows)-1)
+
+	for i, row := range rows {
+		if i == rowHead-1 {
+			continue
+		}
+		item := make(map[string]string)
+		for colIdx, header := range headers {
+			if colIdx < len(row) {
+				item[header] = row[colIdx]
+			} else {
+				item[header] = "" // 空值填充
+			}
+		}
+		result = append(result, item)
+	}
+
+	return result, nil
+}
+
 // GetExcelInfo 获取Excel文件基本信息（工作表列表、文件属性等）
 // path: 文件路径
 // return: 信息字符串、错误

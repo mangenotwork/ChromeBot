@@ -149,7 +149,7 @@ func jsonSave(args []interpreter.Value) (interpreter.Value, error) {
 	jsonStr, strOK = args[0].(string)
 	if strOK {
 
-		if gt.IsJson(jsonStr) {
+		if !gt.IsJson(jsonStr) {
 			fmt.Println("[Err]不是json字符串")
 			return false, nil
 		}

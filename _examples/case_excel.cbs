@@ -1,26 +1,26 @@
 // 1 写入 list
 var data1 = [1,2,3,4]
-ExcelSave(data1, "D:\\test1.xlsx")
+ExcelSave("D:\\test1.xlsx", data1)
 
 // 2 写入 二维list
 var data2 = [[1,2,3,4],[5,6,7,8]]
-ExcelSave(data2, "D:\\test2.xlsx")
+ExcelSave("D:\\test2.xlsx", data2)
 
 // 3 写入 map
 var data3 = {"姓名":"张三","年龄":"25"}
-ExcelSave(data3, "D:\\test3.xlsx")
+ExcelSave("D:\\test3.xlsx", data3)
 
 // 4 写入 数组map
 var data4 = [{"姓名":"张三","年龄":"25"}, {"姓名":"李四","年龄":"30"}]
-ExcelSave(data4, "D:\\test4.xlsx")
+ExcelSave("D:\\test4.xlsx", data4)
 
 // 5 写入 字符串
 var data5 = "55555"
-ExcelSave(data5, "D:\\test5.xlsx")
+ExcelSave("D:\\test5.xlsx", data5)
 
 // 6 写入 数字
 var data6 = 666666
-ExcelSave(data6, "D:\\test6.xlsx")
+ExcelSave("D:\\test6.xlsx", data6)
 
 // 读取到列表
 var a1 = ExcelReadList("D:\\test1.xlsx")
