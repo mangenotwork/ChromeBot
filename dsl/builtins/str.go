@@ -4,13 +4,14 @@ import (
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/utils"
 	"fmt"
+	"strings"
+
 	gt "github.com/mangenotwork/gathertool"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/transform"
-	"strings"
 )
 
 // 字符串相关的内置方法，字符串的正则方法
@@ -50,6 +51,7 @@ var strFn = map[string]interpreter.Function{
 	"RegDel":          strRegDel,          // RegDel 函数 常见的删除方法支持html删除指定标签内容 第一个参数是字符串，第二个是方法名或标签名
 	"RegHas":          strRegHas,          // RegHas 函数 使用正则判断是否存在某内容 第一个参数是字符串，第二个是方法名
 	"SaveToFile":      strSaveToFile,      // SaveToFile 函数 将字符串保存到指定函数 todo 扩展为内置函数 save 任意变量都能保存到文件
+
 }
 
 func strUpper(args []interpreter.Value) (interpreter.Value, error) {
@@ -590,7 +592,6 @@ func strRegDel(args []interpreter.Value) (interpreter.Value, error) {
 	if len(args) != 2 {
 		return nil, fmt.Errorf("RegDel(str,str) 需要2个参数 ")
 	}
-	fmt.Printf("strRegDel %T str = %s ", args[0], args[0])
 	str, ok1 := args[0].(string)
 	if !ok1 {
 		return nil, fmt.Errorf("RegDel(str,str) 第一个参数要求是字符串 ")

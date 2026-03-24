@@ -1,0 +1,54 @@
+// 采集阳光高考的学校数据到excel文件
+// https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml
+
+
+chrome init  // 打开浏览器
+chrome req="https://gaokao.chsi.com.cn/sch/search--ss-on,option-qg,searchType-1,start-0.dhtml"
+chrome pause=2
+var res=NowTabGetPointClassHTML("div", "sch-item")
+var data = []
+for item in res {
+
+    var name = HTMLGetPointClass(item, "a", "name js-yxk-yxmc text-decoration-none")
+    var nameList = RegDel(name[0], "html")
+    var nameText = join(nameList, "")
+    nameText = CleanWhitespace(nameText)
+    nameText = replace(nameText, " ", "")
+    print("nameText = ", nameText)
+
+    var department = HTMLGetPointClass(item, "a", "sch-department text-decoration-none")
+    var departmentList = RegDel(department[0], "html")
+    var departmentText = join(departmentList, "")
+    departmentText = CleanWhitespace(departmentText)
+    departmentText = replace(departmentText, " ", "")
+    print("departmentText = ", departmentText)
+
+    var level = HTMLGetPointClass(item, "a", "sch-level text-decoration-none")
+    var levelList = RegDel(level[0], "html")
+    var levelText = join(levelList, "")
+    levelText = CleanWhitespace(levelText)
+    levelText = replace(levelText, " ", "")
+    print("levelText = ", levelText)
+
+    var manyidu = HTMLGetPointClass(item, "div", "manyidu-star-box js-alert-myd") 
+    var manyiduList = RegDel(manyidu[0], "html")
+    var manyiduText = join(manyiduList, "")
+    manyiduText = CleanWhitespace(manyiduText)
+    manyiduText = replace(manyiduText, " ", "")
+    print("manyiduText = ", manyiduText)
+    
+    var dataItem = {
+        "name": nameText,
+        "department": departmentText,
+        "level" : levelText,
+        "manyidu" : manyiduText
+    }
+
+    print("dataItem = ", dataItem)
+
+    data = append(data, dataItem)
+}
+
+print(data)
+ExcelSave("D:\\test_gaokao_1.xlsx", data)
+

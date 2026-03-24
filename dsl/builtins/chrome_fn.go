@@ -18,6 +18,9 @@ var chromeFn = map[string]interpreter.Function{
 	"NowTabGetPointHTML":       chromeNowTabGetPointHTML,       // NowTabGetPointHTML(label, attr, val)  获取指定位置的HTML， 用标签， 标签属性， 属性值来定位
 	"NowTabGetPointIDHTML":     chromeNowTabGetPointIDHTML,     // NowTabGetPointIDHTML(label, val) 获取指定位置的HTML， 用标签， 标签属性为id， 属性值来定位
 	"NowTabGetPointClassHTML":  chromeNowTabGetPointClassHTML,  // NowTabGetPointClassHTML(label, val) 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
+	"HTMLGetPoint":             chromeHTMLGetPoint,             // HTMLGetPoint(html, label, attr, val)  获取指定位置的HTML， 用标签， 标签属性， 属性值来定位
+	"HTMLGetPointID":           chromeHTMLGetPointID,           // HTMLGetPointID(html, label, val) 获取指定位置的HTML， 用标签， 标签属性为id， 属性值来定位
+	"HTMLGetPointClass":        chromeHTMLGetPointClass,        // HTMLGetPointClass(html, label, val) 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
 	"HtmlToTableSaveExcel":     chromeHtmlToTableSaveExcel,     // HtmlToTableSaveExcel(html, path, 可选参数sheetName) 提取html内的表格数据保存为Excel
 }
 
@@ -278,4 +281,105 @@ func chromeHtmlToTableSaveExcel(args []interpreter.Value) (interpreter.Value, er
 	saveArgs := []interpreter.Value{path, inputData, sheetName}
 
 	return excelSave(saveArgs)
+}
+
+func chromeHTMLGetPoint(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 4 {
+		return nil, fmt.Errorf("HTMLGetPoint(html, label, attr, val) 需要四个参数")
+	}
+
+	htmlStr, htmlStrOK := args[0].(string)
+	if !htmlStrOK {
+		return nil, fmt.Errorf("HTMLGetPoint(html, label, attr, val) html 参数要求是字符串 ")
+	}
+
+	label, labelOK := args[1].(string)
+	if !labelOK {
+		return nil, fmt.Errorf("HTMLGetPoint(html, label, attr, val) label 参数要求是字符串 ")
+	}
+
+	attr, attrOK := args[2].(string)
+	if !attrOK {
+		return nil, fmt.Errorf("HTMLGetPoint(html, label, attr, val) attr 参数要求是字符串 ")
+	}
+
+	val, valOK := args[3].(string)
+	if !valOK {
+		return nil, fmt.Errorf("HTMLGetPoint(html, label, attr, val) val 参数要求是字符串 ")
+	}
+
+	res, err := gt.GetPointHTML(htmlStr, label, attr, val)
+	if err != nil {
+		fmt.Println("NowTabGetPointHTML 函数运行错误: ", err.Error())
+	}
+
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, interpreter.Value(v))
+	}
+	return resVal, err
+}
+
+func chromeHTMLGetPointID(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("HTMLGetPointID(html, label, val) 需要三个参数")
+	}
+
+	htmlStr, htmlStrOK := args[0].(string)
+	if !htmlStrOK {
+		return nil, fmt.Errorf("HTMLGetPointID(html, label, val) html 参数要求是字符串 ")
+	}
+
+	label, labelOK := args[1].(string)
+	if !labelOK {
+		return nil, fmt.Errorf("HTMLGetPointID(html, label, val) label 参数要求是字符串 ")
+	}
+
+	val, valOK := args[2].(string)
+	if !valOK {
+		return nil, fmt.Errorf("HTMLGetPointID(html, label, val) val 参数要求是字符串 ")
+	}
+
+	res, err := gt.GetPointIDHTML(htmlStr, label, val)
+	if err != nil {
+		fmt.Println("NowTabGetPointIDHTML 函数运行错误: ", err.Error())
+	}
+
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, v)
+	}
+	return resVal, err
+}
+
+func chromeHTMLGetPointClass(args []interpreter.Value) (interpreter.Value, error) {
+	if len(args) != 3 {
+		return nil, fmt.Errorf("HTMLGetPointClass(html, label, val) 需要三个参数")
+	}
+
+	htmlStr, htmlStrOK := args[0].(string)
+	if !htmlStrOK {
+		return nil, fmt.Errorf("HTMLGetPointClass(html, label, val) html 参数要求是字符串 ")
+	}
+
+	label, labelOK := args[1].(string)
+	if !labelOK {
+		return nil, fmt.Errorf("HTMLGetPointClass(html, label, val) 参数要求是字符串 ")
+	}
+
+	val, valOK := args[2].(string)
+	if !valOK {
+		return nil, fmt.Errorf("HTMLGetPointClass(html, label, val) 参数要求是字符串 ")
+	}
+
+	res, err := gt.GetPointClassHTML(htmlStr, label, val)
+	if err != nil {
+		fmt.Println("NowTabGetPointClassHTML 函数运行错误: ", err.Error())
+	}
+
+	resVal := make([]interpreter.Value, 0)
+	for _, v := range res {
+		resVal = append(resVal, interpreter.Value(v))
+	}
+	return resVal, err
 }

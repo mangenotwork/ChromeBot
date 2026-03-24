@@ -11,3 +11,5 @@ for var i=0; i<10; i++ { // 从第二页开始
     chrome pause=2
 }
 chrome close
+
+

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -22,6 +23,8 @@ func (i *Interpreter) registerBuiltins() {
 		"delete":  builtinDelete, // delete 删除字典或列表的指定元素, arg第一个是字典或列表， 第二个是要找的元素
 		"type_of": builtinTypeOf, // type_of 获取变量类型
 		"copy":    builtinCopy,   // copy 深拷贝变量
+		"append":  builtAppend,   // append(list, item) 给List增加元素
+		"exit":    builtExit,     // exit 退出程序
 	}
 	for name, fn := range builtinFnMap {
 		i.global.SetFunc(name, fn)
@@ -39,9 +42,9 @@ func builtinPrint(args []Value) (Value, error) {
 			fmt.Print(" ")
 		}
 
-		//fmt.Printf("%T \n", arg)
+		fmt.Printf("%T \n", arg)
 		switch arg := arg.(type) {
-		case DictType, map[interface{}]interface{}, []map[interface{}]interface{}, []map[string]string:
+		case DictType, []Value, map[interface{}]interface{}, []map[interface{}]interface{}, []map[string]string:
 			fmt.Print(dictToString(arg))
 
 		default:
@@ -348,5 +351,20 @@ func builtinCopy(args []Value) (Value, error) {
 		return nil, nil
 	}
 	_ = gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(args[1])
+	return nil, nil
+}
+
+func builtAppend(args []Value) (Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("append(list, item) 需要两个参数")
+	}
+
+	args[0] = append(args[0].([]Value), args[1])
+
+	return args[0], nil
+}
+
+func builtExit(args []Value) (Value, error) {
+	os.Exit(0)
 	return nil, nil
 }

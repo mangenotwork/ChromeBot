@@ -50,3 +50,10 @@ print(d2)
 print(d1["one"]+d1["two"])
 var d3 = {"nested": {"inner": 42}}
 print(d3["nested"]["inner"])
+
+
+var a = []
+a = append(a, {"a":1})
+a = append(a, {"a":2})
+print(a)
+exit()

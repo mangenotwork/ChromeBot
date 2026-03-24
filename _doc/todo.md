@@ -148,8 +148,8 @@
 - [ok] 将html table 直接转存到excel文件
 
 - []示例
-  [ok] 1. 采集东方财经网排名数据到excel文件
-  [] 2. 采集阳光高考的学习数据到excel文件
+  [ok] 1. eastmoney_2.cbs 采集东方财经网排名数据到excel文件
+  [ok] 2. gaokaochsi_2.cbs 采集阳光高考的学校数据到excel文件
   [] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
   [] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart
 
@@ -301,6 +301,11 @@
 - 是否要支持goto语法
 - 多脚本场景下 是否设计 CALL语法来支持调用运行其他脚本，用CALL语句可将程序执行控制权转移到一个脚本过程中，在其他脚本结束后，再将控制权返回到调用脚本的下一行。
   （设计的时候需考虑同步调用，异步调用，调用时候值的传递，调用之间的通讯机制等等）
+- excel 加解密，隐藏，锁定功能 
+- excel copy sheets在新的sheets上操作，保证原有的shhets不变
+- excel 获取指定区域的数据，按照矩形 x0,y1 的坐标矩形， 如 A1:C20
+- excel 多个sheets之间的交互
+- 识别html页面组件或控件的方法，列举可操作的节点
 - 
 
 ----
