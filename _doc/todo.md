@@ -150,8 +150,8 @@
 - [ok]示例
   [ok] 1. eastmoney_2.cbs 采集东方财经网排名数据到excel文件
   [ok] 2. gaokaochsi_2.cbs 采集阳光高考的学校数据到excel文件
-  [fail] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
-  [ok] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart
+  [fail] 3. lottery_1.cbs 采集中国体彩的大乐透历史开奖数据到excel文件
+  [ok] 4. douban_1.cbs 采集豆瓣电影排行榜到excel文件
 
 - [ok] 改测试的bug和优化
 - [ok] bug和优化验收

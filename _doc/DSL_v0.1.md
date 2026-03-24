@@ -264,6 +264,17 @@ var d1 = {"one": 1, "two": 2}
 print(type_of(d1))
 ```
 
+- append(list, item) 给List增加元素
+```
+var a = []
+a = append(a, {"a":1})
+a = append(a, {"a":2})
+print(a)
+```
+
+- exit() 退出程序
+
+
 ### 内置函数 - 数学方法 math
 
 - abs 计算绝对值
@@ -832,6 +843,14 @@ NowTabGetPointIDHTML(label, val) // label:标签 id的val:属性值
 NowTabGetPointClassHTML(label, val) // label:标签 class的val:属性值
 ```
 
+- HTMLGetPoint(html, label, attr, val)  获取指定位置的HTML， 用标签， 标签属性， 属性值来定位
+  
+- HTMLGetPointID(html, label, val) 获取指定位置的HTML， 用标签， 标签属性为id， 属性值来定位
+  
+- HTMLGetPointClass(html, label, val) 获取指定位置的HTML， 用标签， 标签属性为class， 属性值来定位
+  
+- HtmlToTableSaveExcel(html, path, 可选参数sheetName) 提取html内的表格数据保存为Excel
+
 ### host 系统方法关键字
 
 host 系统方法关键字,主要编写系统脚本所用到，如文件管理，系统信息查询，系统相关的等等方法，与系统bat文件脚本一样; 
@@ -893,5 +912,101 @@ Whois("www.baidu.com")
 ```
 SearchPort("192.168.1.1")
 ```
+
+### Json相关方法
+- jsonDict(str) 将json字符串转换成字典
+```
+jsonDict("{'name':'zhangsan'}")
+```
+
+- json(arg) 将字典转换成json字符串
+```
+json([1,2,3,4])
+```
+
+- jsonFind(str, find) 查找json字符串  find是查询节点 如： {a:[{b:1},{b:2}]}  find=/a/[0]  =>   {b:1}   find=a/[0]/b  =>  1
+```
+jsonFind("{'a':[{'b':1},{'b':2}]}", "a/[0]/b")
+```  
+
+- jsonIS(str) 判断是否是json字符串
+```
+jsonIS("{'name':'zhangsan'}")
+```
+
+- jsonSave(arg, path) 将变量转存到本地文件，数据内容为json(格式化输出)
+```
+jsonSave([1,2,3,4], "D:\\json.txt")
+```
+
+
+### Excel相关方法
+- ExcelSave(path, arg, 可选参数sheetName) 将变量保存到excel
+  
+- ExcelReadList(path, 可选参数sheetName) 读取excel返回二维列表
+
+- ExcelReadDict(path, 可选参数sheetName) 读取excel返回字典
+
+- ExcelShow(path, 可选参数sheetName) 显示excel
+
+- ExcelInfo(path) 获取excel信息
+
+- ExcelSheetInfo(path, sheetName) 获取excel的sheet信息
+
+- ExcelSheet(path) 获取excel的sheet信息
+
+- ExcelGetByCell(path, cell, 可选参数sheetName) 通过位置标签获取excel数据   cell 标签 A1 B1 C1 ...
+
+- ExcelGetByPos(path, row, col, 可选参数sheetName) 通过位置获取excel数据
+
+- ExcelSetByCell(path, cell, value, 可选参数sheetName) 通过位置标签设置excel数据   cell 标签 A1 B1 C1 ...
+
+- ExcelSetByPos(path, row, col, value, 可选参数sheetName) 通过位置设置excel数据
+
+- ExcelClearByCell(path, cell, 可选参数sheetName) 通过位置标签清除excel数据   cell 标签 A1 B1 C1 ...
+
+- ExcelClearByPos(path, row, col, 可选参数sheetName) 通过位置清除excel数据
+
+- ExcelReadRow(path, row, 可选参数sheetName)  读取指定行数据
+
+- ExcelWriteRow(path, row, list, 可选参数sheetName)  写入指定行数据
+
+- ExcelDeleteRow(path, row, 可选参数sheetName)  删除指定行数据
+
+- ExcelReadCol(path, col, 可选参数sheetName)  读取指定列数据
+
+- ExcelWriteCol(path, col, list, 可选参数sheetName)  写入指定列数据
+
+- ExcelDeleteCol(path, col, 可选参数sheetName)  删除指定列数据
+
+- ExcelReadCell(path, cell, 可选参数sheetName)  读取列 cell 标签 A B C ...
+
+- ExcelWriteCell(path, cell, list, 可选参数sheetName)  写入列 cell 标签 A B C ...
+
+- ExcelDeleteCell(path, cell, 可选参数sheetName)  删除指定列数据  cell 标签 A B C ...
+
+- ExcelImg(path, cell, imgPath, 可选参数sheetName)   插入图片 cell 标签 A1 B1 C1 ...
+
+- ExcelCellStyle(path, cell, style, 可选参数sheetName) 设置单元格样式 cell 标签 A1 B1 C1 ...
+```
+style {
+  	fontBold: 是否加粗
+ 	fontColor: 字体颜色（十六进制，如"FF0000"）
+ 	bgColor: 背景颜色（十六进制，如"E0E0E0"）
+ 	alignCenter: 是否居中
+}
+
+// 修改单元格样式
+ExcelCellStyle("D:\\test4.xlsx", "A1", {"fontBold":true, "fontColor":"FF1234", "bgColor":"E0E0E0", "alignCenter":true})
+
+```
+
+- ExcelMergeCells(path, startCell, endCell, 可选参数sheetName) 合并单元格 cell 标签 A1 B1 C1 ...
+
+- ExcelSetFormula(path, cell, formula, 可选参数sheetName) 给单元格设置公式 标签 A1 B1 C1 ...  formula公式 如"SUM(A1:A3)"
+
+- ExcelToJson(path, rowHead, 可选参数sheetName) rowHead:第几行作为key 如果是0key默认为 标签 A1 B1 C1 ...
+
+- ExcelFromJson(path, json, 可选参数sheetName) json:json字符串数据
 
 ### todo....
