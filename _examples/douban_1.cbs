@@ -1,0 +1,44 @@
+// 采集豆瓣电影排行榜到excel文件 
+// https://movie.douban.com/chart
+
+chrome init
+chrome req="https://movie.douban.com/chart"
+chrome pause=2
+var res = NowTabGetPointClassHTML("div", "pl2")
+var data = []
+for item in res {
+    print("item = ", item)
+
+    var title = RegHtmlText(item, "a")
+    title = join(title, "")
+    title = RegDel(title, "html")
+    title = join(title, "")
+    title = replace(title, " ", "")
+    title = CleanWhitespace(title)
+    print("title = ", title)
+
+    var user = RegHtmlText(item, "p")
+    user  = join(user, "")
+    user = CleanWhitespace(user)
+    print("user = ", user)
+
+    var score = RegHtmlText(item, "span")
+    score = join(score, "-")
+    score = CleanWhitespace(score)
+    print("score = ", score)
+
+    print("----\n")
+
+    var dataItem = {
+        "title": title,
+        "user": user,
+        "score" : score
+    }
+
+    print("dataItem = ", dataItem)
+
+    data = append(data, dataItem)
+}
+
+print(data)
+ExcelSave("D:\\test_douban_1.xlsx", data)

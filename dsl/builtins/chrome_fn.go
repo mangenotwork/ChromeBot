@@ -208,12 +208,14 @@ func chromeNowTabGetPointClassHTML(args []interpreter.Value) (interpreter.Value,
 		return "", err
 	}
 
+	fmt.Println("htmlText = ", htmlText)
+
 	res, err := gt.GetPointClassHTML(htmlText, label, val)
 	if err != nil {
 		fmt.Println("NowTabGetPointClassHTML 函数运行错误: ", err.Error())
 	}
 
-	//fmt.Println("NowTabGetPointClassHTML 结果: ", res)
+	fmt.Println("NowTabGetPointClassHTML 结果: ", res)
 
 	resVal := make([]interpreter.Value, 0)
 	for _, v := range res {

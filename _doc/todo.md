@@ -147,15 +147,15 @@
 - [ok] json转excel
 - [ok] 将html table 直接转存到excel文件
 
-- []示例
+- [ok]示例
   [ok] 1. eastmoney_2.cbs 采集东方财经网排名数据到excel文件
   [ok] 2. gaokaochsi_2.cbs 采集阳光高考的学校数据到excel文件
-  [] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
-  [] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart
+  [fail] 3. 采集中国体彩的大乐透历史开奖数据到excel文件  https://www.lottery.gov.cn/kj/kjlb.html?dlt
+  [ok] 4. 采集豆瓣电影排行榜到excel文件 https://movie.douban.com/chart
 
-- [] 改测试的bug和优化
-- [] bug和优化验收
-- [] 更新文档    // 预计0324完成
+- [ok] 改测试的bug和优化
+- [ok] bug和优化验收
+- [ok] 更新文档
 
 #### v0.0.5
 - [ok] 设计脚本配置 以 @ 开头, 全局的程序执行前就需要处理，优先解析并保存在全局常量，只有脚本模式下才有

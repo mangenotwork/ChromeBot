@@ -1,0 +1,10 @@
+// 采集中国体彩的大乐透历史开奖数据到excel文件  
+// https://www.lottery.gov.cn/kj/kjlb.html?dlt
+
+chrome init
+chrome req="https://www.lottery.gov.cn/kj/kjlb.html?dlt"
+chrome pause=2
+var res = NowTabGetPointClassHTML("table", "m-historyTab")
+print(res)
+print("res len = ", len(res))
+HtmlToTableSaveExcel(res[0], "D:\\test_lottery_1.xlsx")
