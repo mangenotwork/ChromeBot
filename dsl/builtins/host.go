@@ -9,24 +9,30 @@ import (
 )
 
 var hostSupport = map[string]bool{
-	"info": true,
-	"name": true,
-	"ip":   true,
-	"to":   true,
-	"disk": true,
-	"ls":   true,
-	"file": true,
-	"goto": true,
-	"from": true,
-	"s":    true,
-	"c":    true,
-	"d":    true,
-	"m":    true,
-	"cp":   true,
-	"r":    true,
-	"renm": true,
-	"w":    true,
-	"a":    true,
+	"info":  true,
+	"name":  true,
+	"ip":    true,
+	"to":    true,
+	"disk":  true,
+	"ls":    true,
+	"file":  true,
+	"goto":  true,
+	"from":  true,
+	"s":     true,
+	"c":     true,
+	"d":     true,
+	"m":     true,
+	"cp":    true,
+	"r":     true,
+	"renm":  true,
+	"w":     true,
+	"a":     true,
+	"ping":  true,
+	"port":  true,
+	"zip":   true,
+	"unzip": true,
+	"src":   true,
+	"dst":   true,
 }
 
 func hasHostSupport(cmd string) bool {
@@ -56,6 +62,11 @@ file : 操作系统文件
   - info=<path> : 文件或目录信息
   - w=<path> from=<arg> : 将文件内容写入文件
   - a=<path> from=<arg> : 将文件内容追加写入文件
+
+ping : ping命令
+port : 查看本机开放端口
+zip src=<path> dst=<path>  : zip压缩
+unzip src=<path> dst=<path> : unzip解压
 */
 func registerHost(interp *interpreter.Interpreter) {
 	interp.Global().SetFunc("host", func(args []interpreter.Value) (interpreter.Value, error) {
@@ -93,8 +104,8 @@ func registerHost(interp *interpreter.Interpreter) {
 		utils.Debug("argMap:", argMap)
 
 		toArg, isTo := argMap["to"]
-		gotoArg, isGoto := argMap["goto"]
-		fromArg, isFrom := argMap["from"]
+		// gotoArg, isGoto := argMap["goto"]
+		// fromArg, isFrom := argMap["from"]
 
 		_, hasInfo := argMap["info"]
 		_, hasName := argMap["name"]
@@ -104,6 +115,10 @@ func registerHost(interp *interpreter.Interpreter) {
 		if hasFile { // 解决命令冲突
 			hasInfo = false
 		}
+		pingArg, hasPing := argMap["ping"]
+		_, hasPort := argMap["port"]
+		_, hasZip := argMap["zip"]
+		_, hasUnZip := argMap["unzip"]
 
 		switch {
 
@@ -138,203 +153,241 @@ func registerHost(interp *interpreter.Interpreter) {
 			host.LS(lsArg)
 
 		case hasFile:
+			file(interp, argMap)
 
-			sArg, sOK := argMap["s"]
-			cArg, cOK := argMap["c"]
-			dArg, dOK := argMap["d"]
-			mArg, mOK := argMap["m"]
-			cpArg, cpOK := argMap["cp"]
-			rArg, rOK := argMap["r"]
-			renmArg, renmOK := argMap["renm"]
-			infoArg, infoOK := argMap["info"]
-			wArg, wOK := argMap["w"]
-			aArg, aOK := argMap["a"]
-			pathType := 1
-
-			taskCount := 0
-			for _, ok := range []bool{sOK, cOK, dOK, mOK, cpOK, rOK, renmOK, infoOK, wOK, aOK} {
-				if ok {
-					taskCount++
-				}
+		case hasPing:
+			ms, err := host.Ping(pingArg)
+			if err != nil {
+				fmt.Println("[Err]ping err : ", err.Error())
 			}
+			fmt.Printf("%dms\n", ms.Milliseconds())
 
-			if taskCount > 1 {
-				fmt.Println("[Err]一行指令代码只做一个任务")
+		case hasPort:
+			hostSearchPort([]interpreter.Value{"127.0.0.1"})
+
+		case hasZip, hasUnZip:
+			srcArg, srcOK := argMap["src"]
+			if !srcOK {
+				fmt.Println("[Err]未设置src")
 				break
 			}
-
-			switch {
-			case sOK:
-				fmt.Println("sArg = ", sArg)
-
-				rootArg, rootOK := argMap["root"]
-				if !rootOK {
-					rootArg = utils.ScriptDir
-				}
-
-				res, err := host.SearchFilesDir(rootArg, sArg, true, true)
-				if err != nil {
-					fmt.Println("[Err]搜索失败err:", err.Error())
-				}
-				utils.ShowJson(res)
-
-			case cOK:
-				cArg, pathType = host.CheckPath(cArg)
-				fmt.Println("cArg = ", cArg, " | pathType = ", pathType)
-				var err error
-				if pathType == 1 {
-					err = host.CreateFile(infoArg)
-				} else {
-					err = host.CreateDir(infoArg)
-				}
-				if err != nil {
-					fmt.Println("[Err]创建失败, err = ", err)
-				}
-
-			case dOK:
-				dArg, pathType = host.CheckPath(dArg)
-				fmt.Println("dArg = ", dArg, " | pathType = ", pathType)
-				err := host.DeleteFile(dArg)
-				if err != nil {
-					fmt.Println("[Err]删除失败, err = ", err)
-				}
-
-			case mOK:
-				mArg, pathType = host.CheckPath(mArg)
-				fmt.Println("mArg = ", mArg, " | pathType = ", pathType)
-				if !isGoto {
-					fmt.Println("[Err]缺少goto")
-					break
-				}
-				gotoArgPathType := 1
-				gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
-				fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
-
-				err := host.MoveFile(mArg, gotoArg)
-				if err != nil {
-					fmt.Println("[Err]移动失败, err = ", err)
-				}
-
-			case cpOK:
-				cpArg, pathType = host.CheckPath(cpArg)
-				fmt.Println("cpArg = ", cpArg, " | pathType = ", pathType)
-				if !isGoto {
-					fmt.Println("[Err]缺少goto")
-					break
-				}
-				gotoArgPathType := 1
-				gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
-				fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
-
-				err := host.CopyFile(cpArg, gotoArg)
-				if err != nil {
-					fmt.Println("[Err]复制失败, err = ", err)
-				}
-
-			case rOK:
-				rArg, pathType = host.CheckPath(rArg)
-				fmt.Println("rArg = ", rArg, " | pathType = ", pathType)
-				if !isTo {
-					fmt.Println("[Err]缺少to")
-					break
-				}
-				toArgPathType := 1
-				toArg, toArgPathType = host.CheckPath(toArg)
-				fmt.Println("toArg = ", toArg, " | toArgPathType = ", toArgPathType)
-
-				str, err := host.ReadFileToString(rArg)
-				if err != nil {
-					fmt.Println("[Err]读取文件失败, err = ", err)
-					break
-				}
-
-				if isTo {
-					interp.Global().SetVar(toArg, str)
-				}
-
-			case renmOK:
-				renmArg, pathType = host.CheckPath(renmArg)
-				fmt.Println("renmArg = ", renmArg, " | pathType = ", pathType)
-				if !isGoto {
-					fmt.Println("[Err]缺少goto")
-					break
-				}
-				gotoArgPathType := 1
-				gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
-				fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
-
-				err := host.RenameOrMove(renmArg, gotoArg)
-				if err != nil {
-					fmt.Println("[Err]重命名失败, err = ", err)
-				}
-
-			case infoOK:
-				infoArg, pathType = host.CheckPath(infoArg)
-				fmt.Println("infoArg = ", infoArg, " | pathType = ", pathType)
-				rse := make(interpreter.DictType)
-				var err error
-				if pathType == 1 {
-					rse, err = host.GetFileInfo(infoArg)
-				} else {
-					rse, err = host.GetDirInfo(infoArg)
-				}
-				if err != nil {
-					fmt.Println("[Err]获取文件或目录信息失败, err = ", err)
-				}
-				fmt.Println("Info : ")
-				utils.ShowJson(rse)
-				if isTo {
-					interp.Global().SetVar(toArg, rse)
-				}
-
-			case wOK:
-				wArg, pathType = host.CheckPath(wArg)
-				fmt.Println("wArg = ", wArg, " | pathType = ", pathType)
-				if !isFrom {
-					fmt.Println("[Err]缺少from")
-					break
-				}
-				fromArgPathType := 1
-				fromArg, fromArgPathType = host.CheckPath(fromArg)
-				fmt.Println("fromArg = ", fromArg, " | fromArgPathType = ", fromArgPathType)
-
-				strVal, strValOK := interp.Global().GetVar(wArg)
-				if !strValOK {
-					fmt.Printf("[Err]%s变量不存在\n", fromArg)
-					break
-				}
-
-				err := host.WriteFileOverwrite(wArg, strVal.(string))
-				if err != nil {
-					fmt.Println("[Err]写入文件失败, err = ", err)
-				}
-
-			case aOK:
-				aArg, pathType = host.CheckPath(aArg)
-				fmt.Println("aArg = ", aArg, " | pathType = ", pathType)
-				if !isFrom {
-					fmt.Println("[Err]缺少from")
-					break
-				}
-				fromArgPathType := 1
-				fromArg, fromArgPathType = host.CheckPath(fromArg)
-				fmt.Println("fromArg = ", fromArg, " | fromArgPathType = ", fromArgPathType)
-
-				strVal, strValOK := interp.Global().GetVar(wArg)
-				if !strValOK {
-					fmt.Printf("[Err]%s变量不存在\n", fromArg)
-					break
-				}
-
-				err := host.AppendToFile(wArg, strVal.(string))
-				if err != nil {
-					fmt.Println("[Err]写入文件失败, err = ", err)
-				}
-
+			dstArg, dstOK := argMap["dst"]
+			if !dstOK {
+				fmt.Println("[Err]未设置dst")
+				break
 			}
+			if hasZip {
+				host.Zip(srcArg, dstArg)
+			}
+			if hasUnZip {
+				host.Unzip(srcArg, dstArg)
+			}
+
+		case hasUnZip:
 
 		}
 
 		return nil, nil
 	})
+}
+
+func file(interp *interpreter.Interpreter, argMap map[string]string) {
+
+	toArg, isTo := argMap["to"]
+	gotoArg, isGoto := argMap["goto"]
+	fromArg, isFrom := argMap["from"]
+
+	sArg, sOK := argMap["s"]
+	cArg, cOK := argMap["c"]
+	dArg, dOK := argMap["d"]
+	mArg, mOK := argMap["m"]
+	cpArg, cpOK := argMap["cp"]
+	rArg, rOK := argMap["r"]
+	renmArg, renmOK := argMap["renm"]
+	infoArg, infoOK := argMap["info"]
+	wArg, wOK := argMap["w"]
+	aArg, aOK := argMap["a"]
+	pathType := 1
+
+	taskCount := 0
+	for _, ok := range []bool{sOK, cOK, dOK, mOK, cpOK, rOK, renmOK, infoOK, wOK, aOK} {
+		if ok {
+			taskCount++
+		}
+	}
+
+	if taskCount > 1 {
+		fmt.Println("[Err]一行指令代码只做一个任务")
+		return
+	}
+
+	switch {
+	case sOK:
+		fmt.Println("sArg = ", sArg)
+
+		rootArg, rootOK := argMap["root"]
+		if !rootOK {
+			rootArg = utils.ScriptDir
+		}
+
+		res, err := host.SearchFilesDir(rootArg, sArg, true, true)
+		if err != nil {
+			fmt.Println("[Err]搜索失败err:", err.Error())
+		}
+		utils.ShowJson(res)
+
+	case cOK:
+		cArg, pathType = host.CheckPath(cArg)
+		fmt.Println("cArg = ", cArg, " | pathType = ", pathType)
+		var err error
+		if pathType == 1 {
+			err = host.CreateFile(infoArg)
+		} else {
+			err = host.CreateDir(infoArg)
+		}
+		if err != nil {
+			fmt.Println("[Err]创建失败, err = ", err)
+		}
+
+	case dOK:
+		dArg, pathType = host.CheckPath(dArg)
+		fmt.Println("dArg = ", dArg, " | pathType = ", pathType)
+		err := host.DeleteFile(dArg)
+		if err != nil {
+			fmt.Println("[Err]删除失败, err = ", err)
+		}
+
+	case mOK:
+		mArg, pathType = host.CheckPath(mArg)
+		fmt.Println("mArg = ", mArg, " | pathType = ", pathType)
+		if !isGoto {
+			fmt.Println("[Err]缺少goto")
+			break
+		}
+		gotoArgPathType := 1
+		gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
+		fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
+
+		err := host.MoveFile(mArg, gotoArg)
+		if err != nil {
+			fmt.Println("[Err]移动失败, err = ", err)
+		}
+
+	case cpOK:
+		cpArg, pathType = host.CheckPath(cpArg)
+		fmt.Println("cpArg = ", cpArg, " | pathType = ", pathType)
+		if !isGoto {
+			fmt.Println("[Err]缺少goto")
+			break
+		}
+		gotoArgPathType := 1
+		gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
+		fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
+
+		err := host.CopyFile(cpArg, gotoArg)
+		if err != nil {
+			fmt.Println("[Err]复制失败, err = ", err)
+		}
+
+	case rOK:
+		rArg, pathType = host.CheckPath(rArg)
+		fmt.Println("rArg = ", rArg, " | pathType = ", pathType)
+		if !isTo {
+			fmt.Println("[Err]缺少to")
+			break
+		}
+		toArgPathType := 1
+		toArg, toArgPathType = host.CheckPath(toArg)
+		fmt.Println("toArg = ", toArg, " | toArgPathType = ", toArgPathType)
+
+		str, err := host.ReadFileToString(rArg)
+		if err != nil {
+			fmt.Println("[Err]读取文件失败, err = ", err)
+			break
+		}
+
+		if isTo {
+			interp.Global().SetVar(toArg, str)
+		}
+
+	case renmOK:
+		renmArg, pathType = host.CheckPath(renmArg)
+		fmt.Println("renmArg = ", renmArg, " | pathType = ", pathType)
+		if !isGoto {
+			fmt.Println("[Err]缺少goto")
+			break
+		}
+		gotoArgPathType := 1
+		gotoArg, gotoArgPathType = host.CheckPath(gotoArg)
+		fmt.Println("gotoArg = ", gotoArg, " | gotoArgPathType = ", gotoArgPathType)
+
+		err := host.RenameOrMove(renmArg, gotoArg)
+		if err != nil {
+			fmt.Println("[Err]重命名失败, err = ", err)
+		}
+
+	case infoOK:
+		infoArg, pathType = host.CheckPath(infoArg)
+		fmt.Println("infoArg = ", infoArg, " | pathType = ", pathType)
+		rse := make(interpreter.DictType)
+		var err error
+		if pathType == 1 {
+			rse, err = host.GetFileInfo(infoArg)
+		} else {
+			rse, err = host.GetDirInfo(infoArg)
+		}
+		if err != nil {
+			fmt.Println("[Err]获取文件或目录信息失败, err = ", err)
+		}
+		fmt.Println("Info : ")
+		utils.ShowJson(rse)
+		if isTo {
+			interp.Global().SetVar(toArg, rse)
+		}
+
+	case wOK:
+		wArg, pathType = host.CheckPath(wArg)
+		fmt.Println("wArg = ", wArg, " | pathType = ", pathType)
+		if !isFrom {
+			fmt.Println("[Err]缺少from")
+			break
+		}
+		fromArgPathType := 1
+		fromArg, fromArgPathType = host.CheckPath(fromArg)
+		fmt.Println("fromArg = ", fromArg, " | fromArgPathType = ", fromArgPathType)
+
+		strVal, strValOK := interp.Global().GetVar(wArg)
+		if !strValOK {
+			fmt.Printf("[Err]%s变量不存在\n", fromArg)
+			break
+		}
+
+		err := host.WriteFileOverwrite(wArg, strVal.(string))
+		if err != nil {
+			fmt.Println("[Err]写入文件失败, err = ", err)
+		}
+
+	case aOK:
+		aArg, pathType = host.CheckPath(aArg)
+		fmt.Println("aArg = ", aArg, " | pathType = ", pathType)
+		if !isFrom {
+			fmt.Println("[Err]缺少from")
+			break
+		}
+		fromArgPathType := 1
+		fromArg, fromArgPathType = host.CheckPath(fromArg)
+		fmt.Println("fromArg = ", fromArg, " | fromArgPathType = ", fromArgPathType)
+
+		strVal, strValOK := interp.Global().GetVar(wArg)
+		if !strValOK {
+			fmt.Printf("[Err]%s变量不存在\n", fromArg)
+			break
+		}
+
+		err := host.AppendToFile(wArg, strVal.(string))
+		if err != nil {
+			fmt.Println("[Err]写入文件失败, err = ", err)
+		}
+
+	}
 }
