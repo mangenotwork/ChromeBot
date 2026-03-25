@@ -15,6 +15,8 @@ import (
 
 func runREPL(sigChan chan os.Signal) {
 
+	utils.ScriptDir, _ = os.Getwd()
+
 	interpreter.IsREPL = true
 
 	scanner := bufio.NewScanner(os.Stdin)

@@ -97,7 +97,7 @@
 - chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
 
 #### v0.0.7
-- [] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，非要用相对请设定工作目录，path=工作目录+文件名
+- [] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
   [] 1. file/dir s=<search word> 搜索文件或目录
   [] 2. file/dir c=<path> 创建文件或目录
   [] 3. file/dir d=<path> 删除文件或目录
@@ -105,8 +105,8 @@
   [] 5. file/dir cp=<path> goto=<path> 复制文件或目录
   [] 6. file/dir r=<path> to=<arg> 读文件
   [] 7. file/dir renm=<path> goto=<path> 文件或目录改名, 路径不同则移动
-  [] 8. ls=<path> 列出文件或目录
-  [] 9. file/dir info=<path> 文件或目录信息
+  [ok] 8. ls=<path> 列出文件或目录
+  [ok] 9. file/dir info=<path> 文件或目录信息
   [] 10. file/dir w=<path> from=<arg> 将文件内容写入文件
   [] 11. file/dir a=<path> from=<arg> 将文件内容追加写入文件
 
@@ -295,7 +295,7 @@
 - 实现全局 @redis  全局声明并连接redis as到指定对象 todo 只设计语法
 - http代理
 - websocket客户端
-- 研究和设计系统级别的变量和常量，多脚本可用，脚本运行中断但数据变量不还在，采用磁盘持久存储不会被内存释放
+- 研究和设计系统级别的变量和常量，多脚本可用，脚本运行中断但数据变量不还在，采用磁盘持久存储不会被内存释放 | 或者研究一下windows的注册表来存储变量
 - 脚本运行中ctrl+c这些来中断需要弹出框再次确认
 - 支持三目运算   参考 vba 的IIF 如: b = IIf(a > 10, 1, 2)
 - 是否要支持goto语法
@@ -306,6 +306,8 @@
 - excel 获取指定区域的数据，按照矩形 x0,y1 的坐标矩形， 如 A1:C20
 - excel 多个sheets之间的交互
 - 识别html页面组件或控件的方法，列举可操作的节点
+- host box 支持输入框
+- 支持邮箱发送来实现通知的效果
 - 
 
 ----

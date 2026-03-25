@@ -304,3 +304,19 @@ func RemoveNewlinesInBackticks(input string) string {
 
 	return result
 }
+
+func ShowJson(data any) {
+	if data == nil {
+		fmt.Println("{}")
+		return
+	}
+
+	// 格式化缩进输出，两个空格缩进
+	bytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Printf("JSON 格式化失败: %v\n", err)
+		return
+	}
+
+	fmt.Println(string(bytes))
+}

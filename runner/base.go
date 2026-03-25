@@ -4,12 +4,13 @@ import (
 	"ChromeBot/browser"
 	"ChromeBot/utils"
 	"fmt"
-	gt "github.com/mangenotwork/gathertool"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
+
+	gt "github.com/mangenotwork/gathertool"
 )
 
 const (
@@ -83,6 +84,7 @@ func Run() {
 		utils.Debug(source)
 
 		utils.RunMode = "Script"
+		utils.ScriptDir = filepath.Dir(filename)
 
 		runScript(string(source))
 
