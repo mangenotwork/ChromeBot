@@ -98,22 +98,22 @@
 
 #### v0.0.7
 - [] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
-  [] 1. file/dir s=<search word> 搜索文件或目录
-  [] 2. file/dir c=<path> 创建文件或目录
-  [] 3. file/dir d=<path> 删除文件或目录
-  [] 4. file/dir m=<path> goto=<path> 移动文件或目录
-  [] 5. file/dir cp=<path> goto=<path> 复制文件或目录
-  [] 6. file/dir r=<path> to=<arg> 读文件
-  [] 7. file/dir renm=<path> goto=<path> 文件或目录改名, 路径不同则移动
+  [ok] 1. file/dir s=<search word> 搜索文件或目录
+  [ok] 2. file/dir c=<path> 创建文件或目录
+  [ok] 3. file/dir d=<path> 删除文件或目录
+  [ok] 4. file/dir m=<path> goto=<path> 移动文件或目录
+  [ok] 5. file/dir cp=<path> goto=<path> 复制文件或目录
+  [ok] 6. file/dir r=<path> to=<arg> 读文件
+  [ok] 7. file/dir renm=<path> goto=<path> 文件或目录改名, 路径不同则移动
   [ok] 8. ls=<path> 列出文件或目录
   [ok] 9. file/dir info=<path> 文件或目录信息
-  [] 10. file/dir w=<path> from=<arg> 将文件内容写入文件
-  [] 11. file/dir a=<path> from=<arg> 将文件内容追加写入文件
+  [ok] 10. file/dir w=<path> from=<arg> 将文件内容写入文件
+  [ok] 11. file/dir a=<path> from=<arg> 将文件内容追加写入文件   // 预计0325完成
 
 - [] host 方法扩展  
   [] 1. ping 
   [] 2. port 已开放的端口
-  [] 3. zip 压缩解压文件  // 预计0325完成
+  [] 3. zip 压缩解压文件   // 预计0326完成
 
 - [] 示例
   [] 1. 循环ping ip
@@ -123,7 +123,7 @@
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档    // 预计0326完成
+- [] 更新文档    // 预计0327完成
 
 
 #### v0.0.6
