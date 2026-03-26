@@ -5,11 +5,6 @@ import (
 	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	gt "github.com/mangenotwork/gathertool"
-	"golang.org/x/sys/windows"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 	"io"
 	"io/ioutil"
 	"log"
@@ -20,12 +15,19 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
+	gt "github.com/mangenotwork/gathertool"
+	"golang.org/x/sys/windows"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 type ChromeProcess struct {
 	WindowSize     string          // 窗口大小
 	Proxy          string          // 代理
 	UserPath       string          // 隔离环境
+	Device         string          // 设备
 	Port           int             // 调试端口
 	PID            int             // 浏览器进程
 	NextID         int             // 自增消息id
@@ -53,7 +55,7 @@ func GetChromeInstance() *ChromeProcess {
 }
 
 // ChromeInit 初始化Chrome单例
-func ChromeInit(windowSize, proxy, userPath string, isNew bool) {
+func ChromeInit(windowSize, proxy, userPath, device string, isNew bool) {
 
 	if isInitialized && chromeInstance != nil {
 		isRun, _ := isProcessRunning(chromeInstance.PID)
@@ -114,7 +116,7 @@ func ChromeInit(windowSize, proxy, userPath string, isNew bool) {
 		fmt.Printf("当前谷歌浏览器工作目录：%s\n", userPath)
 
 		// 启动Chrome进程
-		pid, err := startChromeProcess(chromePath, windowSize, proxy, userPath, port)
+		pid, err := startChromeProcess(chromePath, windowSize, proxy, userPath, device, port)
 		if err != nil {
 			fmt.Printf("启动Chrome进程失败, err = %s", err.Error())
 			os.Exit(0)
@@ -155,7 +157,7 @@ func getAvailablePort() int {
 	return addr.Port
 }
 
-func startChromeProcess(chromePath, windowSize, proxy, userPath string, port int) (int, error) {
+func startChromeProcess(chromePath, windowSize, proxy, userPath, device string, port int) (int, error) {
 
 	args := []string{
 		"--remote-debugging-port=" + strconv.Itoa(port), // 远程调试端口
@@ -173,6 +175,12 @@ func startChromeProcess(chromePath, windowSize, proxy, userPath string, port int
 
 	if proxy != "" {
 		args = append(args, "--proxy-server="+proxy)
+	}
+
+	if deviceData, ok := chromeDevice[device]; ok {
+		fmt.Println("设置设备:", device)
+		args = append(args, deviceData.userAgent)
+		args = append(args, deviceData.windowSize)
 	}
 
 	cmd := exec.Command(chromePath, args...)
@@ -231,6 +239,7 @@ func DefaultNowTab(isOP bool) bool {
 	windowSize := chromeInstance.WindowSize
 	proxy := chromeInstance.Proxy
 	userPath := chromeInstance.UserPath
+	device := chromeInstance.Device
 	isNew := chromeInstance.IsNew
 	retryTimes := 4
 	firstTabWsOK := false
@@ -240,7 +249,7 @@ func DefaultNowTab(isOP bool) bool {
 		log.Println("[Chrome] 初始化失败 err = ", err)
 		for i := 0; i < retryTimes; i++ {
 			_ = Close()
-			ChromeInit(windowSize, proxy, userPath, isNew)
+			ChromeInit(windowSize, proxy, userPath, device, isNew)
 			var newErr error
 			targetId, webSocketDebuggerUrl, newErr = GetFirstTabWs()
 			if newErr == nil {
@@ -378,7 +387,7 @@ func ConnTab() (*websocket.Conn, error) {
 					msgDebug = msgDebug[0:4000] + " --> 太多了省略 ..."
 				}
 
-				utils.Debug("=====> 收到服务器回复: %s", msgDebug)
+				utils.Debugf("=====> 收到服务器回复: %s", msgDebug)
 
 				// getRequestImg(string(message))  // 监听到图片资源
 
@@ -406,9 +415,9 @@ func ConnTab() (*websocket.Conn, error) {
 							// 使用select+default，避免NowPageLoadEventFired无缓冲时阻塞
 							select {
 							case NowPageLoadEventFired <- sessionId:
-								utils.Debug("发送页面加载事件，sessionId: %s", sessionId)
+								utils.Debugf("发送页面加载事件，sessionId: %s", sessionId)
 							default:
-								utils.Debug("NowPageLoadEventFired通道阻塞，跳过发送: %s", sessionId)
+								utils.Debugf("NowPageLoadEventFired通道阻塞，跳过发送: %s", sessionId)
 							}
 						}
 					}

@@ -41,6 +41,10 @@ chromeBot.exe case.cbs
 - [定期对网站进行死链检查](_examples/check_domain_badlink.cbs)
 - [定期扫描端口](_examples/search_port.cbs)
 - [定期chrome交互网站](_examples/case_cron.cbs)
+- [采集东方财经网排名数据到excel文件](_examples/eastmoney_2.cbs)
+- [采集阳光高考的学校数据到excel文件](_examples/gaokaochsi_2.cbs) 
+- [采集中国体彩的大乐透历史开奖数据到excel文件](_examples/lottery_1.cbs)
+- [采集豆瓣电影排行榜到excel文件](_examples/douban_1.cbs)
 - todo...
 
 例子

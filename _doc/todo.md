@@ -70,17 +70,18 @@
 #### v0.0.9
 - chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。
 - chrome  DOMStorage  : 查询和修改 DOM 存储。
-- chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
-- chrome  Target : 目标对象
+
 
 #### v0.0.8
-- chrome 打开移动端模式
-- 支持字符串模板语法，替代加法拼接字符串
-- 检查当前是否支持该协议域
-- chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+- [ok] chrome device 指定多种设备启动浏览器
+- [] 支持字符串模板语法，替代加法拼接字符串
+- [] chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+- [] chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
+- [] chrome  Target : 目标对象
+
 
 #### v0.0.7
-- [] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
+- [ok] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
   [ok] 1. file/dir s=<search word> 搜索文件或目录
   [ok] 2. file/dir c=<path> 创建文件或目录
   [ok] 3. file/dir d=<path> 删除文件或目录
