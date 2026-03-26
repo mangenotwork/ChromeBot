@@ -88,12 +88,25 @@
 
 #### v0.0.8
 - [ok] chrome device 指定多种设备启动浏览器
-- [] 支持字符串模板语法，替代加法拼接字符串 // 0306 End
-- [] chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+- [ok] 支持字符串模板语法，替代加法拼接字符串 // 0306 End
+- [ok] chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
 - [] chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
+    [] Browser.close   关闭浏览器 
+    [] Browser.resetPermissions   重置权限
+    [] Browser.getWindowBounds 获取浏览器窗口的位置和大小。
+    [] Browser.getWindowForTarget 获取目标对象对应的浏览器窗口。
+    [] Browser.setContentsSize 设置浏览器窗口的大小。
+    [] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
+    
 - [] chrome  Target : 目标对象
+    []
+
 - [] chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。 // 0327 End
+    []
+
 - [] chrome  DOMStorage  : 查询和修改 DOM 存储。
+    []
+
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档  // 0328 End

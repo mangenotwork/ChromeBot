@@ -320,3 +320,18 @@ func ShowJson(data any) {
 
 	fmt.Println(string(bytes))
 }
+
+// JsonPrettyFormat 输入原始 JSON 字符串，返回美化格式化后的字符串
+func JsonPrettyFormat(jsonStr string) string {
+	// 用来存放格式化后的输出
+	var prettyJSON bytes.Buffer
+
+	// 用标准库格式化，缩进用 2 个空格
+	err := json.Indent(&prettyJSON, []byte(jsonStr), "", "  ")
+	if err != nil {
+		fmt.Println("[Err]json字符串格式错误")
+		return ""
+	}
+
+	return prettyJSON.String()
+}

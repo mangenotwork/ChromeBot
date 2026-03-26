@@ -4,6 +4,7 @@ import (
 	"ChromeBot/browser"
 	"ChromeBot/dsl/interpreter"
 	"ChromeBot/utils"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -40,6 +41,8 @@ var chromeSupport = map[string]bool{
 	"info":        true,
 	"as":          true,
 	"device":      true,
+	"cdp":         true,
+	"params":      true,
 }
 
 func hasChromeSupport(cmd string) bool {
@@ -78,6 +81,15 @@ device : 设置浏览器启动设备与init参数一起用， 目前支持: ipho
 
 	ipadMini,android,galaxy,galaxyS24,galaxyS23,galaxyS22,galaxyZFold5,huawei,huaweiMate60,
 	huaweiPura70,huaweiMagic6,xiaomi,xiaomi14,xiaomi13,redmi,oppo,vivo,pixel,pixel8,pixel7,androidPad
+
+cdp=<域> params=<jsonStr>: 发送 cdp指令  params是指令所需的参数要求是json字符串
+
+	SystemInfo.getFeatureState 获取Feature状态 ex: chrome cdp=`SystemInfo.getFeatureState` params=`{"feature":"webgl"}`
+					feature：gpu_acceleration(GPU 加速),vulkan(Vulkan 渲染),direct3d11(D3D11),canvas_oop_rasterization(画布离屏渲染),video_acceleration(视频硬件加速),webgl,webgl2,webgpu
+
+	SystemInfo.getInfo 获取系统信息信息 ex: chrome cdp=`SystemInfo.getInfo`
+
+	SystemInfo.getProcessInfo 获取正在运行的进程的相关信息 ex: chrome cdp=`SystemInfo.getProcessInfo`
 
 语法
 
@@ -141,6 +153,18 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if _, ok := argMap["init"]; ok {
 			op.opType = opInit
 			opNumber++
+		}
+
+		if val, ok := argMap["cdp"]; ok {
+			op.opType = opCDP
+			op.arg["cdp"] = val
+			opNumber++
+		}
+
+		if val, ok := argMap["params"]; ok {
+			if op.opType == opCDP {
+				op.arg["params"] = val
+			}
 		}
 
 		if _, ok := argMap["info"]; ok {
@@ -339,6 +363,15 @@ func registerChrome(interp *interpreter.Interpreter) {
 			if err != nil {
 				fmt.Println("[ERR]", err.Error())
 			}
+
+		case opCDP:
+			cdp := op.arg["cdp"].(string)
+			fmt.Println("执行 cdp : ", cdp)
+			params, paramsOK := op.arg["params"].(string)
+			if !paramsOK {
+				params = "{}"
+			}
+			runCDP(cdp, params)
 
 		case opTable:
 			fmt.Println("[Chrome]tab操作...")
@@ -552,6 +585,7 @@ type chromeOPType string
 
 var (
 	opInit       chromeOPType = "init"  // 初始化浏览器
+	opCDP        chromeOPType = "cdp"   // 与浏览器进行cdp交互
 	opInfo       chromeOPType = "info"  // 获取chrome info
 	opClose      chromeOPType = "close" // 关闭浏览器
 	opTable      chromeOPType = "tab"
@@ -565,33 +599,6 @@ var (
 	opTo         chromeOPType = "to"         // 将当前页面的html赋值到变量操作
 	opSave       chromeOPType = "save"       // 将当前页面的html保存到本地
 )
-
-//type executionPriorityLevel int
-//
-//var (
-//	executionPriorityLevel1 executionPriorityLevel = 1 // 优先级1：浏览器的直接操作
-//	executionPriorityLevel2 executionPriorityLevel = 2 // 优先级2：Table页签操作，等待时间
-//	executionPriorityLevel3 executionPriorityLevel = 3 // 优先级3：对Table页签进行输入网址
-//	executionPriorityLevel4 executionPriorityLevel = 4 // 优先级4：检查页面是否存在某元素或Xpath
-//	executionPriorityLevel5 executionPriorityLevel = 5 // 优先级5：对页面进行直接操作
-//	executionPriorityLevel6 executionPriorityLevel = 6 // 优先级6: 将页面进行输出
-//)
-//
-//// 执行优先级 顺序：小的在前
-//var executionPriority = map[chromeOPType]executionPriorityLevel{
-//	opInit:       executionPriorityLevel1,
-//	opClose:      executionPriorityLevel1,
-//	opTable:      executionPriorityLevel2,
-//	opReq:        executionPriorityLevel3,
-//	opClick:      executionPriorityLevel5,
-//	opInput:      executionPriorityLevel5,
-//	opCheck:      executionPriorityLevel4,
-//	opWait:       executionPriorityLevel2,
-//	opScroll:     executionPriorityLevel5,
-//	opScreenshot: executionPriorityLevel6,
-//	opTo:         executionPriorityLevel6,
-//	opSave:       executionPriorityLevel6,
-//}
 
 type chromeOperation struct {
 	opType chromeOPType                 // 操作的类型
@@ -693,4 +700,31 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 	}
 
 	return result
+}
+
+func runCDP(cdp string, params string) {
+
+	fmt.Println("cdp = ", cdp)
+	fmt.Println("params = ", params)
+
+	paramsMap := make(map[string]any)
+	err := json.Unmarshal([]byte(params), &paramsMap)
+	if err != nil {
+		fmt.Println("[Err] CDP params 解析失败 err:", err.Error())
+		return
+	}
+
+	switch cdp {
+	case "SystemInfo.getFeatureState":
+		feature := paramsMap["feature"].(string)
+		fmt.Println("run CDPSystemInfoGetFeatureState feature = ", feature)
+		browser.CDPSystemInfoGetFeatureState(feature)
+
+	case "SystemInfo.getInfo":
+		browser.CDPSystemInfoGetInfo()
+
+	case "SystemInfo.getProcessInfo":
+		browser.CDPSystemInfoGetProcessInfo()
+
+	}
 }

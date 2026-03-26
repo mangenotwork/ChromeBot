@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"html/template"
 	"os"
 	"strings"
 )
@@ -25,6 +26,7 @@ func (i *Interpreter) registerBuiltins() {
 		"copy":    builtinCopy,   // copy 深拷贝变量
 		"append":  builtAppend,   // append(list, item) 给List增加元素
 		"exit":    builtExit,     // exit 退出程序
+		"tpl":     builtTpl,      // tpl(str, dict) 字符串模板拼接  tpl("hello {{.word}}", {"word":"小红"}) ->  hello 小红
 	}
 	for name, fn := range builtinFnMap {
 		i.global.SetFunc(name, fn)
@@ -41,8 +43,6 @@ func builtinPrint(args []Value) (Value, error) {
 		if i > 0 {
 			fmt.Print(" ")
 		}
-
-		fmt.Printf("%T \n", arg)
 		switch arg := arg.(type) {
 		case DictType, []Value, map[interface{}]interface{}, []map[interface{}]interface{}, []map[string]string:
 			fmt.Print(dictToString(arg))
@@ -367,4 +367,29 @@ func builtAppend(args []Value) (Value, error) {
 func builtExit(args []Value) (Value, error) {
 	os.Exit(0)
 	return nil, nil
+}
+
+func builtTpl(args []Value) (Value, error) {
+	if len(args) != 2 {
+		fmt.Println("tpl(str, dict) 要求两个参数")
+		return "", fmt.Errorf(("tpl(str, dict) 要求两个参数"))
+	}
+
+	str, strOk := args[0].(string)
+	if !strOk {
+		fmt.Println("tpl(str, dict) 要求第一个参数是字符串")
+		return "", fmt.Errorf(("tpl(str, dict) 要求第一个参数是字符串"))
+	}
+
+	dict, dictOK := args[1].(DictType)
+	if !dictOK {
+		fmt.Println("tpl(str, dict) 要求第二个参数是字典")
+		return "", fmt.Errorf(("tpl(str, dict) 要求第二个参数是字典"))
+	}
+
+	t, _ := template.New("").Parse(str)
+	var buf bytes.Buffer
+	t.Execute(&buf, dict)
+	result := buf.String()
+	return result, nil
 }

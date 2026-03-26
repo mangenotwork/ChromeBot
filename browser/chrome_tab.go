@@ -1,13 +1,15 @@
 package browser
 
 import (
+	"ChromeBot/internal/host"
 	"ChromeBot/utils"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	gt "github.com/mangenotwork/gathertool"
 	"log"
 	"time"
+
+	"github.com/gorilla/websocket"
+	gt "github.com/mangenotwork/gathertool"
 )
 
 func getAllTabData() (map[string]string, error) {
@@ -52,6 +54,20 @@ func GetAllTab() (map[string]string, error) {
 		return map[string]string{}, nil
 	}
 	return getAllTabData()
+}
+
+func CheckTab() {
+	tabData, err := getAllTabData()
+	if err != nil {
+		fmt.Println("[Chrome] 获取所有tab出现错误, err : ", err)
+		return
+	}
+	fmt.Println("tabData = ", tabData)
+	if _, ok := tabData[chromeInstance.NowTabTargetId]; !ok {
+		host.ErrorTipBox("当前浏览器操作Tab已丢失，请检查！")
+	} else {
+		fmt.Println("存在tabid = ", chromeInstance.NowTabTargetId)
+	}
 }
 
 // NewTab 新建标签页
