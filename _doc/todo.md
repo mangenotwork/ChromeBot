@@ -3,82 +3,100 @@
 
 
 
-#### v0.1.1
+#### v0.1.1   // 04010 End
 - [] DSL v0.1, 继续完善语法文档和定版
 - [] chrome 脚本操作自动化功能完整，能应对主流业务场景
 - [] http+host 脚本操作自动化功能完成，能应对主流业务场景
-- 写blog,录制视，4~5月看数据最后总结
+- 4~5月写blog,录制视，6月看数据最后总结
 
-#### v0.0.19
-- chrome  WebAudio ： 此域名允许查看 Web Audio API。
-- chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。
 
-#### v0.0.18
+#### v0.0.14
 - chrome  ServiceWorker ： 服务任务
-- chrome  Storage ： 存储
-- chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
-- chrome  Tracing ： 追踪
+- chrome  WebAudio ： 此域名允许查看 Web Audio API。
+- chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 0408 End
 
-#### v0.0.17
+- 更多示例
+  1.
+  2.
+  3.
+  4.
+  5.
+  6.
+  7.
+
+// 0409 End
+
+#### v0.0.13
 - chrome  Profiler ： 分析器域
 - chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
 - chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
-- chrome  Security ： 安全域
+- chrome  Security ： 安全域   // 0406 End
+- chrome  Storage ： 存储
+- chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
+- chrome  Tracing ： 追踪
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档   // 0407 End
 
-#### v0.0.16
-- chrome  Page ： 与被检查页面相关的操作和事件属于页面域。
-- chrome  Performance ： 性能域
-- chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
-- chrome  Preload ： 预加载域
-
-#### v0.0.15
+#### v0.0.12
 - chrome  Media ： 该域允许对媒体元素进行详细检查。
 - chrome  Memory ： 内存相关
 - chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
-- chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
-
-#### v0.0.14
-- chrome  Inspector ： 检查域
-- chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。
-- chrome  LayerTree ： 层树
-- chrome  Log ： 提供对日志条目的访问权限。
-
-#### v0.0.13
-- chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
-- chrome  HeapProfiler : 堆分析器域
-- chrome  IndexedDB : IndexedDB相关的域
-- chrome  Input ： 输入域
-
-#### v0.0.12
-- chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
-- chrome  FileSystem : 文件系统域
-- chrome  DOM : 此域公开 DOM 读/写操作。
-- chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+- chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
+- chrome  Performance ： 性能域
+- chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
+- chrome  Preload ： 预加载域
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档   // 0405 End
 
 #### v0.0.11
-- chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
-- chrome  CacheStorage ： 缓存存储域
-- chrome  Extensions : 定义浏览器扩展的命令和事件。
-- chrome  FedCm : 该域允许与 FedCM 对话框进行交互。
+- chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
+- chrome  HeapProfiler : 堆分析器域
+- chrome  Inspector ： 检查域
+- chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
+- chrome  LayerTree ： 层树
+- chrome  Log ： 提供对日志条目的访问权限。
+- chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档   // 0403 End
 
 #### v0.0.10
+- chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
+- chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
+- chrome  FileSystem : 文件系统域
+- chrome  DOM : 此域公开 DOM 读/写操作。   // 0331 End
+- chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+- chrome  IndexedDB : IndexedDB相关的域
+- chrome  Input ： 输入域
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档   // 0401 End
+
+#### v0.0.9
 - chrome  CSS ： 此域公开 CSS 的读写操作。
 - chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
 - chrome  Emulation : 该域名模拟了页面的不同环境。
-- chrome  EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。
-
-#### v0.0.9
-- chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。
-- chrome  DOMStorage  : 查询和修改 DOM 存储。
-
+- chrome  EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
+- chrome  CacheStorage ： 缓存存储域
+- chrome  Extensions : 定义浏览器扩展的命令和事件。
+- chrome  FedCm : 该域允许与 FedCM 对话框进行交互。  
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档   // 0330 End
 
 #### v0.0.8
 - [ok] chrome device 指定多种设备启动浏览器
-- [] 支持字符串模板语法，替代加法拼接字符串
+- [] 支持字符串模板语法，替代加法拼接字符串 // 0306 End
 - [] chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
 - [] chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
 - [] chrome  Target : 目标对象
-
+- [] chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。 // 0327 End
+- [] chrome  DOMStorage  : 查询和修改 DOM 存储。
+- [] 改测试的bug和优化
+- [] bug和优化验收
+- [] 更新文档  // 0328 End
 
 #### v0.0.7
 - [ok] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
