@@ -863,6 +863,23 @@ name : 获取系统的名称
 ip : 获取系统的ip
 to : 将当前操作返回的值存入到指定变量-如果变量未声明这里会自动声明变量  <值类型是字符串>
 disk : todo 系统的磁盘信息
+ls : 列出文件或目录
+file : 操作系统文件
+  - s=<search word> root=<path> : 搜索文件或目录
+  - c=<path> : 创建文件或目录
+  - d=<path> : 删除文件或目录
+  - m=<path> goto=<path> : 移动文件或目录
+  - cp=<path> goto=<path> : 复制文件或目录
+  - r=<path> to=<arg> : 读文件
+  - renm=<path> goto=<path> : 文件或目录改名, 路径不同则移动
+  - info=<path> : 文件或目录信息
+  - w=<path> from=<arg> : 将文件内容写入文件
+  - a=<path> from=<arg> : 将文件内容追加写入文件
+
+ping : ping命令
+port : 查看本机开放端口
+zip src=<path> dst=<path>  : zip压缩
+unzip src=<path> dst=<path> : unzip解压
 
 ```
 host info
