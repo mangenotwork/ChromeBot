@@ -11,10 +11,41 @@
 
 
 #### v0.0.14
-- chrome  ServiceWorker ： 服务任务
-- chrome  WebAudio ： 此域名允许查看 Web Audio API。
-- chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 0408 End
+- []chrome  ServiceWorker ： 服务任务
+    []ServiceWorker.deliverPushMessage  推送消息
+    []ServiceWorker.disable  禁用
+    []ServiceWorker.dispatchPeriodicSyncEvent  定时同步
+    []ServiceWorker.dispatchSyncEvent  推送消息
+    []ServiceWorker.enable  启用
+    []ServiceWorker.setForceUpdateOnPageLoad  强制更新
+    []ServiceWorker.skipWaiting  跳过等待
+    []ServiceWorker.startWorker  启动工作
+    []ServiceWorker.stopAllWorkers  停止所有工作
+    []ServiceWorker.stopWorker  停止工作
+    []ServiceWorker.unregister  取消注册
+    []ServiceWorker.updateRegistration  更新注册
 
+- []chrome  WebAudio ： 此域名允许查看 Web Audio API。
+    []WebAudio.disable
+    []WebAudio.enable
+    []WebAudio.getRealtimeData   获取实时数据
+
+- []chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 0408 End
+    []WebAuthn.addCredential  添加凭证
+    []WebAuthn.addVirtualAuthenticator  添加虚拟身份验证器
+    []WebAuthn.clearCredentials  清空凭证
+    []WebAuthn.disable  禁用
+    []WebAuthn.enable  启用
+    []WebAuthn.getCredential  获取凭证
+    []WebAuthn.getCredentials  获取凭证
+    []WebAuthn.removeCredential  删除凭证
+    []WebAuthn.removeVirtualAuthenticator  删除虚拟身份验证器
+    []WebAuthn.setAutomaticPresenceSimulation  设置自动存在模拟
+    []WebAuthn.setCredentialProperties  设置凭证属性
+    []WebAuthn.setResponseOverrideBits  设置响应覆盖位
+    []WebAuthn.setUserVerified  设置用户验证
+
+- 执行js代码的能力
 - 更多示例
   1.
   2.
@@ -27,69 +58,511 @@
 // 0409 End
 
 #### v0.0.13
-- chrome  Profiler ： 分析器域
-- chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
-- chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
-- chrome  Security ： 安全域   // 0406 End
-- chrome  Storage ： 存储
-- chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
-- chrome  Tracing ： 追踪
+- []chrome  Profiler ： 分析器域
+    []Profiler.disable  禁用
+    []Profiler.enable  启用
+    []Profiler.getBestEffortCoverage  获取最佳效果覆盖
+    []Profiler.setSamplingInterval  设置采样间隔
+    []Profiler.start  
+    []Profiler.startPreciseCoverage  开始精确覆盖
+    []Profiler.stop  停止
+    []Profiler.stopPreciseCoverage  停止精确覆盖
+    []Profiler.takePreciseCoverage  获取精确覆盖
+
+- []chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
+    []PWA.changeAppUserSettings  更改 PWA 用户设置
+    []PWA.getOsAppState  获取操作系统应用状态
+    []PWA.install  安装 PWA
+    []PWA.launch  启动 PWA
+    []PWA.launchFilesInApp   启动文件
+    []PWA.openCurrentPageInApp  在应用中打开当前页面
+    []PWA.uninstall  卸载 PWA
+
+- []chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
+    []Runtime.addBinding 如果 executionContextId 为空，则会在所有被检查上下文的全局对象（包括之后创建的上下文）上添加具有给定名称的绑定，并且绑定在重新加载后仍然存在。
+    []Runtime.awaitPromise 使用给定的 Promise 对象 ID 向 Promise 添加处理程序。
+    []Runtime.callFunctionOn 调用给定对象上具有给定声明的函数。结果的对象组继承自目标对象。
+    []Runtime.compileScript 编译表达式。
+    []Runtime.disable 禁用执行上下文创建的报告。
+    []Runtime.discardConsoleEntries  丢弃收集到的异常和控制台 API 调用。
+    []Runtime.enable  启用事件报告功能，用于报告执行上下文的创建情况executionContextCreated。
+    []Runtime.evaluate  对全局对象求表达式的值。
+    []Runtime.getProperties  返回给定对象的属性。结果的对象组继承自目标对象。
+    []Runtime.globalLexicalScopeNames  返回全局作用域中的所有 let、const 和 class 变量。
+    []Runtime.queryObjects  返回指定对象组中的对象。
+    []Runtime.releaseObject  释放对象组中指定的对象。
+    []Runtime.releaseObjectGroup  释放对象组。
+    []Runtime.removeBinding  删除绑定。
+    []Runtime.runIfWaitingForDebugger  运行等待的调试器。
+    []Runtime.runScript  运行脚本。
+    []Runtime.setAsyncCallStackDepth  设置异步调用堆栈深度。
+    []Runtime.getExceptionDetails  获取异常详细信息。
+    []Runtime.getHeapUsage  获取堆使用情况。
+    []Runtime.getIsolateId  获取隔离 ID。
+    []Runtime.setCustomObjectFormatterEnabled  设置自定义对象格式化程序是否启用。
+    []Runtime.setMaxCallStackSizeToCapture  设置调用堆栈大小以捕获。
+    []Runtime.terminateExecution  终止执行。
+
+- []chrome  Security ： 安全域   // 0406 End
+    []Security.disable
+    []Security.enable
+    []Security.setIgnoreCertificateErrors  处理触发certificateError事件的证书错误。
+
+- []chrome  Storage ： 存储
+    []Storage.clearCookies  清除所有 Cookie。
+    []Storage.clearDataForOrigin  清除指定源的 Cookie。
+    []Storage.clearDataForStorageKey  清除指定 StorageKey 的 Cookie。
+    []Storage.getCookies  获取所有 Cookie。
+    []Storage.getUsageAndQuota  获取指定源的 Cookie 使用情况。
+    []Storage.setCookies  设置 Cookie。
+    []Storage.setProtectedAudienceKAnonymity  设置受保护的受众的 K-匿名。
+    []Storage.trackCacheStorageForOrigin  跟踪指定源的 CacheStorage。
+    []Storage.trackCacheStorageForStorageKey  跟踪指定 StorageKey 的 CacheStorage。
+    []Storage.trackIndexedDBForOrigin  跟踪指定源的 IndexedDB。
+    []Storage.trackIndexedDBForStorageKey  跟踪指定 StorageKey 的 IndexedDB。
+    []Storage.untrackCacheStorageForOrigin  停止跟踪指定源的 CacheStorage。
+    []Storage.untrackCacheStorageForStorageKey  停止跟踪指定 StorageKey 的 CacheStorage。
+    []Storage.untrackIndexedDBForOrigin  停止跟踪指定源的 IndexedDB。
+    []Storage.untrackIndexedDBForStorageKey  停止跟踪指定 StorageKey 的 IndexedDB。
+    []Storage.clearSharedStorageEntries  删除指定存储桶的共享存储条目。
+    []Storage.clearTrustTokens  删除所有共享存储令牌。
+    []Storage.deleteSharedStorageEntry  删除指定存储桶的共享存储条目。
+    []Storage.deleteStorageBucket  删除指定存储桶。
+    []Storage.getAffectedUrlsForThirdPartyCookieMetadata  获取指定源的受影响的 URL。
+    []Storage.getInterestGroupDetails  获取指定兴趣组详情。
+    []Storage.getRelatedWebsiteSets  获取相关网站集。
+    []Storage.getSharedStorageEntries  获取指定存储桶的共享存储条目。
+    []Storage.getSharedStorageMetadata  获取指定存储桶的共享存储元数据。
+    []Storage.getStorageKey   获取指定存储桶的存储密钥。
+    []Storage.getTrustTokens  获取所有共享存储令牌。
+    []Storage.overrideQuotaForOrigin  覆盖指定源的存储配额。
+    []Storage.resetSharedStorageBudget  重置共享存储的预算。
+    []Storage.runBounceTrackingMitigations  运行 Bunce Tracking 拦截。
+    []Storage.sendPendingAttributionReports  发送挂起的ATTRIBUTION报告。
+    []Storage.setAttributionReportingLocalTestingMode  设置ATTRIBUTION报告本地测试模式。
+    []Storage.setAttributionReportingTracking  设置ATTRIBUTION报告跟踪。
+    []Storage.setInterestGroupAuctionTracking  设置兴趣组拍卖跟踪。
+    []Storage.setInterestGroupTracking  设置兴趣组跟踪。
+    []Storage.setSharedStorageEntry  设置共享存储条目。
+    []Storage.setSharedStorageTracking  设置共享存储跟踪。
+    []Storage.setStorageBucketTracking  设置存储ucket跟踪。
+
+- []chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
+    []Tethering.bind
+    []Tethering.unbind
+
+- []chrome  Tracing ： 追踪
+    []Tracing.end 
+    []Tracing.start
+    []Tracing.getCategories  获取可用的跟踪类别
+    []Tracing.getTrackEventDescriptor  获取跟踪事件描述符
+    []Tracing.recordClockSyncMarker  记录时钟同步标记
+    []Tracing.requestMemoryDump  请求内存转储
+
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档   // 0407 End
 
 #### v0.0.12
-- chrome  Media ： 该域允许对媒体元素进行详细检查。
-- chrome  Memory ： 内存相关
-- chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
-- chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
-- chrome  Performance ： 性能域
-- chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
-- chrome  Preload ： 预加载域
+- []chrome  Media ： 该域允许对媒体元素进行详细检查。
+    []Media.disable
+    []Media.enable
+
+- []chrome  Memory ： 内存相关
+    []Memory.forciblyPurgeJavaScriptMemory  通过清除 V8 内存来模拟 OomIntervention。
+    []Memory.getAllTimeSamplingProfile  获取自渲染进程启动以来收集的本地内存分配概况。
+    []Memory.getBrowserSamplingProfile  获取自浏览器进程启动以来收集的本地内存分配概况。
+    []Memory.getDOMCounters  返回当前 DOM 对象计数器。
+    []Memory.getDOMCountersForLeakDetection 在准备渲染器进行泄漏检测后，返回 DOM 对象计数器。
+    []Memory.getSamplingProfile  检索自上次 startSampling调用以来收集的本地内存分配配置文件。
+    []Memory.prepareForLeakDetection  通过终止工作进程、停止拼写检查器、删除非必要的内部缓存、运行垃圾回收等方式，为泄漏检测做好准备。
+    []Memory.setPressureNotificationsSuppressed  启用/禁用所有进程中的内存压力通知抑制。
+    []Memory.simulatePressureNotification  模拟所有进程的内存压力通知。
+    []Memory.startSampling  开始收集本地内存配置文件。
+    []Memory.stopSampling  停止收集本地内存配置文件。
+
+- []chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
+    []Network.clearBrowserCache  清除浏览器缓存。
+    []Network.clearBrowserCookies  清除浏览器cookie。
+    []Network.deleteCookies  删除名称和 URL 或域/路径/分区密钥对匹配的浏览器 cookie。
+    []Network.disable  禁用网络域。
+    []Network.enable  启用网络域。
+    []Network.getCookies  返回当前 URL 的所有浏览器 Cookie。
+    []Network.getRequestPostData  返回请求中发送的 POST 数据。如果请求中未发送任何数据，则返回错误。
+    []Network.getResponseBody  返回针对给定请求提供的内容。
+    []Network.setBypassServiceWorker  切换是否忽略每个请求中的 Service Worker。
+    []Network.setCacheDisabled  切换是否忽略缓存。如果启用此选项true，则不会使用缓存。
+    []Network.setCookie  设置 Cookie。
+    []Network.setCookies  设置多个 Cookie。
+    []Network.setExtraHTTPHeaders  指定是否始终随此页面发出的请求发送额外的 HTTP 标头。
+    []Network.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。
+    []Network.clearAcceptedEncodingsOverride   清除 setAcceptedEncodings 设置的已接受编码
+    []Network.configureDurableMessages  配置将响应体存储在渲染器外部，以便跨进程导航时响应体仍然有效。
+    []Network.emulateNetworkConditionsByRule  使用 URL 匹配模式为单个请求启用网络条件模拟。
+    []Network.enableDeviceBoundSessions  设置跟踪设备绑定会话并获取初始会话集。
+    []Network.enableReportingApi  启用报表 API 的跟踪功能，报表 API 生成的事件现在将传递给客户端。
+    []Network.fetchSchemefulSite  获取特定来源的阴谋网站
+    []Network.getCertificate 返回 DER 编码的证书。
+    []Network.getResponseBodyForInterception  返回针对当前拦截的请求提供的内容。
+    []Network.getSecurityIsolationStatus  返回有关 COEP/COOP 隔离状态的信息。
+    []Network.loadNetworkResource  获取资源并返回其内容。
+    []Network.overrideNetworkState  覆盖 navigator.onLine 和 navigator.connection 的状态。
+    []Network.replayXHR  此方法会发送一个与原始 XMLHttpRequest 完全相同的新请求。
+    []Network.searchInResponseBody  在响应内容中搜索指定的字符串。
+    []Network.setAcceptedEncodings  设置可接受的内容编码列表。空列表表示不接受任何编码。
+    []Network.setAttachDebugStack  指定是否在请求中附加页面脚本堆栈 ID
+    []Network.setBlockedURLs 阻止URL加载。
+    []Network.setCookieControls  设置第三方 Cookie 访问控制。页面需要重新加载才能生效。
+    []Network.streamResourceContent 启用对给定请求 ID 的响应进行流式传输。如果启用，dataReceived 事件将包含在流式传输期间接收到的数据。
+    []Network.takeResponseBodyForInterceptionAsStream  返回指向表示响应体的流的句柄。
+    
+- []chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
+    []Page.addScriptToEvaluateOnNewDocument  在创建每一帧时（在加载帧的脚本之前），对给定的脚本进行评估。
+    []Page.bringToFront  将页面置于最前面（激活选项卡）。
+    []Page.captureScreenshot  截取页面屏幕截图。
+    []Page.close  关闭当前页面。
+    []Page.createIsolatedWorld  创建一个新的 isolatedWorld 并返回其 ID。
+    []Page.disable  禁用性能域。
+    []Page.enable  启用性能域。
+    []Page.getAppManifest  获取当前文档的已处理清单。此 API 始终等待清单加载完成。
+    []Page.getFrameTree   返回当前帧树结构。
+    []Page.getLayoutMetrics  返回与页面布局相关的指标，例如视口边界/缩放比例。
+    []Page.getNavigationHistory  返回当前页面的导航历史记录。
+    []Page.handleJavaScriptDialog 接受或关闭 JavaScript 发起的对话框（alert、confirm、prompt 或 onbeforeunload）。
+    []Page.navigate 将当前页面导航到指定的URL。
+    []Page.navigateToHistoryEntry  将当前页面导航到指定的历史记录条目。
+    []Page.printToPDF  以PDF格式打印页面。
+    []Page.reload   重新加载指定页面，可选择忽略缓存。
+    []Page.removeScriptToEvaluateOnNewDocument  从列表中移除指定的脚本。
+    []Page.resetNavigationHistory  重置当前页面的导航历史记录。
+    []Page.setBypassCSP 启用页面内容安全策略绕过功能。
+    []Page.setDocumentContent  将给定的标记设置为文档的 HTML。
+    []Page.setInterceptFileChooserDialog 拦截文件选择器请求并将控制权转移给协议客户端。
+    []Page.setLifecycleEventsEnabled 控制页面是否会发出生命周期事件。
+    []Page.stopLoading  页面停止加载
+    []Page.addCompilationCache  为给定的 URL 创建编译缓存。编译缓存不会在跨进程导航后保留。
+    []Page.captureSnapshot  返回页面快照的字符串形式。对于 MHTML 格式，序列化内容包括 iframe、Shadow DOM、外部资源和元素内联样式。
+    []Page.clearCompilationCache  清除已初始化的编译缓存。
+    []Page.crash  IO线程上的渲染器崩溃，生成小型转储文件。
+    []Page.generateTestReport 生成测试报告。
+    []Page.getAdScriptAncestry  获取广告脚本的祖先。
+    []Page.getAnnotatedPageContent 获取主框架的带注释页面内容。这是一个实验性命令，可能会有所更改。
+    []Page.getAppId   返回唯一的（PWA）应用 ID。仅当启用功能标志“WebAppEnableManifestId”时才返回值。
+    []Page.getInstallabilityErrors  获取当前页面的安装错误。
+    []Page.getOriginTrials 在给定帧上获取 Origin Trials。
+    []Page.getPermissionsPolicyState  获取给定帧的权限策略状态。
+    []Page.getResourceContent  返回给定资源的内容。
+    []Page.getResourceTree  返回当前帧/资源树结构。
+    []Page.produceCompilationCache  请求后端为指定的脚本生成编译缓存。
+    []Page.screencastFrameAck  确认前端已收到屏幕录制帧。
+    []Page.searchInResource  在资源内容中搜索给定的字符串。
+    []Page.setAdBlockingEnabled  在所有网站上启用 Chrome 的实验性广告过滤器。
+    []Page.setFontFamilies  设置通用字体系列。
+    []Page.setFontSizes  设置通用字体大小。
+    []Page.setPrerenderingAllowed  手动启用/禁用预渲染。 
+    []Page.setRPHRegistrationMode  自定义处理程序 API 的扩展
+    []Page.setSPCTransactionMode  设置安全支付确认交易模式。
+    []Page.setWebLifecycleState  尝试更新页面的 Web 生命周期状态。
+    []Page.startScreencast  开始使用screencastFrame事件发送每一帧。
+    []Page.stopScreencast  停止使用screencastFrame事件发送每一帧。
+    []Page.waitForDebugger  暂停页面执行。可以使用通用的 Runtime.runIfWaitingForDebugger 恢复执行。
+    
+- []chrome  Performance ： 性能域
+    []Performance.disable  禁用指标收集和报告功能。
+    []Performance.enable  启用指标收集和报告功能。
+    []Performance.getMetrics  获取运行时指标的当前值
+
+- []chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
+    []PerformanceTimeline.enable  之前已缓冲的事件会在方法返回之前报告
+
+- []chrome  Preload ： 预加载域
+    []Preload.disable  
+    []Preload.enable  
+
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档   // 0405 End
 
 #### v0.0.11
-- chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
-- chrome  HeapProfiler : 堆分析器域
-- chrome  Inspector ： 检查域
-- chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
-- chrome  LayerTree ： 层树
-- chrome  Log ： 提供对日志条目的访问权限。
-- chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
+- []chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
+    []HeadlessExperimental.beginFrame  向目标发送 BeginFrame 消息，并在帧完成后返回。可选择捕获生成的帧的屏幕截图。要求创建目标时启用了 BeginFrameControl。设计用于与 `--run-all-compositor-stages-before-draw` 参数配合使用
+
+- []chrome  HeapProfiler : 堆分析器域
+    []HeapProfiler.addInspectedHeapObject  允许控制台通过 $x 引用具有给定 id 的节点
+    []HeapProfiler.collectGarbage  垃圾回收
+    []HeapProfiler.disable  禁用堆分析器
+    []HeapProfiler.enable  启用堆分析器
+    []HeapProfiler.getHeapObjectId  返回给定对象在堆中的唯一标识符
+    []HeapProfiler.getObjectByHeapObjectId  返回给定对象在堆中的唯一标识符
+    []HeapProfiler.getSamplingProfile  获取采样配置文件
+    []HeapProfiler.startSampling  开始堆采样
+    []HeapProfiler.startTrackingHeapObjects  开始跟踪对象分配
+    []HeapProfiler.stopSampling   停止堆采样
+    []HeapProfiler.stopTrackingHeapObjects  停止跟踪对象分配
+    []HeapProfiler.takeHeapSnapshot   获取堆快照
+
+- []chrome  Inspector ： 检查域
+    []Inspector.disable 禁用检查器域通知。
+    []Inspector.enable 启用检查器域通知。
+
+- []chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
+    []IO.close  关闭数据流，丢弃所有临时备份存储。
+    []IO.read  阅读一段流媒体内容
+
+- []chrome  LayerTree ： 层树
+    []LayerTree.compositingReasons  说明合成给定图层的原因。
+    []LayerTree.disable 禁用堆肥树检查。
+    []LayerTree.enable  启用堆肥树检查功能。
+    []LayerTree.loadSnapshot 返回快照标识符。
+    []LayerTree.makeSnapshot  返回图层快照标识符。
+    []LayerTree.profileSnapshot  获取堆肥树性能数据。
+    []LayerTree.releaseSnapshot  释放快照。
+    []LayerTree.replaySnapshot  重新播放后端捕获的层快照。
+    []LayerTree.snapshotCommandLog  返回指定快照的命令日志。
+
+- []chrome  Log ： 提供对日志条目的访问权限。
+    []Log.clear 清除日志。
+    []Log.disable 禁用日志。
+    []Log.enable 启用日志。
+    []Log.startViolationsReport 启动违规报告。
+    []Log.stopViolationsReport 停止违规报告。
+
+- []chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
+    []Overlay.disable 禁用叠加。
+    []Overlay.enable 启用叠加。
+    []Overlay.getGridHighlightObjectsForTest 用于持久网格测试。
+    []Overlay.getHighlightObjectForTest 用于测试。
+    []Overlay.getSourceOrderHighlightObjectForTest  用于源顺序查看器测试。
+    []Overlay.hideHighlight 隐藏所有高亮显示。
+    []Overlay.highlightNode 高亮显示具有指定 ID 或指定 JavaScript 对象包装器的 DOM 节点。
+    []Overlay.highlightQuad 高亮显示给定四边形区域。坐标系是相对于主框架视口的绝对坐标。
+    []Overlay.highlightRect 高亮显示给定的矩形区域。坐标是相对于主框架视口的绝对坐标。
+    []Overlay.highlightSourceOrder 高亮显示具有给定 id 或给定 JavaScript 对象包装器的 DOM 节点的子节点的源顺序。
+    []Overlay.setInspectMode  进入“检查”模式。在此模式下，用户鼠标悬停的元素会高亮显示。
+    []Overlay.setPausedInDebuggerMessage  暂停 JavaScript 运行，并显示给定的消息。
+    []Overlay.setShowAdHighlights  设置是否显示广告高亮。
+    []Overlay.setShowContainerQueryOverlays  设置是否显示容器查询高亮。
+    []Overlay.setShowDebugBorders  设置是否显示调试边框。
+    []Overlay.setShowFlexOverlays  设置是否显示 Flex 高亮。
+    []Overlay.setShowFPSCounter  设置是否显示 FPS 计数器。
+    []Overlay.setShowGridOverlays  设置是否显示网格高亮。
+    []Overlay.setShowHinge  设置是否显示 3D 旋转轴。
+    []Overlay.setShowInspectedElementAnchor  设置是否显示被检查元素锚点。
+    []Overlay.setShowIsolatedElements  设置是否显示隔离元素。
+    []Overlay.setShowLayoutShiftRegions  设置是否显示布局偏移区域。
+    []Overlay.setShowPaintRects  设置是否显示绘制矩形。
+    []Overlay.setShowScrollBottleneckRects    设置是否显示滚动 bottleneck 矩形。
+    []Overlay.setShowScrollSnapOverlays  设置是否显示滚动 snap 覆盖。
+    []Overlay.setShowViewportSizeOnResize  设置是否显示视图大小。
+    []Overlay.setShowWindowControlsOverlay  设置是否显示窗口控制栏。
+
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档   // 0403 End
 
 #### v0.0.10
-- chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
-- chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
-- chrome  FileSystem : 文件系统域
-- chrome  DOM : 此域公开 DOM 读/写操作。   // 0331 End
-- chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
-- chrome  IndexedDB : IndexedDB相关的域
-- chrome  Input ： 输入域
+- []chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
+    []BackgroundService.clearEvents  清除该服务的所有已存储数据。
+    []BackgroundService.setRecording  设置服务的录制状态。
+    []BackgroundService.startObserving  启用服务的事件更新。
+    []BackgroundService.stopObserving  禁用该服务的事件更新。
+
+- []chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
+    []Fetch.continueRequest  继续发送请求，并可选择修改其某些参数。
+    []Fetch.continueWithAuth  在 authRequired 事件发生后，继续提供 authChallengeResponse 的请求。
+    []Fetch.disable  禁用 fetch 域。
+    []Fetch.enable  启用 requestPaused 事件的触发。请求将被暂停，直到客户端调用 failRequest、fulfillRequest 或 continueRequest/continueWithAuth 中的一个。
+    []Fetch.failRequest 使请求因指定原因失败。
+    []Fetch.fulfillRequest  对请求做出响应。
+    []Fetch.getResponseBody  使服务器接收响应正文并将其作为单个字符串返回。
+    []Fetch.takeResponseBodyAsStream  返回指向表示响应体的流的句柄。
+
+- []chrome  FileSystem : 文件系统域
+    []FileSystem.getDirectory 获取目录
+
+- []chrome  DOM : 此域公开 DOM 读/写操作。   // 0331 End
+    []DOM.describeNode 根据节点 ID 描述节点，无需启用域。不会开始跟踪任何对象，可用于自动化。
+    []DOM.disable 禁用指定页面的 DOM 代理。
+    []DOM.enable 启用 DOM 代理。
+    []DOM.focus 聚焦指定元素。
+    []DOM.getAttributes 返回指定节点的属性。
+    []DOM.getBoxModel 返回给定节点的盒子。
+    []DOM.getDocument  返回根 DOM 节点（以及可选的子树）给调用者。隐式启用当前目标的 DOM 域事件。
+    []DOM.getNodeForLocation  返回指定位置的节点 ID。是否返回 nodeId 取决于 DOM 域是否启用。
+    []DOM.getOuterHTML  返回节点的 HTML 标记。
+    []DOM.hideHighlight  隐藏所有高亮显示。
+    []DOM.highlightNode  高亮显示 DOM 节点。
+    []DOM.highlightRect  高亮显示给定的矩形。
+    []DOM.moveTo  将节点移动到新容器中，并将其放置在给定锚点之前。
+    []DOM.querySelector  querySelector在指定节点上执行。
+    []DOM.querySelectorAll  querySelectorAll在指定节点上执行。
+    []DOM.removeAttribute  从具有给定 id 的元素中移除具有给定名称的属性。
+    []DOM.removeNode  删除具有给定 id 的节点。
+    []DOM.requestChildNodes  请求将给定 id 的节点的子节点以事件的形式返回给调用者， setChildNodes其中不仅检索直接子节点，而且检索到指定深度的所有子节点。
+    []DOM.requestNode  根据 JavaScript 节点对象引用，请求将节点发送给调用者。
+    []DOM.resolveNode  解析给定 NodeId 或 BackendNodeId 的 JavaScript 节点对象。
+    []DOM.scrollIntoViewIfNeeded  如果指定节点的指定矩形区域尚未可见，则将其滚动到视图中。
+    []DOM.setAttributesAsText  设置具有给定 ID 的元素的属性。
+    []DOM.setAttributeValue  设置具有给定 id 的元素的属性。
+    []DOM.setFileInputFiles  为给定的文件输入元素设置文件。
+    []DOM.setNodeName  设置具有给定 id 的节点的节点名称。
+    []DOM.setNodeValue  设置具有给定 id 的节点的节点值。
+    []DOM.setOuterHTML  设置节点 HTML 标记，返回新的节点 ID。
+
+- []chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+    []DOMDebugger.getEventListeners  返回给定对象的事件监听器。
+    []DOMDebugger.removeDOMBreakpoint  移除使用 . 设置的 DOM 断点setDOMBreakpoint。
+    []DOMDebugger.removeEventListenerBreakpoint  移除特定 DOM 事件上的断点。
+    []DOMDebugger.removeXHRBreakpoint  移除 XMLHttpRequest 中的断点。
+    []DOMDebugger.setDOMBreakpoint  在对 DOM 进行特定操作时设置断点。
+    []DOMDebugger.setEventListenerBreakpoint  在特定 DOM 事件上设置断点
+    []DOMDebugger.setXHRBreakpoint  在 XMLHttpRequest 上设置断点。
+
+- [] chrome  IndexedDB : IndexedDB相关的域
+    []IndexedDB.clearObjectStore  清除对象存储中的所有条目。
+    []IndexedDB.deleteDatabase  删除数据库。
+    []IndexedDB.deleteObjectStoreEntries  从对象存储库中删除一系列条目
+    []IndexedDB.disable  禁用后端事件。
+    []IndexedDB.enable  启用来自后端的事件。
+    []IndexedDB.getMetadata  获取对象存储的元数据。
+    []IndexedDB.requestData  从对象存储或索引中请求数据。
+    []IndexedDB.requestDatabase  请求具有给定名称的数据库到给定框架。
+    []IndexedDB.requestDatabaseNames  请求给定安全源的数据库名称。
+
+- []chrome  Input ： 输入域
+    []Input.cancelDragging  取消页面上所有正在进行的拖动操作。
+    []Input.dispatchKeyEvent  向页面发送关键事件。
+    []Input.dispatchMouseEvent  向页面发送鼠标事件。
+    []Input.dispatchTouchEvent  向页面发送触摸事件。
+    []Input.setIgnoreInputEvents  忽略输入事件
+    []Input.dispatchDragEvent  将拖拽事件发送到页面中。
+    []Input.emulateTouchFromMouseEvent 根据鼠标事件参数模拟触摸事件。
+    []Input.imeSetComposition  此方法设置输入法编辑器 (IME) 的当前候选文本。使用 `imeCommitComposition` 提交最终文本。
+    []Input.insertText  这种方法模拟插入非按键输入的文本，例如表情符号键盘或输入法编辑器。
+    []Input.setInterceptDrags  阻止默认的拖放行为，而是发出Input.dragIntercepted事件。
+    
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档   // 0401 End
 
 #### v0.0.9
+- 支持执行js代码
 - chrome  CSS ： 此域公开 CSS 的读写操作。
+  [] CSS.addRule  ruleText在给定样式表的styleSheetId位置插入一条具有给定值的新规则location
+  [] CSS.collectClassNames  返回指定样式表中的所有类名。
+  [] CSS.createStyleSheet  在给定的框架中创建一个新的特殊“via-inspector”样式表frameId。
+  [] CSS.disable  禁用指定页面的 CSS 
+  [] CSS.enable  为指定页面启用 CSS 
+  [] CSS.forcePseudoState  确保给定节点在浏览器计算其样式时具有指定的伪类。
+  [] CSS.forceStartingStyle  确保给定节点处于初始状态。
+  [] CSS.getBackgroundColors  获取DOM.NodeId背景颜色
+  [] CSS.getComputedStyleForNode  获取DOM.NodeId的计算样式
+  [] CSS.getInlineStylesForNode  获取DOM.NodeId的内联样式
+  [] CSS.getMatchedStylesForNode 获取DOM.NodeId的请求样式
+  [] CSS.getMediaQueries  返回渲染引擎解析的所有媒体查询。
+  [] CSS.getPlatformFontsForNode  请求有关我们在给定节点中渲染子文本节点时使用的平台字体的信息。
+  [] CSS.getStyleSheetText  返回样式表的当前文本内容。
+  [] CSS.setEffectivePropertyValueForNode 找到给定节点的具有给定 active 属性的规则，并设置该属性的新值。
+  [] CSS.setKeyframeKey  修改关键帧规则的关键文本。
+  [] CSS.setMediaText  修改规则选择器。
+  [] CSS.setPropertyRulePropertyName 修改属性规则属性名称。
+  [] CSS.setRuleSelector 修改规则选择器。
+  [] CSS.setStyleSheetText  设置新的样式表文本。
+  [] CSS.setStyleTexts  按指定顺序逐一应用指定的样式修改。
+  [] CSS.startRuleUsageTracking  启用选择器录制。
+  [] CSS.stopRuleUsageTracking  停止跟踪规则使用情况，并返回自上次调用（或自覆盖率检测开始）以来使用的规则列表 。
+  [] CSS.takeCoverageDelta  获取自上次调用此方法（或自覆盖率检测开始）以来使用的规则列表。
+  [] CSS.getEnvironmentVariables  返回 env() 函数中使用的默认 UA 定义的环境变量的值。
+  [] CSS.setContainerQueryText  修改容器查询的表达式。
+
 - chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
+  [] Debugger.continueToLocation  持续执行直至到达指定断点位置。
+  [] Debugger.disable  禁用指定页面的调试器
+  [] Debugger.enable  启用指定页面的调试器
+  [] Debugger.evaluateOnCallFrame  对给定调用帧求表达式的值。
+  [] Debugger.getPossibleBreakpoints 返回断点的可能位置。起始位置和结束位置的 scriptId 必须相同。
+  [] Debugger.getScriptSource  返回指定脚本的源代码。
+  [] Debugger.pause 执行到下一条 JavaScript 语句时停止。
+  [] Debugger.restartFrame 从头开始重新启动特定的调用帧。
+  [] Debugger.resume  恢复 JavaScript 运行。
+  [] Debugger.searchInContent  在指定脚本中搜索字符串。
+  [] Debugger.setAsyncCallStackDepth 启用或禁用异步调用堆栈跟踪。
+  [] Debugger.setBreakpoint 在指定位置设置 JavaScript 断点。
+  [] Debugger.setBreakpointByUrl 在指定位置（通过 URL 或 URL 正则表达式指定）设置 JavaScript 断点。
+  [] Debugger.setBreakpointsActive  激活/停用页面上的所有断点。
+  [] Debugger.setInstrumentationBreakpoint  设置检测断点。
+  [] Debugger.setPauseOnExceptions  定义异常暂停状态。可以设置为在所有异常、未捕获的异常或已捕获的异常（无异常）时停止。异常暂停状态的初始值为none。
+  [] Debugger.setScriptSource  实时编辑 JavaScript 源代码。 
+  [] Debugger.setSkipAllPauses  使页面在任何暂停时（断点、异常、DOM 异常等）都不会中断。
+  [] Debugger.setVariableValue  更改调用帧中变量的值。不支持基于对象的作用域，必须手动修改。
+  [] Debugger.stepInto  进入函数调用。
+  [] Debugger.stepOut  退出当前函数。
+  [] Debugger.stepOver  跳过当前函数。
+  [] Debugger.disassembleWasmModule  反汇编 Wasm 模块
+  [] Debugger.getStackTrace  返回给定堆栈跟踪的stackTraceId.
+
 - chrome  Emulation : 该域名模拟了页面的不同环境。
+  [] Emulation.clearDeviceMetricsOverride  清除已覆盖的设备指标。
+  [] Emulation.clearGeolocationOverride  清除已覆盖的地理位置位置和错误。
+  [] Emulation.clearIdleOverride  清除空闲状态覆盖。
+  [] Emulation.setCPUThrottlingRate  启用 CPU 降频功能以模拟低速 CPU。
+  [] Emulation.setDefaultBackgroundColorOverride  设置或清除框架默认背景颜色的覆盖值。如果内容未指定背景颜色，则使用此覆盖值。
+  [] Emulation.setDeviceMetricsOverride  覆盖设备屏幕尺寸的值（window.screen.width、window.screen.height、window.innerWidth、window.innerHeight）。
+  [] Emulation.setEmulatedMedia 模拟 CSS 媒体查询中给定的媒体类型或媒体特性。
+  [] Emulation.setEmulatedOSTextScale  模拟给定操作系统的文本缩放比例。
+  [] Emulation.setEmulatedVisionDeficiency   模拟给定的视力缺陷。
+  [] Emulation.setGeolocationOverride  覆盖地理位置位置或误差。省略纬度、经度或精度将模拟位置不可用。
+  [] Emulation.setIdleOverride 覆盖空闲状态。
+  [] Emulation.setScriptExecutionDisabled  切换页面中的脚本执行方式。
+  [] Emulation.setTimezoneOverride  使用指定的时区覆盖主机系统的默认时区。
+  [] Emulation.setTouchEmulationEnabled  在不支持触控功能的平台上启用触控功能。
+  [] Emulation.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。 userAgentMetadata必须设置此项才能发送客户端提示标头。
+
 - chrome  EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
+  [] EventBreakpoints.disable  移除所有断点
+  [] EventBreakpoints.removeInstrumentationBreakpoint 移除特定原生事件上的断点。
+  [] EventBreakpoints.setInstrumentationBreakpoint  在特定原生事件上设置断点。
+
 - chrome  CacheStorage ： 缓存存储域
+  [] CacheStorage.deleteCache 清除缓存。
+  [] CacheStorage.deleteEntry 删除缓存条目。
+  [] CacheStorage.requestCachedResponse 获取缓存条目。
+  [] CacheStorage.requestCacheNames 请求缓存名称。
+  [] CacheStorage.requestEntries 从缓存中请求数据。
+
 - chrome  Extensions : 定义浏览器扩展的命令和事件。
+  [] Extensions.clearStorageItems 清除给定扩展存储中的数据storageArea。
+  [] Extensions.getExtensions  获取所有已解压扩展的列表。
+  [] Extensions.getStorageItems 从指定位置的扩展存储中获取数据storageArea。
+  [] Extensions.loadUnpacked 从文件系统安装已解压的扩展，类似于 `--load-extension` 命令行标志。扩展安装完成后返回扩展 ID。
+                             仅当客户端使用 `--remote-debugging-pipe` 标志连接且设置了 `--enable-unsafe-extension-debugging` 标志时才可用。
+  [] Extensions.removeStorageItems  keys从给定的扩展存储中移除storageArea
+  [] Extensions.setStorageItems  values在给定的扩展存储中设置storageArea。提供的值values 将与存储区域中的现有值合并。
+  [] Extensions.triggerAction  运行扩展程序的默认操作。仅当客户端使用 `--remote-debugging-pipe` 标志连接且设置了 `--enable-unsafe-extension-debugging` 标志时才可用。
+  [] Extensions.uninstall  从配置文件中卸载已解压的扩展程序（不支持其他扩展程序）。仅当客户端使用 `--remote-debugging-pipe` 
+                            标志和 `--enable-unsafe-extension-debugging` 标志连接时才可用。
+
 - chrome  FedCm : 该域允许与 FedCM 对话框进行交互。  
+  [] FedCm.clickDialogButton 点击对话框按钮
+  [] FedCm.disable  禁用FedCm
+  [] FedCm.dismissDialog dismiss对话框
+  [] FedCm.enable  启用FedCm
+  [] FedCm.openUrl  访问一个URL并打开FedCm对话框
+  [] FedCm.resetCooldown 重置冷却时间（如果有），以允许下一次 FedCM 调用显示对话框，即使用户最近关闭了某个对话框。
+  [] FedCm.selectAccount 选择账户
+
 - [] 改测试的bug和优化
 - [] bug和优化验收
 - [] 更新文档   // 0330 End
 
 #### v0.0.8
 - [ok] chrome device 指定多种设备启动浏览器
-- [ok] 支持字符串模板语法，替代加法拼接字符串 // 0306 End
+- [ok] 支持字符串模板语法，替代加法拼接字符串 
 - [ok] chrome  SystemInfo ： SystemInfo 域定义了用于查询底层系统信息的方法和事件
+    [ok] SystemInfo.getInfo 获取Chrome完整系统信息
+    [ok] SystemInfo.getProcessInfo  获取Chrome所有进程信息
+    [ok] SystemInfo.getFeatureState 获取Chrome所有特性状态
+
 - [] chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
     [] Browser.close   关闭浏览器 
     [] Browser.resetPermissions   重置权限
@@ -99,13 +572,34 @@
     [] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
     
 - [] chrome  Target : 目标对象
-    []
+    [] Target.activateTarget 激活target 聚焦指定页面
+    [] Target.attachToTarget  聚焦后返回sessionID
+    [] Target.closeTarget   关闭指定target,如果目标是页面，则页面也会被关闭。
+    [] Target.createBrowserContext  创建一个新的空浏览器上下文。它类似于（浏览器的）无痕模式，但你可以同时拥有多个。
+                                    举个通俗的例子：普通的浏览器就像你只有一台电脑，所有人用同一个账号登录。而使用 BrowserContext，
+                                    就像是你瞬间变出了 10 台全新的、互不干扰的电脑，每台电脑都可以独立登录不同的账号，互不影响。
+    [] Target.createTarget  创建target (常用于创建页面)
+    [] Target.detachFromTarget  分离掉指定sessionID
+    [] Target.disposeBrowserContext  删除 BrowserContext。所有属于该 BrowserContext 的页面都将被关闭，而不会调用它们的 beforeunload 钩子函数
+    [] Target.getBrowserContexts   返回创建的所有浏览器上下文
+    [] Target.getTargets  获取可用目标列表。
+    [] Target.setAutoAttach  <待定>  控制是否自动附加到与当前目标直接相关的新目标（例如 iframe 或 worker）。
+    [] Target.setDiscoverTargets <待定> 控制是否发现可用目标并通过 targetCreated/targetInfoChanged/targetDestroyed事件通知
+    [] Target.getTargetInfo  返回目标的相关信息。
 
 - [] chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。 // 0327 End
-    []
+    [] DOMSnapshot.captureSnapshot <深入了解> 返回文档快照，其中包含根节点的完整 DOM 树（包括 iframe、模板内容和导入的文档），以扁平数组的形式呈现
+    [] DOMSnapshot.disable 禁用给定页面的 DOM 快照。
+    [] DOMSnapshot.enable  启用 DOM 快照
+    
 
 - [] chrome  DOMStorage  : 查询和修改 DOM 存储。
-    []
+    [] DOMStorage.clear <深入了解>
+    [] DOMStorage.disable  禁用存储跟踪，阻止将存储事件发送到客户端。
+    [] DOMStorage.enable  启用存储跟踪功能，存储事件现在将发送给客户端。 
+    [] DOMStorage.getDOMStorageItems   <深入了解>
+    [] DOMStorage.removeDOMStorageItem  <深入了解>
+    [] DOMStorage.setDOMStorageItem   <深入了解>
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
