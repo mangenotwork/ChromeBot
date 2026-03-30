@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -334,4 +335,19 @@ func JsonPrettyFormat(jsonStr string) string {
 	}
 
 	return prettyJSON.String()
+}
+
+// IsValidOrigin 验证 origin 格式
+func IsValidOrigin(origin string) bool {
+	// 基本格式验证
+	if !strings.Contains(origin, "://") {
+		return false
+	}
+
+	// 可以解析 URL 进行更严格的验证
+	if parsed, err := url.Parse(origin); err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return false
+	}
+
+	return true
 }

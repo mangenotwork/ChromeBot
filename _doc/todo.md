@@ -563,13 +563,13 @@
     [ok] SystemInfo.getProcessInfo  获取Chrome所有进程信息
     [ok] SystemInfo.getFeatureState 获取Chrome所有特性状态
 
-- [] chrome  Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
-    [] Browser.close   关闭浏览器 
-    [] Browser.resetPermissions   重置权限
-    [] Browser.getWindowBounds 获取浏览器窗口的位置和大小。
-    [] Browser.getWindowForTarget 获取目标对象对应的浏览器窗口。
-    [] Browser.setContentsSize 设置浏览器窗口的大小。
-    [] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
+- [ok] chrome Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
+    [ok] Browser.close   关闭浏览器 
+    [ok] Browser.resetPermissions   重置权限
+    [ok] Browser.getWindowBounds 获取浏览器窗口的位置和大小。
+    [ok] Browser.getWindowForTarget 获取目标对象对应的浏览器窗口。
+    [ok] Browser.setContentsSize 设置浏览器窗口的大小。
+    [ok] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
     
 - [] chrome  Target : 目标对象
     [] Target.activateTarget 激活target 聚焦指定页面
@@ -602,6 +602,7 @@
     [] DOMStorage.setDOMStorageItem   <深入了解>
 
 - [] 改测试的bug和优化
+  [] chrome Browser 测试
 - [] bug和优化验收
 - [] 更新文档  // 0328 End
 
