@@ -571,21 +571,21 @@
     [ok] Browser.setContentsSize 设置浏览器窗口的大小。
     [ok] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
     
-- [] chrome  Target : 目标对象
-    [] Target.activateTarget 激活target 聚焦指定页面
-    [] Target.attachToTarget  聚焦后返回sessionID
-    [] Target.closeTarget   关闭指定target,如果目标是页面，则页面也会被关闭。
-    [] Target.createBrowserContext  创建一个新的空浏览器上下文。它类似于（浏览器的）无痕模式，但你可以同时拥有多个。
+- [] chrome Target : 目标对象
+    [ok] Target.activateTarget 激活target 聚焦指定页面
+    [ok] Target.attachToTarget  聚焦后返回sessionID
+    [ok] Target.closeTarget   关闭指定target,如果目标是页面，则页面也会被关闭。
+    [ok] Target.createBrowserContext  创建一个新的空浏览器上下文。它类似于（浏览器的）无痕模式，但你可以同时拥有多个。
                                     举个通俗的例子：普通的浏览器就像你只有一台电脑，所有人用同一个账号登录。而使用 BrowserContext，
                                     就像是你瞬间变出了 10 台全新的、互不干扰的电脑，每台电脑都可以独立登录不同的账号，互不影响。
-    [] Target.createTarget  创建target (常用于创建页面)
-    [] Target.detachFromTarget  分离掉指定sessionID
-    [] Target.disposeBrowserContext  删除 BrowserContext。所有属于该 BrowserContext 的页面都将被关闭，而不会调用它们的 beforeunload 钩子函数
-    [] Target.getBrowserContexts   返回创建的所有浏览器上下文
-    [] Target.getTargets  获取可用目标列表。
-    [] Target.setAutoAttach  <待定>  控制是否自动附加到与当前目标直接相关的新目标（例如 iframe 或 worker）。
-    [] Target.setDiscoverTargets <待定> 控制是否发现可用目标并通过 targetCreated/targetInfoChanged/targetDestroyed事件通知
-    [] Target.getTargetInfo  返回目标的相关信息。
+    [ok] Target.createTarget  创建target (常用于创建页面)
+    [ok] Target.detachFromTarget Target.detachFromTarget  分离掉指定sessionID
+    [ok] Target.disposeBrowserContext  删除 BrowserContext。所有属于该 BrowserContext 的页面都将被关闭，而不会调用它们的 beforeunload 钩子函数
+    [ok] Target.getBrowserContexts   返回创建的所有浏览器上下文
+    [ok] Target.getTargets  获取可用目标列表。
+    [待定] Target.setAutoAttach  <待定>  控制是否自动附加到与当前目标直接相关的新目标（例如 iframe 或 worker）。
+    [待定] Target.setDiscoverTargets <待定> 控制是否发现可用目标并通过 targetCreated/targetInfoChanged/targetDestroyed事件通知
+    [ok] Target.getTargetInfo  返回目标的相关信息。
 
 - [] chrome  DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。 // 0327 End
     [] DOMSnapshot.captureSnapshot <深入了解> 返回文档快照，其中包含根节点的完整 DOM 树（包括 iframe、模板内容和导入的文档），以扁平数组的形式呈现
