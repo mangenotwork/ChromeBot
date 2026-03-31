@@ -30,7 +30,7 @@
     []WebAudio.enable
     []WebAudio.getRealtimeData   获取实时数据
 
-- []chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 0408 End
+- []chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 04010 End
     []WebAuthn.addCredential  添加凭证
     []WebAuthn.addVirtualAuthenticator  添加虚拟身份验证器
     []WebAuthn.clearCredentials  清空凭证
@@ -103,7 +103,7 @@
     []Runtime.setMaxCallStackSizeToCapture  设置调用堆栈大小以捕获。
     []Runtime.terminateExecution  终止执行。
 
-- []chrome  Security ： 安全域   // 0406 End
+- []chrome  Security ： 安全域   // 0409 End
     []Security.disable
     []Security.enable
     []Security.setIgnoreCertificateErrors  处理触发certificateError事件的证书错误。
@@ -358,7 +358,7 @@
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档   // 0403 End
+- [] 更新文档   // 0404 End
 
 #### v0.0.10
 - []chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
@@ -443,7 +443,7 @@
     
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档   // 0401 End
+- [] 更新文档   // 0403 End
 
 #### v0.0.9
 - 支持执行js代码
@@ -553,7 +553,7 @@
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
-- [] 更新文档   // 0330 End
+- [] 更新文档   // 0402 End
 
 #### v0.0.8
 - [ok] chrome device 指定多种设备启动浏览器
@@ -565,7 +565,7 @@
 
 - [ok] chrome Browser ： 浏览器域定义了用于管理浏览器的方法和事件。
     [ok] Browser.close   关闭浏览器 
-    [ok] Browser.resetPermissions   重置权限
+    [ok] Browser.resetPermissions  重置权限
     [ok] Browser.getWindowBounds 获取浏览器窗口的位置和大小。
     [ok] Browser.getWindowForTarget 获取目标对象对应的浏览器窗口。
     [ok] Browser.setContentsSize 设置浏览器窗口的大小。
@@ -592,13 +592,13 @@
     [ok] DOMSnapshot.disable 禁用给定页面的 DOM 快照。
     [ok] DOMSnapshot.enable  启用 DOM 快照
     
-- [] chrome DOMStorage  : 查询和修改 DOM 存储。
-    [] DOMStorage.clear <深入了解>
-    [] DOMStorage.disable  禁用存储跟踪，阻止将存储事件发送到客户端。
-    [] DOMStorage.enable  启用存储跟踪功能，存储事件现在将发送给客户端。 
-    [] DOMStorage.getDOMStorageItems   <深入了解>
-    [] DOMStorage.removeDOMStorageItem  <深入了解>
-    [] DOMStorage.setDOMStorageItem   <深入了解>
+- [ok] chrome DOMStorage  : 查询和修改 DOM 存储。
+    [ok] DOMStorage.clear <深入了解>
+    [ok] DOMStorage.disable  禁用存储跟踪，阻止将存储事件发送到客户端。
+    [ok] DOMStorage.enable  启用存储跟踪功能，存储事件现在将发送给客户端。 
+    [ok] DOMStorage.getDOMStorageItems   <深入了解>
+    [ok] DOMStorage.removeDOMStorageItem  <深入了解>
+    [ok] DOMStorage.setDOMStorageItem   <深入了解>
 
 - [] 改测试的bug和优化
     [] chrome Browser 测试
@@ -606,7 +606,7 @@
     [] chrome DOMSnapshot 测试
     [] chrome DOMStorage 测试
 - [] bug和优化验收
-- [] 更新文档  // 0328 End
+- [] 更新文档  // 0401 End
 
 #### v0.0.7
 - [ok] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根
@@ -814,6 +814,8 @@
 - 识别html页面组件或控件的方法，列举可操作的节点
 - host box 支持输入框
 - 支持邮箱发送来实现通知的效果
+- Browser.close 关闭浏览器 在现有的关闭浏览器加这个方法，如果连接还在的时候就可以先用这个关闭浏览器
+- 页面DOM变化的监听函数，监听页面DOM变化，并执行回调函数（参考现有的DOMSnapshot.captureSnapshot）
 - 
 
 ----
