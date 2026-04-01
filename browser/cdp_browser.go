@@ -312,7 +312,7 @@ func CDPBrowserGetWindowBounds(windowId int) (map[string]interface{}, error) {
 	}
 }
 
-// GetMainWindowID 获取主窗口ID（通常为1，但更可靠的方法）
+// GetMainWindowID 获取主窗口ID
 func GetMainWindowID() (int, error) {
 	// 方法1: 尝试默认值1（适用于单窗口情况）
 	// 先尝试获取窗口边界，如果成功则说明windowId=1存在
@@ -761,6 +761,7 @@ func checkVisibility(targetID string) (bool, error) {
 }
 
 // evaluateJavaScriptSimple 简化的JavaScript执行
+// todo 改造为公开的公共函数
 func evaluateJavaScriptSimple(sessionId, script string) (interface{}, error) {
 	if !DefaultBrowserWS() || chromeInstance.BrowserWSConn == nil {
 		return nil, fmt.Errorf("CDP连接不可用")
@@ -986,32 +987,32 @@ func detachFromTarget(sessionId string) error {
 	return nil
 }
 
-// CDPBrowserSetContentsSize 设置浏览器内容区域尺寸
+// CDPBrowserSetContentsSizeFn 设置浏览器内容区域尺寸
 // 通过 Browser.setWindowBounds 实现，可以精确控制窗口大小从而控制内容区域
 /*
 
 1.  设置窗口1的内容尺寸为800x600
-response, err := CDPBrowserSetContentsSize(1, 800, 600)
+response, err := CDPBrowserSetContentsSizeFn(1, 800, 600)
 
 2. 包括浏览器边框
-response, err := CDPBrowserSetContentsSize(1, 800, 600,
+response, err := CDPBrowserSetContentsSizeFn(1, 800, 600,
 	WithIncludeChrome(true),  // 包括浏览器边框
 		WithKeepPosition(true),   // 保持当前位置
 	)
 
 3. 设置到指定位置
-response, err := CDPBrowserSetContentsSize(1, 1024, 768,
+response, err := CDPBrowserSetContentsSizeFn(1, 1024, 768,
 		WithPosition(100, 100),  // 设置到屏幕位置(100, 100)
 		WithIncludeChrome(true), // 包括浏览器边框
 	)
 
 4. 最大化窗口
-response, err := CDPBrowserSetContentsSize(1, 1920, 1080,
+response, err := CDPBrowserSetContentsSizeFn(1, 1920, 1080,
 		WithWindowState("maximized"),  // 最大化窗口
 	)
 
 */
-func CDPBrowserSetContentsSize(windowId int, width, height int, options ...SetSizeOption) (string, error) {
+func CDPBrowserSetContentsSizeFn(windowId int, width, height int, options ...SetSizeOption) (string, error) {
 	// 1. 参数验证
 	if windowId <= 0 {
 		return "", fmt.Errorf("无效的窗口ID: %d", windowId)
@@ -1246,6 +1247,181 @@ func waitForSetWindowBoundsResponse(reqID, windowId, width, height int) (string,
 
 		case <-timer.C:
 			return "", fmt.Errorf("设置窗口边界请求超时 (%v), windowId: %d", timeout, windowId)
+		}
+	}
+}
+
+// CDPBrowserSetWindowBounds 设置浏览器窗口边界
+// 参数说明:
+//   - windowId: 窗口ID
+//   - left: 窗口左边距
+//   - top: 窗口顶边距
+//   - width: 窗口宽度
+//   - height: 窗口高度
+//   - windowState: 窗口状态
+func CDPBrowserSetWindowBounds(windowId, left, top, width, height int, windowState string) (string, error) {
+	if !DefaultBrowserWS() {
+		return "", fmt.Errorf("CDP功能未启用")
+	}
+	if chromeInstance.BrowserWSConn == nil {
+		return "", fmt.Errorf("浏览器WebSocket连接未建立")
+	}
+
+	// 验证参数
+	if windowId <= 0 {
+		return "", fmt.Errorf("无效的窗口ID: %d", windowId)
+	}
+
+	if width <= 0 || height <= 0 {
+		return "", fmt.Errorf("窗口尺寸必须是正数: %dx%d", width, height)
+	}
+
+	// 验证窗口状态
+	validStates := map[string]bool{
+		"normal":     true,
+		"minimized":  true,
+		"maximized":  true,
+		"fullscreen": true,
+	}
+	if !validStates[windowState] {
+		return "", fmt.Errorf("无效的窗口状态: %s", windowState)
+	}
+
+	chromeInstance.NextID++
+	reqID := chromeInstance.NextID
+
+	// 构建消息
+	message := fmt.Sprintf(`{
+		"id": %d,
+		"method": "Browser.setWindowBounds",
+		"params": {
+			"windowId": %d,
+			"bounds": {
+				"left": %d,
+				"top": %d,
+				"width": %d,
+				"height": %d,
+				"windowState": "%s"
+			}
+		}
+	}`, reqID, windowId, left, top, width, height, windowState)
+
+	// 发送请求
+	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	if err != nil {
+		return "", fmt.Errorf("发送设置窗口边界请求失败: %w", err)
+	}
+
+	log.Printf("[DEBUG] 发送 CDP 消息: %s", message)
+
+	// 等待响应
+	timeout := 5 * time.Second
+	timer := time.NewTimer(timeout)
+	defer timer.Stop()
+
+	for {
+		select {
+		case respMsg, ok := <-messageQueue:
+			if !ok {
+				return "", fmt.Errorf("消息队列已关闭")
+			}
+
+			if reqID == respMsg.ID {
+				content := utils.JsonPrettyFormat(respMsg.Content)
+				log.Printf("[DEBUG] 收到回复: %s", content)
+
+				// 解析响应检查错误
+				var response map[string]interface{}
+				if err := json.Unmarshal([]byte(respMsg.Content), &response); err != nil {
+					return content, fmt.Errorf("解析响应失败: %w", err)
+				}
+
+				if errorObj, exists := response["error"]; exists {
+					return content, fmt.Errorf("CDP错误: %v", errorObj)
+				}
+
+				return content, nil
+			}
+
+		case <-timer.C:
+			return "", fmt.Errorf("设置窗口边界请求超时")
+		}
+	}
+}
+
+// CDPBrowserSetContentsSize 设置浏览器窗口内容区域尺寸
+// 这是 CDP 协议的原生方法（Experimental 状态）
+// 参数说明:
+//   - windowId: 浏览器窗口ID
+//   - width: 内容区域宽度（DIP单位）
+//   - height: 内容区域高度（DIP单位）
+func CDPBrowserSetContentsSize(windowId, width, height int) (string, error) {
+	if !DefaultBrowserWS() {
+		return "", fmt.Errorf("CDP功能未启用")
+	}
+	if chromeInstance.BrowserWSConn == nil {
+		return "", fmt.Errorf("浏览器WebSocket连接未建立")
+	}
+
+	// 参数验证
+	if windowId <= 0 {
+		return "", fmt.Errorf("无效的窗口ID: %d", windowId)
+	}
+
+	if width <= 0 && height <= 0 {
+		return "", fmt.Errorf("width 和 height 不能同时省略")
+	}
+
+	chromeInstance.NextID++
+	reqID := chromeInstance.NextID
+
+	message := fmt.Sprintf(`{
+		"id": %d,
+		"method": "Browser.setContentsSize",
+		"params": {
+			"windowId": %d,
+			"width": %d,
+			"height": %d
+		}
+	}`, reqID, windowId, width, height)
+
+	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	if err != nil {
+		return "", fmt.Errorf("发送 setContentsSize 请求失败: %w", err)
+	}
+
+	log.Printf("[DEBUG] 发送 CDP 消息: %s", message)
+
+	// 等待响应
+	timeout := 5 * time.Second
+	timer := time.NewTimer(timeout)
+	defer timer.Stop()
+
+	for {
+		select {
+		case respMsg, ok := <-messageQueue:
+			if !ok {
+				return "", fmt.Errorf("消息队列已关闭")
+			}
+
+			if reqID == respMsg.ID {
+				content := utils.JsonPrettyFormat(respMsg.Content)
+				log.Printf("[DEBUG] 收到回复: %s", content)
+
+				var response map[string]interface{}
+				if err := json.Unmarshal([]byte(respMsg.Content), &response); err != nil {
+					return content, fmt.Errorf("解析响应失败: %w", err)
+				}
+
+				if errorObj, exists := response["error"]; exists {
+					return content, fmt.Errorf("CDP错误: %v", errorObj)
+				}
+
+				return content, nil
+			}
+
+		case <-timer.C:
+			return "", fmt.Errorf("setContentsSize 请求超时")
 		}
 	}
 }

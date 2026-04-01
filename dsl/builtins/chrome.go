@@ -43,6 +43,7 @@ var chromeSupport = map[string]bool{
 	"device":      true,
 	"cdp":         true,
 	"params":      true,
+	"cdpfn":       true,
 }
 
 func hasChromeSupport(cmd string) bool {
@@ -84,12 +85,26 @@ device : 设置浏览器启动设备与init参数一起用， 目前支持: ipho
 
 cdp=<域> params=<jsonStr>: 发送 cdp指令  params是指令所需的参数要求是json字符串
 
-	SystemInfo.getFeatureState 获取Feature状态 ex: chrome cdp=`SystemInfo.getFeatureState` params=`{"feature":"webgl"}`
+	SystemInfo.getFeatureState 获取Feature状态 ex: chrome cdp=`SystemInfo.getFeatureState` params=`{"featureState":"webgl"}`
 					feature：gpu_acceleration(GPU 加速),vulkan(Vulkan 渲染),direct3d11(D3D11),canvas_oop_rasterization(画布离屏渲染),video_acceleration(视频硬件加速),webgl,webgl2,webgpu
-
 	SystemInfo.getInfo 获取系统信息信息 ex: chrome cdp=`SystemInfo.getInfo`
-
 	SystemInfo.getProcessInfo 获取正在运行的进程的相关信息 ex: chrome cdp=`SystemInfo.getProcessInfo`
+	Browser.close   关闭浏览器  ex: chrome cdp=`Browser.close`
+	Browser.resetPermissions 重置权限 ex: chrome cdp=`Browser.resetPermissions` params=`{"origin": "https://example.com"}`
+	Browser.getWindowForTarget  通过targetId获取对应的窗口ID ex: chrome cdp=`Browser.getWindowForTarget` params=`{"targetId": "..."}` to=wid
+	Browser.setWindowBounds  设置浏览器窗口的大小。 ex: chrome cdp=`Browser.setWindowBounds` params=`{"windowId": "...", "left":100,"top":100,"width":800,"height":600,"windowState":"normal"}`
+										  windowState:窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)
+	Browser.setContentsSize  设置浏览器窗口的位置和/或大小  ex: chrome cdp=`Browser.setContentsSize` params=`{"windowId": "...", "width":800,"height":600}`
+
+cdpfn=<方法名> params=<jsonStr>: 发送封装好了的cdp方法，一般是针对特定场景的补充  params是指令所需的函数参数要求是json字符串
+
+	GetMainWindowID 获取主窗口ID ex: chrome cdpfn=GetMainWindowID to=wid
+	GetCurrentWindowInfo 获取当前活动窗口的信息  ex: chrome cdpfn=GetMainWindowID to=wid
+	CDPBrowserSetContentsSize设置浏览器内容区域尺寸  ex: chrome cdpfn=CDPBrowserSetContentsSize
+								params=`{"windowId":123, "width":900, "height":600, "keepPosition":false, "includeChrome":false}`
+								keepPosition:是否保持当前位置(可选),includeChrome:是否包括浏览器边框(可选),
+								windowState(可选):窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)
+								left(可选):指定X坐标, top(可选):指定Y坐标
 
 语法
 
@@ -161,8 +176,14 @@ func registerChrome(interp *interpreter.Interpreter) {
 			opNumber++
 		}
 
+		if val, ok := argMap["cdpfn"]; ok {
+			op.opType = opCDPFN
+			op.arg["cdpfn"] = val
+			opNumber++
+		}
+
 		if val, ok := argMap["params"]; ok {
-			if op.opType == opCDP {
+			if op.opType == opCDP || op.opType == opCDPFN {
 				op.arg["params"] = val
 			}
 		}
@@ -287,6 +308,7 @@ func registerChrome(interp *interpreter.Interpreter) {
 		if val, ok := argMap["to"]; ok && opNumber == 0 {
 			op.opType = opTo
 			op.arg["arg"] = val
+			op.arg["to"] = val
 			opNumber++
 		}
 
@@ -371,7 +393,26 @@ func registerChrome(interp *interpreter.Interpreter) {
 			if !paramsOK {
 				params = "{}"
 			}
-			runCDP(cdp, params)
+
+			to, toOK := op.arg["to"].(string)
+			if !toOK {
+				to = ""
+			}
+			runCDP(interp, cdp, params, to)
+
+		case opCDPFN:
+			cdpfn := op.arg["cdpfn"].(string)
+			fmt.Println("执行 cdpfn : ", cdpfn)
+			params, paramsOK := op.arg["params"].(string)
+			if !paramsOK {
+				params = "{}"
+			}
+
+			to, toOK := op.arg["to"].(string)
+			if !toOK {
+				to = ""
+			}
+			runCDPFN(interp, cdpfn, params, to)
 
 		case opTable:
 			fmt.Println("[Chrome]tab操作...")
@@ -586,6 +627,7 @@ type chromeOPType string
 var (
 	opInit       chromeOPType = "init"  // 初始化浏览器
 	opCDP        chromeOPType = "cdp"   // 与浏览器进行cdp交互
+	opCDPFN      chromeOPType = "cdpfn" // 与浏览器进行cdp交互封装好了的函数
 	opInfo       chromeOPType = "info"  // 获取chrome info
 	opClose      chromeOPType = "close" // 关闭浏览器
 	opTable      chromeOPType = "tab"
@@ -702,7 +744,7 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 	return result
 }
 
-func runCDP(cdp string, params string) {
+func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
 	fmt.Println("params = ", params)
@@ -716,8 +758,11 @@ func runCDP(cdp string, params string) {
 
 	switch cdp {
 	case "SystemInfo.getFeatureState":
-		feature := paramsMap["feature"].(string)
-		fmt.Println("run CDPSystemInfoGetFeatureState feature = ", feature)
+		feature, ok := paramsMap["featureState"].(string)
+		if !ok {
+			fmt.Println("未设置参数 featureState")
+			break
+		}
 		browser.CDPSystemInfoGetFeatureState(feature)
 
 	case "SystemInfo.getInfo":
@@ -726,5 +771,150 @@ func runCDP(cdp string, params string) {
 	case "SystemInfo.getProcessInfo":
 		browser.CDPSystemInfoGetProcessInfo()
 
+	case "Browser.close":
+		browser.CDPBrowserClose()
+
+	case "Browser.resetPermissions":
+		origin, ok := paramsMap["origin"].(string)
+		if !ok {
+			fmt.Println("未设置参数 origin")
+			break
+		}
+		browser.CDPBrowserResetPermissions(origin)
+
+	case "Browser.getWindowForTarget":
+		targetId, ok := paramsMap["targetId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 targetId")
+			break
+		}
+		windowId, err := browser.CDPBrowserGetWindowForTarget(targetId)
+		if err != nil {
+			fmt.Println("获取targetId对应的windowId失败, err: ", err.Error())
+			break
+		}
+		interp.Global().SetVar(to, windowId)
+
+	case "Browser.setWindowBounds":
+		windowId, ok := paramsMap["windowId"]
+		if !ok {
+			fmt.Println("未设置参数 windowId")
+			break
+		}
+		width, ok := paramsMap["width"]
+		if !ok {
+			fmt.Println("未设置参数 width")
+			break
+		}
+		height, ok := paramsMap["height"]
+		if !ok {
+			fmt.Println("未设置参数 height")
+			break
+		}
+		left, ok := paramsMap["left"]
+		if !ok {
+			fmt.Println("未设置参数 left")
+			break
+		}
+		top, ok := paramsMap["top"]
+		if !ok {
+			fmt.Println("未设置参数 top")
+			break
+		}
+		windowState, ok := paramsMap["top"].(string)
+		if !ok {
+			fmt.Println("未设置参数 windowState")
+			break
+		}
+		windowIdInt := gt.Any2Int(windowId)
+		widthInt := gt.Any2Int(width)
+		heightInt := gt.Any2Int(height)
+		leftInt := gt.Any2Int(left)
+		topInt := gt.Any2Int(top)
+		browser.CDPBrowserSetWindowBounds(windowIdInt, leftInt, topInt, widthInt, heightInt, windowState)
+
+	case "Browser.setContentsSize":
+		windowId, ok := paramsMap["windowId"]
+		if !ok {
+			fmt.Println("未设置参数 windowId")
+			break
+		}
+		width, ok := paramsMap["width"]
+		if !ok {
+			fmt.Println("未设置参数 width")
+			break
+		}
+		height, ok := paramsMap["height"]
+		if !ok {
+			fmt.Println("未设置参数 height")
+			break
+		}
+		windowIdInt := gt.Any2Int(windowId)
+		widthInt := gt.Any2Int(width)
+		heightInt := gt.Any2Int(height)
+		browser.CDPBrowserSetContentsSize(windowIdInt, widthInt, heightInt)
 	}
+}
+
+func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) {
+
+	fmt.Println("cdp = ", cdpfn)
+	fmt.Println("params = ", params)
+
+	paramsMap := make(map[string]any)
+	err := json.Unmarshal([]byte(params), &paramsMap)
+	if err != nil {
+		fmt.Println("[Err] CDPFN params 解析失败 err:", err.Error())
+		return
+	}
+
+	switch cdpfn {
+	case "GetMainWindowID":
+		windowId, err := browser.GetMainWindowID()
+		if err != nil {
+			fmt.Println("GetMainWindowID获取windowId失败, err: ", err.Error())
+			break
+		}
+
+		fmt.Println("windowId = ", windowId)
+		fmt.Println("to = ", to)
+
+		interp.Global().SetVar(to, windowId)
+
+	case "GetCurrentWindowInfo":
+		info, err := browser.GetCurrentWindowInfo()
+		if err != nil {
+			fmt.Println("GetCurrentWindowInfo失败, err: ", err.Error())
+			break
+		}
+		fmt.Println("窗口信息: ")
+		utils.ShowJson(info)
+
+	case "CDPBrowserSetContentsSize":
+		windowId, ok := paramsMap["windowId"]
+		if !ok {
+			fmt.Println("未设置参数 windowId")
+			break
+		}
+		width, ok := paramsMap["width"]
+		if !ok {
+			fmt.Println("未设置参数 width")
+			break
+		}
+		height, ok := paramsMap["height"]
+		if !ok {
+			fmt.Println("未设置参数 height")
+			break
+		}
+
+		// todo 可选参数如何优雅的传入, 或者在设计上如何避免这种不确定性，建议不到再一个方法上扩展太多可选参数，应该对应的场景进行方法拆解，
+		// 个人认为这样具有确定性，AI在识别和按文档生成的时候也具备了确定性从而避免了不确定导致的问题
+
+		windowIdInt := gt.Any2Int(windowId)
+		widthInt := gt.Any2Int(width)
+		heightInt := gt.Any2Int(height)
+		browser.CDPBrowserSetContentsSizeFn(windowIdInt, widthInt, heightInt)
+
+	}
+
 }
