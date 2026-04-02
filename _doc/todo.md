@@ -447,35 +447,35 @@
 
 #### v0.0.9
 - 支持执行js代码
-- chrome  CSS ： 此域公开 CSS 的读写操作。
-  [] CSS.addRule  ruleText在给定样式表的styleSheetId位置插入一条具有给定值的新规则location
-  [] CSS.collectClassNames  返回指定样式表中的所有类名。
-  [] CSS.createStyleSheet  在给定的框架中创建一个新的特殊“via-inspector”样式表frameId。
-  [] CSS.disable  禁用指定页面的 CSS 
-  [] CSS.enable  为指定页面启用 CSS 
-  [] CSS.forcePseudoState  确保给定节点在浏览器计算其样式时具有指定的伪类。
-  [] CSS.forceStartingStyle  确保给定节点处于初始状态。
-  [] CSS.getBackgroundColors  获取DOM.NodeId背景颜色
-  [] CSS.getComputedStyleForNode  获取DOM.NodeId的计算样式
-  [] CSS.getInlineStylesForNode  获取DOM.NodeId的内联样式
-  [] CSS.getMatchedStylesForNode 获取DOM.NodeId的请求样式
-  [] CSS.getMediaQueries  返回渲染引擎解析的所有媒体查询。
-  [] CSS.getPlatformFontsForNode  请求有关我们在给定节点中渲染子文本节点时使用的平台字体的信息。
-  [] CSS.getStyleSheetText  返回样式表的当前文本内容。
-  [] CSS.setEffectivePropertyValueForNode 找到给定节点的具有给定 active 属性的规则，并设置该属性的新值。
-  [] CSS.setKeyframeKey  修改关键帧规则的关键文本。
-  [] CSS.setMediaText  修改规则选择器。
-  [] CSS.setPropertyRulePropertyName 修改属性规则属性名称。
-  [] CSS.setRuleSelector 修改规则选择器。
-  [] CSS.setStyleSheetText  设置新的样式表文本。
-  [] CSS.setStyleTexts  按指定顺序逐一应用指定的样式修改。
-  [] CSS.startRuleUsageTracking  启用选择器录制。
-  [] CSS.stopRuleUsageTracking  停止跟踪规则使用情况，并返回自上次调用（或自覆盖率检测开始）以来使用的规则列表 。
-  [] CSS.takeCoverageDelta  获取自上次调用此方法（或自覆盖率检测开始）以来使用的规则列表。
-  [] CSS.getEnvironmentVariables  返回 env() 函数中使用的默认 UA 定义的环境变量的值。
-  [] CSS.setContainerQueryText  修改容器查询的表达式。
+- chrome CSS ： 此域公开 CSS 的读写操作。
+  [ok] CSS.addRule  ruleText在给定样式表的styleSheetId位置插入一条具有给定值的新规则location
+  [ok] CSS.collectClassNames  返回指定样式表中的所有类名。
+  [ok] CSS.createStyleSheet  在给定的框架中创建一个新的特殊“via-inspector”样式表frameId。
+  [ok] CSS.disable  禁用指定页面的 CSS 
+  [ok] CSS.enable  为指定页面启用 CSS 
+  [ok] CSS.forcePseudoState  确保给定节点在浏览器计算其样式时具有指定的伪类。
+  [ok] CSS.forceStartingStyle  确保给定节点处于初始状态。
+  [ok] CSS.getBackgroundColors  获取DOM.NodeId背景颜色
+  [ok] CSS.getComputedStyleForNode  获取DOM.NodeId的计算样式
+  [ok] CSS.getInlineStylesForNode  获取DOM.NodeId的内联样式
+  [ok] CSS.getMatchedStylesForNode 获取DOM.NodeId的请求样式
+  [ok] CSS.getMediaQueries  返回渲染引擎解析的所有媒体查询。
+  [ok] CSS.getPlatformFontsForNode  请求有关我们在给定节点中渲染子文本节点时使用的平台字体的信息。
+  [ok] CSS.getStyleSheetText  返回样式表的当前文本内容。
+  [ok] CSS.setEffectivePropertyValueForNode 找到给定节点的具有给定 active 属性的规则，并设置该属性的新值。
+  [ok] CSS.setKeyframeKey  修改关键帧规则的关键文本。
+  [ok] CSS.setMediaText  修改规则选择器。
+  [ok] CSS.setPropertyRulePropertyName 修改属性规则属性名称。
+  [ok] CSS.setRuleSelector 修改规则选择器。
+  [ok] CSS.setStyleSheetText  设置新的样式表文本。
+  [ok] CSS.setStyleTexts  按指定顺序逐一应用指定的样式修改。
+  [ok] CSS.startRuleUsageTracking  启用选择器录制。
+  [ok] CSS.stopRuleUsageTracking  停止跟踪规则使用情况，并返回自上次调用（或自覆盖率检测开始）以来使用的规则列表 。
+  [ok] CSS.takeCoverageDelta  获取自上次调用此方法（或自覆盖率检测开始）以来使用的规则列表。
+  [ok] CSS.getEnvironmentVariables  返回 env() 函数中使用的默认 UA 定义的环境变量的值。
+  [ok] CSS.setContainerQueryText  修改容器查询的表达式。
 
-- chrome  Debugger ： 调试器域公开了 JavaScript 调试功能。
+- chrome Debugger ： 调试器域公开了 JavaScript 调试功能。
   [] Debugger.continueToLocation  持续执行直至到达指定断点位置。
   [] Debugger.disable  禁用指定页面的调试器
   [] Debugger.enable  启用指定页面的调试器
@@ -501,7 +501,7 @@
   [] Debugger.disassembleWasmModule  反汇编 Wasm 模块
   [] Debugger.getStackTrace  返回给定堆栈跟踪的stackTraceId.
 
-- chrome  Emulation : 该域名模拟了页面的不同环境。
+- chrome Emulation : 该域名模拟了页面的不同环境。
   [] Emulation.clearDeviceMetricsOverride  清除已覆盖的设备指标。
   [] Emulation.clearGeolocationOverride  清除已覆盖的地理位置位置和错误。
   [] Emulation.clearIdleOverride  清除空闲状态覆盖。
@@ -518,19 +518,19 @@
   [] Emulation.setTouchEmulationEnabled  在不支持触控功能的平台上启用触控功能。
   [] Emulation.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。 userAgentMetadata必须设置此项才能发送客户端提示标头。
 
-- chrome  EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
+- chrome EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
   [] EventBreakpoints.disable  移除所有断点
   [] EventBreakpoints.removeInstrumentationBreakpoint 移除特定原生事件上的断点。
   [] EventBreakpoints.setInstrumentationBreakpoint  在特定原生事件上设置断点。
 
-- chrome  CacheStorage ： 缓存存储域
+- chrome CacheStorage ： 缓存存储域
   [] CacheStorage.deleteCache 清除缓存。
   [] CacheStorage.deleteEntry 删除缓存条目。
   [] CacheStorage.requestCachedResponse 获取缓存条目。
   [] CacheStorage.requestCacheNames 请求缓存名称。
   [] CacheStorage.requestEntries 从缓存中请求数据。
 
-- chrome  Extensions : 定义浏览器扩展的命令和事件。
+- chrome Extensions : 定义浏览器扩展的命令和事件。
   [] Extensions.clearStorageItems 清除给定扩展存储中的数据storageArea。
   [] Extensions.getExtensions  获取所有已解压扩展的列表。
   [] Extensions.getStorageItems 从指定位置的扩展存储中获取数据storageArea。
@@ -542,7 +542,7 @@
   [] Extensions.uninstall  从配置文件中卸载已解压的扩展程序（不支持其他扩展程序）。仅当客户端使用 `--remote-debugging-pipe` 
                             标志和 `--enable-unsafe-extension-debugging` 标志连接时才可用。
 
-- chrome  FedCm : 该域允许与 FedCM 对话框进行交互。  
+- chrome FedCm : 该域允许与 FedCM 对话框进行交互。  
   [] FedCm.clickDialogButton 点击对话框按钮
   [] FedCm.disable  禁用FedCm
   [] FedCm.dismissDialog dismiss对话框
@@ -552,6 +552,13 @@
   [] FedCm.selectAccount 选择账户
 
 - [] 改测试的bug和优化
+    [] chrome CSS 测试和完善
+    [] chrome Debugger 测试和完善
+    [] chrome Emulation 测试和完善
+    [] chrome EventBreakpoints 测试和完善
+    [] chrome CacheStorage 测试和完善
+    [] chrome Extensions 测试和完善
+    [] chrome FedCm 测试和完善
 - [] bug和优化验收
 - [] 更新文档   // 0402 End
 
