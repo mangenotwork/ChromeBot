@@ -3,7 +3,7 @@
 chrome init  // 打开浏览器
 chrome req="https://www.eastmoney.com/" // 访问
 chrome click=`/html/body/div[3]/div[2]/div[4]/ul[2]/li[1]/a[4]` // 点击排行
-chrome to=body
+//chrome html=body
 //chrome screenshot="D:\eastmoney_2.png"
 var rse = NowTabGetPointIDHTML("table", "dbtable") // 获取页面标签table id=dbtable 的html 保存到变量 rse
 SaveToFile(rse, "D:\eastmoney_data_2.txt") // 将变量rse保存到文件

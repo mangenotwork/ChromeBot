@@ -571,7 +571,7 @@
     [ok] Browser.setContentsSize 设置浏览器窗口的大小。
     [ok] Browser.setWindowBounds 设置浏览器窗口的位置和/或大小。
     
-- [] chrome Target : 目标对象
+- [ok] chrome Target : 目标对象
     [ok] Target.activateTarget 激活target 聚焦指定页面
     [ok] Target.attachToTarget  聚焦后返回sessionID
     [ok] Target.closeTarget   关闭指定target,如果目标是页面，则页面也会被关闭。
@@ -601,7 +601,7 @@
     [ok] DOMStorage.setDOMStorageItem   <深入了解>
 
 - [] 改测试的bug和优化
-    [] chrome Browser 测试
+    [ok] chrome Browser 测试
     [] chrome Target 测试
     [] chrome DOMSnapshot 测试
     [] chrome DOMStorage 测试
