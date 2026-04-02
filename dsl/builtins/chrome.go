@@ -748,6 +748,9 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 // Target.getBrowserContexts 返回创建的所有浏览器上下文  ex: chrome cdp=`Target.getBrowserContexts`
 // Target.getTargets  获取可用目标列表。  ex: chrome cdp=`Target.getTargets`
 // Target.getTargetInfo  返回目标的相关信息   ex: chrome cdp=`Target.getTargetInfo` params=`{"targetId":""}`
+// DOMSnapshot.captureSnapshot 返回文档快照，其中包含根节点的完整 DOM 树   ex: chrome cdp=`DOMSnapshot.captureSnapshot`
+// DOMSnapshot.disable 禁用给定页面的 DOM 快照  ex: chrome cdp=`DOMSnapshot.disable`
+// DOMSnapshot.enable  启用 DOM 快照   ex: chrome cdp=`DOMSnapshot.enable`
 func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
@@ -933,6 +936,15 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 		}
 		browser.CDPTargetGetTargetInfo(targetId)
 
+	case "DOMSnapshot.captureSnapshot":
+		browser.CDPDOMSnapshotCaptureSnapshot()
+
+	case "DOMSnapshot.disable":
+		browser.CDPDOMSnapshotDisable()
+
+	case "DOMSnapshot.enable":
+		browser.CDPDOMSnapshotEnable()
+
 	}
 }
 
@@ -941,6 +953,8 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 // CDPBrowserSetContentsSize设置浏览器内容区域尺寸  ex: chrome cdpfn=CDPBrowserSetContentsSize params=`{"windowId":123, "width":900, "height":600, "keepPosition":false, "includeChrome":false}`
 // 参数说明: keepPosition:是否保持当前位置(可选),includeChrome:是否包括浏览器边框(可选),windowState(可选):窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)left(可选):指定X坐标, top(可选):指定Y坐标
 // NewTab 新建页签并返回sessionId，改方法会默认切换到这个新的页签  ex: chrome cdpfn=NewTab params=`{"url":""}` to=sid
+// DOMStructureAnalysis DOM结构分析工具  ex: chrome cdpfn=DOMStructureAnalysis
+// PageComparisonAtTime 指定时间页面对比分析   ex:  chrome cdpfn=PageComparisonAtTime  params=`{"second":5}`
 func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) {
 
 	fmt.Println("cdp = ", cdpfn)
@@ -1013,6 +1027,17 @@ func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) 
 		}
 		browser.OpenUrl(urlStr)
 		interp.Global().SetVar(to, browser.GetNowTabSession())
+
+	case "DOMStructureAnalysis":
+		browser.DOMStructureAnalysis()
+
+	case "PageComparisonAtTime":
+		second, ok := paramsMap["second"]
+		if !ok {
+			fmt.Println("未设置参数 second")
+			break
+		}
+		browser.PageComparisonAtTime(gt.Any2Int(second))
 
 	}
 

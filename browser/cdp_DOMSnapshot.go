@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,11 +25,11 @@ import (
 // DOMSnapshot.captureSnapshot用于捕获页面DOM结构的完整快照：
 // 捕获当前DOM树的结构和内容, 包含节点的属性、样式、布局信息, 生成可用于离线分析的数据结构, 支持序列化和反序列化, 可以包含计算样式和布局信息
 func CDPDOMSnapshotCaptureSnapshot(options ...DOMSnapshotOption) (string, error) {
-	if !DefaultBrowserWS() {
+	if !DefaultNowTab(false) {
 		return "", nil
 	}
-	if chromeInstance.BrowserWSConn == nil {
-		return "", fmt.Errorf("BrowserWSConn 未连接，无法调用 DOMSnapshot.captureSnapshot")
+	if chromeInstance.NowTabWSConn == nil {
+		return "", fmt.Errorf("NowTabWSConn 未连接，无法调用 DOMSnapshot.captureSnapshot")
 	}
 
 	// 默认配置
@@ -46,19 +47,36 @@ func CDPDOMSnapshotCaptureSnapshot(options ...DOMSnapshotOption) (string, error)
 	chromeInstance.NextID++
 	reqID := chromeInstance.NextID
 
-	// 构建消息
-	message := fmt.Sprintf(`{
-		"id": %d,
-		"method": "DOMSnapshot.captureSnapshot",
-		"params": {
-			"computedStyles": ["%s"],
-			"includeDOMRects": %t,
-			"includeBlendedBackgroundColors": %t
-		}
-	}`, reqID, strings.Join(config.ComputedStyles, `","`),
-		config.IncludeDOMRects, config.IncludeBlendedBackgroundColors)
+	// 构建参数对象
+	params := map[string]interface{}{
+		"computedStyles":                 config.ComputedStyles,
+		"includeDOMRects":                config.IncludeDOMRects,
+		"includeBlendedBackgroundColors": config.IncludeBlendedBackgroundColors,
+	}
 
-	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	// 只有有 CSS 属性时才添加
+	if len(config.ComputedStyles) > 0 {
+		params["computedStyles"] = config.ComputedStyles
+	}
+
+	// 构建完整的消息
+	request := map[string]interface{}{
+		"id":     reqID,
+		"method": "DOMSnapshot.captureSnapshot",
+		"params": params,
+	}
+
+	// 转换为 JSON
+	messageBytes, err := json.Marshal(request)
+	if err != nil {
+		return "", fmt.Errorf("构建请求 JSON 失败: %w", err)
+	}
+
+	message := string(messageBytes)
+
+	fmt.Println("发送快照消息  -> ", message)
+
+	err = chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, messageBytes)
 	if err != nil {
 		log.Println("发送 DOMSnapshot.captureSnapshot 失败:", err)
 		return "", err
@@ -135,7 +153,7 @@ func exampleDetailedDOMSnapshot() {
 		IncludeBlendedBackgroundColors(true),
 	)
 	if err != nil {
-		log.Fatalf("捕获详细DOM快照失败: %v", err)
+		log.Printf("捕获详细DOM快照失败: %v", err)
 	}
 
 	log.Printf("详细DOM快照捕获成功，包含 %d 种计算样式", len(computedStyles))
@@ -166,8 +184,10 @@ func exampleDetailedDOMSnapshot() {
 }
 
 
-// 示例3: 页面对比分析
-func examplePageComparison() {
+*/
+
+// PageComparisonAtTime 指定时间页面对比分析
+func PageComparisonAtTime(second int) {
 	// 捕获页面A的DOM快照
 	log.Println("捕获页面A的DOM快照...")
 	snapshotA, err := CDPDOMSnapshotCaptureSnapshot()
@@ -181,7 +201,7 @@ func examplePageComparison() {
 	// performPageActions()
 
 	// 等待页面更新
-	time.Sleep(2 * time.Second)
+	time.Sleep(time.Duration(second) * time.Second)
 
 	// 捕获页面B的DOM快照
 	log.Println("捕获页面B的DOM快照...")
@@ -194,7 +214,7 @@ func examplePageComparison() {
 	// 比较快照
 	comparison, err := CompareDOMSnapshots(snapshotA, snapshotB)
 	if err != nil {
-		log.Fatalf("比较快照失败: %v", err)
+		log.Printf("比较快照失败: %v", err)
 	}
 
 	// 生成报告
@@ -207,10 +227,8 @@ func examplePageComparison() {
 	fmt.Println(string(jsonResult))
 }
 
-
-
-// 示例4: DOM结构分析工具
-func exampleDOMStructureAnalysis() {
+// DOMStructureAnalysis DOM结构分析工具
+func DOMStructureAnalysis() {
 	log.Println("开始DOM结构分析...")
 
 	response, err := CDPDOMSnapshotCaptureSnapshot(
@@ -218,7 +236,7 @@ func exampleDOMStructureAnalysis() {
 		IncludeDOMRects(true),
 	)
 	if err != nil {
-		log.Fatalf("捕获DOM快照失败: %v", err)
+		fmt.Printf("捕获DOM快照失败: %v", err)
 	}
 
 	// 解析DOM快照
@@ -282,9 +300,6 @@ func exampleDOMStructureAnalysis() {
 	log.Printf("    SPAN元素: %d", len(spanNodes))
 	log.Printf("    IMG元素: %d", len(imgNodes))
 }
-
-
-*/
 
 // 辅助函数
 func getNodeTypeName(nodeType int) string {
@@ -423,114 +438,240 @@ func CompareDOMSnapshots(snapshotA, snapshotB string) (*DOMSnapshotComparison, e
 	return comparison, nil
 }
 
-// parseSnapshotData 解析DOM快照数据
+// parseSnapshotData 解析DOM快照数据 - 最稳定版本
 func parseSnapshotData(snapshot string) (*DOMSnapshotData, error) {
-	var response struct {
-		Result struct {
-			Documents []struct {
-				DocumentURL string `json:"documentURL"`
-				Title       string `json:"title"`
-				Nodes       []struct {
-					BackendID  int      `json:"backendNodeId"`
-					NodeName   string   `json:"nodeName"`
-					NodeType   int      `json:"nodeType"`
-					NodeValue  string   `json:"nodeValue,omitempty"`
-					ChildCount int      `json:"childCount,omitempty"`
-					Attributes []string `json:"attributes,omitempty"`
-					ParentID   int      `json:"parentIndex,omitempty"`
-				} `json:"nodes"`
-				Layout struct {
-					NodeIndex []int `json:"nodeIndex"`
-				} `json:"layout,omitempty"`
-			} `json:"documents"`
-		} `json:"result"`
+	// 1. 先解析为最简化的结构
+	var rawResponse struct {
+		Result map[string]interface{} `json:"result"`
+		Error  map[string]interface{} `json:"error,omitempty"`
 	}
 
-	if err := json.Unmarshal([]byte(snapshot), &response); err != nil {
+	if err := json.Unmarshal([]byte(snapshot), &rawResponse); err != nil {
 		return nil, fmt.Errorf("JSON解析失败: %w", err)
 	}
 
-	if len(response.Result.Documents) == 0 {
+	// 检查错误
+	if rawResponse.Error != nil {
+		return nil, fmt.Errorf("CDP响应包含错误: %v", rawResponse.Error)
+	}
+
+	if rawResponse.Result == nil {
+		return nil, fmt.Errorf("响应中缺少result字段")
+	}
+
+	// 2. 获取documents
+	documentsInterface, ok := rawResponse.Result["documents"]
+	if !ok {
+		return nil, fmt.Errorf("响应中缺少documents字段")
+	}
+
+	// documents可能是数组或空
+	documents, ok := documentsInterface.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("documents字段类型错误: %T", documentsInterface)
+	}
+
+	if len(documents) == 0 {
 		return nil, fmt.Errorf("快照中没有文档")
 	}
 
-	doc := response.Result.Documents[0]
+	// 3. 处理第一个文档
+	doc, ok := documents[0].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("文档格式错误")
+	}
+
+	// 4. 创建返回结构
 	data := &DOMSnapshotData{
 		Nodes:     make(map[int]*DOMNodeInfo),
 		RootNodes: []int{},
-		NodeCount: len(doc.Nodes),
-		DocURL:    doc.DocumentURL,
-		Title:     doc.Title,
 		Timestamp: time.Now(),
 	}
 
-	// 构建节点映射
-	for i, rawNode := range doc.Nodes {
-		node := &DOMNodeInfo{
-			BackendID:  rawNode.BackendID,
-			NodeName:   rawNode.NodeName,
-			NodeType:   rawNode.NodeType,
-			NodeValue:  rawNode.NodeValue,
-			ChildCount: rawNode.ChildCount,
-			Index:      i,
-		}
+	// 5. 提取基础信息
+	data.DocURL = extractString(doc, "documentURL")
+	data.Title = extractString(doc, "title")
 
-		// 解析属性
-		if len(rawNode.Attributes) > 0 {
-			node.Attributes = make(map[string]string)
-			for j := 0; j < len(rawNode.Attributes); j += 2 {
-				if j+1 < len(rawNode.Attributes) {
-					key := rawNode.Attributes[j]
-					value := rawNode.Attributes[j+1]
-					node.Attributes[key] = value
-				}
-			}
-		}
-
-		// 设置父节点
-		if rawNode.ParentID > 0 && rawNode.ParentID < len(doc.Nodes) {
-			node.ParentID = doc.Nodes[rawNode.ParentID].BackendID
-		}
-
-		data.Nodes[node.BackendID] = node
+	// 6. 处理nodes - 处理各种格式
+	nodes, nodeCount, err := extractNodes(doc)
+	if err != nil {
+		return nil, fmt.Errorf("提取nodes失败: %w", err)
 	}
 
-	// 构建子节点关系
-	for _, node := range data.Nodes {
+	data.NodeCount = nodeCount
+
+	// 7. 解析每个节点
+	nodeMap := make(map[int]*DOMNodeInfo)
+	for i, nodeData := range nodes {
+		node := parseNode(nodeData, i)
+		if node != nil && node.BackendID > 0 {
+			nodeMap[node.BackendID] = node
+		}
+	}
+
+	// 8. 构建节点关系
+	for _, node := range nodeMap {
+		// 处理父节点关系
 		if node.ParentID > 0 {
-			if parent, exists := data.Nodes[node.ParentID]; exists {
+			if parent, exists := nodeMap[node.ParentID]; exists {
 				parent.Children = append(parent.Children, node.BackendID)
 			}
 		} else {
-			// 根节点
+			// 没有父节点的是根节点
 			data.RootNodes = append(data.RootNodes, node.BackendID)
 		}
 	}
 
-	// 计算节点深度
-	calculateNodeDepth(data)
+	data.Nodes = nodeMap
+
+	// 9. 计算节点深度
+	if err := calculateNodeDepth(data); err != nil {
+		log.Printf("计算节点深度失败: %v", err)
+	}
 
 	return data, nil
 }
 
-// calculateNodeDepth 计算节点深度
-func calculateNodeDepth(data *DOMSnapshotData) {
-	var calculate func(nodeID, depth int)
-	calculate = func(nodeID, depth int) {
+func calculateNodeDepth(data *DOMSnapshotData) error {
+	// 防止递归导致栈溢出
+	const maxDepth = 1000
+
+	var dfs func(nodeID, depth int) error
+	dfs = func(nodeID, depth int) error {
+		if depth > maxDepth {
+			return fmt.Errorf("节点深度超过限制: %d", depth)
+		}
+
 		node, exists := data.Nodes[nodeID]
 		if !exists {
-			return
+			return fmt.Errorf("节点不存在: %d", nodeID)
 		}
 
 		node.Depth = depth
+
+		// 递归处理子节点
 		for _, childID := range node.Children {
-			calculate(childID, depth+1)
+			if err := dfs(childID, depth+1); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	// 从每个根节点开始计算深度
+	for _, rootID := range data.RootNodes {
+		if err := dfs(rootID, 0); err != nil {
+			return err
 		}
 	}
 
-	for _, rootID := range data.RootNodes {
-		calculate(rootID, 0)
+	return nil
+}
+
+// 辅助函数：从map提取字符串
+func extractString(m map[string]interface{}, key string) string {
+	if val, ok := m[key]; ok && val != nil {
+		switch v := val.(type) {
+		case string:
+			return v
+		case float64:
+			// 如果是整数，去掉小数部分
+			if v == float64(int(v)) {
+				return strconv.Itoa(int(v))
+			}
+			return strconv.FormatFloat(v, 'f', -1, 64)
+		case int, int32, int64:
+			return fmt.Sprintf("%d", v)
+		case bool:
+			return strconv.FormatBool(v)
+		default:
+			return fmt.Sprintf("%v", v)
+		}
 	}
+	return ""
+}
+
+// 辅助函数：提取节点数据
+func extractNodes(doc map[string]interface{}) ([]interface{}, int, error) {
+	nodesInterface, ok := doc["nodes"]
+	if !ok {
+		return nil, 0, fmt.Errorf("文档中缺少nodes字段")
+	}
+
+	var nodes []interface{}
+
+	// 处理不同的nodes格式
+	switch v := nodesInterface.(type) {
+	case []interface{}:
+		// 格式1: 数组
+		nodes = v
+	case map[string]interface{}:
+		// 格式2: 对象，转换为数组
+		nodes = make([]interface{}, 0, len(v))
+		for _, node := range v {
+			nodes = append(nodes, node)
+		}
+	case nil:
+		// 格式3: 空值
+		return nil, 0, nil
+	default:
+		return nil, 0, fmt.Errorf("nodes字段格式不支持: %T", v)
+	}
+
+	return nodes, len(nodes), nil
+}
+
+// 辅助函数：解析单个节点
+func parseNode(nodeData interface{}, index int) *DOMNodeInfo {
+	// 确保是map
+	nodeMap, ok := nodeData.(map[string]interface{})
+	if !ok {
+		return nil
+	}
+
+	node := &DOMNodeInfo{
+		BackendID:  extractInt(nodeMap, "backendNodeId"),
+		NodeName:   extractString(nodeMap, "nodeName"),
+		NodeType:   extractInt(nodeMap, "nodeType"),
+		NodeValue:  extractString(nodeMap, "nodeValue"),
+		ChildCount: extractInt(nodeMap, "childCount"),
+		ParentID:   extractInt(nodeMap, "parentIndex"),
+		Index:      index,
+	}
+
+	// 解析attributes
+	if attrs, ok := nodeMap["attributes"].([]interface{}); ok {
+		node.Attributes = make(map[string]string)
+		for j := 0; j < len(attrs); j += 2 {
+			if j+1 < len(attrs) {
+				key, keyOk := attrs[j].(string)
+				value, valueOk := attrs[j+1].(string)
+				if keyOk && valueOk {
+					node.Attributes[key] = value
+				}
+			}
+		}
+	}
+
+	return node
+}
+
+// 辅助函数：从map提取int
+func extractInt(m map[string]interface{}, key string) int {
+	if val, ok := m[key]; ok && val != nil {
+		switch v := val.(type) {
+		case float64:
+			return int(v)
+		case int:
+			return v
+		case int32:
+			return int(v)
+		case int64:
+			return int(v)
+		}
+	}
+	return 0
 }
 
 // compareNodeStructure 比较节点结构
@@ -815,6 +956,10 @@ func max(a, b int) int {
 func GenerateComparisonReport(comparison *DOMSnapshotComparison) string {
 	report := strings.Builder{}
 
+	if comparison == nil {
+		return "无法生成报告，因为 comparison 参数为空。"
+	}
+
 	report.WriteString("=== DOM快照比较报告 ===\n\n")
 	report.WriteString(fmt.Sprintf("比较时间: %v\n", comparison.ComparisonTime))
 	report.WriteString(fmt.Sprintf("快照A节点数: %d\n", comparison.TotalNodesA))
@@ -888,11 +1033,11 @@ func GenerateComparisonReport(comparison *DOMSnapshotComparison) string {
 
 // CDPDOMSnapshotDisable 禁用DOMSnapshot域
 func CDPDOMSnapshotDisable() (string, error) {
-	if !DefaultBrowserWS() {
+	if !DefaultNowTab(false) {
 		return "", nil
 	}
-	if chromeInstance.BrowserWSConn == nil {
-		return "", fmt.Errorf("BrowserWSConn 未连接，无法调用 DOMSnapshot.disable")
+	if chromeInstance.NowTabWSConn == nil {
+		return "", fmt.Errorf("NowTabWSConn 未连接，无法调用 DOMSnapshot.disable")
 	}
 	chromeInstance.NextID++
 	reqID := chromeInstance.NextID
@@ -901,7 +1046,7 @@ func CDPDOMSnapshotDisable() (string, error) {
 		"method": "DOMSnapshot.disable"
 	}`, reqID)
 
-	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	err := chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		log.Println("发送 DOMSnapshot.disable 失败:", err)
 		return "", err
@@ -930,11 +1075,11 @@ func CDPDOMSnapshotDisable() (string, error) {
 
 // CDPDOMSnapshotEnable 启用DOMSnapshot域
 func CDPDOMSnapshotEnable() (string, error) {
-	if !DefaultBrowserWS() {
+	if !DefaultNowTab(false) {
 		return "", nil
 	}
-	if chromeInstance.BrowserWSConn == nil {
-		return "", fmt.Errorf("BrowserWSConn 未连接，无法调用 DOMSnapshot.enable")
+	if chromeInstance.NowTabWSConn == nil {
+		return "", fmt.Errorf("NowTabWSConn 未连接，无法调用 DOMSnapshot.enable")
 	}
 	chromeInstance.NextID++
 	reqID := chromeInstance.NextID
@@ -943,7 +1088,7 @@ func CDPDOMSnapshotEnable() (string, error) {
 		"method": "DOMSnapshot.enable"
 	}`, reqID)
 
-	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	err := chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		log.Println("发送 DOMSnapshot.enable 失败:", err)
 		return "", err

@@ -324,17 +324,42 @@ func ShowJson(data any) {
 
 // JsonPrettyFormat 输入原始 JSON 字符串，返回美化格式化后的字符串
 func JsonPrettyFormat(jsonStr string) string {
-	// 用来存放格式化后的输出
-	var prettyJSON bytes.Buffer
-
-	// 用标准库格式化，缩进用 2 个空格
-	err := json.Indent(&prettyJSON, []byte(jsonStr), "", "  ")
-	if err != nil {
-		fmt.Println("[Err]json字符串格式错误")
-		return ""
+	// 如果已经是格式化的 JSON，直接返回
+	if strings.TrimSpace(jsonStr) == "" {
+		return jsonStr
 	}
 
-	return prettyJSON.String()
+	// 尝试解析
+	var data interface{}
+
+	// 创建自定义解码器
+	decoder := json.NewDecoder(strings.NewReader(jsonStr))
+	decoder.UseNumber() // 保留数字精度
+
+	if err := decoder.Decode(&data); err != nil {
+		// 如果是无效 JSON，返回原字符串
+		fmt.Printf("[Wring] 无法解析为 JSON: %v", err)
+		return jsonStr
+	}
+
+	// 创建自定义编码器
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false) // 关键：不转义 Unicode
+	encoder.SetIndent("", "  ")  // 缩进2个空格
+
+	if err := encoder.Encode(data); err != nil {
+		fmt.Printf("[Wring] JSON 编码失败: %v", err)
+		return jsonStr
+	}
+
+	// 移除末尾的换行符（Encode 会自动添加）
+	result := buf.String()
+	if len(result) > 0 && result[len(result)-1] == '\n' {
+		result = result[:len(result)-1]
+	}
+
+	return result
 }
 
 // IsValidOrigin 验证 origin 格式

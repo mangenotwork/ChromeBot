@@ -587,7 +587,7 @@
     [待定] Target.setDiscoverTargets <待定> 控制是否发现可用目标并通过 targetCreated/targetInfoChanged/targetDestroyed事件通知
     [ok] Target.getTargetInfo  返回目标的相关信息。
 
-- [ok] chrome DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。 // 0327 End
+- [ok] chrome DOMSnapshot : 该域便于获取包含 DOM、布局和样式信息的文档快照。
     [ok] DOMSnapshot.captureSnapshot <深入了解> 返回文档快照，其中包含根节点的完整 DOM 树（包括 iframe、模板内容和导入的文档），以扁平数组的形式呈现
     [ok] DOMSnapshot.disable 禁用给定页面的 DOM 快照。
     [ok] DOMSnapshot.enable  启用 DOM 快照
@@ -603,7 +603,7 @@
 - [] 改测试的bug和优化
     [ok] chrome Browser 测试
     [ok] chrome Target 测试
-    [] chrome DOMSnapshot 测试
+    [ok] chrome DOMSnapshot 测试
     [] chrome DOMStorage 测试
 - [] bug和优化验收
 - [] 更新文档  // 0401 End
