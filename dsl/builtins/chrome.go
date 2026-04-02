@@ -85,31 +85,10 @@ device : 设置浏览器启动设备与init参数一起用， 目前支持: ipho
 	ipadMini,android,galaxy,galaxyS24,galaxyS23,galaxyS22,galaxyZFold5,huawei,huaweiMate60,
 	huaweiPura70,huaweiMagic6,xiaomi,xiaomi14,xiaomi13,redmi,oppo,vivo,pixel,pixel8,pixel7,androidPad
 
-cdp=<域> params=<jsonStr>: 发送 cdp指令  params是指令所需的参数要求是json字符串
-
-	SystemInfo.getFeatureState 获取Feature状态 ex: chrome cdp=`SystemInfo.getFeatureState` params=`{"featureState":"webgl"}`
-					feature：gpu_acceleration(GPU 加速),vulkan(Vulkan 渲染),direct3d11(D3D11),canvas_oop_rasterization(画布离屏渲染),video_acceleration(视频硬件加速),webgl,webgl2,webgpu
-	SystemInfo.getInfo 获取系统信息信息 ex: chrome cdp=`SystemInfo.getInfo`
-	SystemInfo.getProcessInfo 获取正在运行的进程的相关信息 ex: chrome cdp=`SystemInfo.getProcessInfo`
-	Browser.close   关闭浏览器  ex: chrome cdp=`Browser.close`
-	Browser.resetPermissions 重置权限 ex: chrome cdp=`Browser.resetPermissions` params=`{"origin": "https://example.com"}`
-	Browser.getWindowForTarget  通过targetId获取对应的窗口ID ex: chrome cdp=`Browser.getWindowForTarget` params=`{"targetId": "..."}` to=wid
-	Browser.setWindowBounds  设置浏览器窗口的大小。 ex: chrome cdp=`Browser.setWindowBounds` params=`{"windowId": "...", "left":100,"top":100,"width":800,"height":600,"windowState":"normal"}`
-										  windowState:窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)
-	Browser.setContentsSize  设置浏览器窗口的位置和/或大小  ex: chrome cdp=`Browser.setContentsSize` params=`{"windowId": "...", "width":800,"height":600}`
-
-cdpfn=<方法名> params=<jsonStr>: 发送封装好了的cdp方法，一般是针对特定场景的补充  params是指令所需的函数参数要求是json字符串
-
-	GetMainWindowID 获取主窗口ID ex: chrome cdpfn=GetMainWindowID to=wid
-	GetCurrentWindowInfo 获取当前活动窗口的信息  ex: chrome cdpfn=GetMainWindowID to=wid
-	CDPBrowserSetContentsSize设置浏览器内容区域尺寸  ex: chrome cdpfn=CDPBrowserSetContentsSize
-								params=`{"windowId":123, "width":900, "height":600, "keepPosition":false, "includeChrome":false}`
-								keepPosition:是否保持当前位置(可选),includeChrome:是否包括浏览器边框(可选),
-								windowState(可选):窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)
-								left(可选):指定X坐标, top(可选):指定Y坐标
+cdp=<域> params=<jsonStr>: 发送 cdp指令  params是指令所需的参数要求是json字符串  详细见下文 runCDP()
+cdpfn=<方法名> params=<jsonStr>: 发送封装好了的cdp方法，一般是针对特定场景的补充  params是指令所需的函数参数要求是json字符串  详细见下文  runCDPFN()
 
 语法
-
 chrome click=`//*[@id="chat-submit-button"]` xpath=`//*[@id="chat-textarea"]` input=`aaaa`
 
 例子1 ：简单访问百度进行查询操作
@@ -749,6 +728,26 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 	return result
 }
 
+// SystemInfo.getFeatureState 获取Feature状态 ex: chrome cdp=`SystemInfo.getFeatureState` params=`{"featureState":"webgl"}`
+// 参数说明 feature：gpu_acceleration(GPU 加速),vulkan(Vulkan 渲染),direct3d11(D3D11),canvas_oop_rasterization(画布离屏渲染),video_acceleration(视频硬件加速),webgl,webgl2,webgpu
+// SystemInfo.getInfo 获取系统信息信息 ex: chrome cdp=`SystemInfo.getInfo`
+// SystemInfo.getProcessInfo 获取正在运行的进程的相关信息 ex: chrome cdp=`SystemInfo.getProcessInfo`
+// Browser.close   关闭浏览器  ex: chrome cdp=`Browser.close`
+// Browser.resetPermissions 重置权限 ex: chrome cdp=`Browser.resetPermissions` params=`{"origin": "https://example.com"}`
+// Browser.getWindowForTarget  通过targetId获取对应的窗口ID ex: chrome cdp=`Browser.getWindowForTarget` params=`{"targetId": "..."}` to=wid
+// Browser.setWindowBounds  设置浏览器窗口的大小。 ex: chrome cdp=`Browser.setWindowBounds` params=`{"windowId": "...", "left":100,"top":100,"width":800,"height":600,"windowState":"normal"}`
+// 参数说明 windowState:窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)
+// Browser.setContentsSize  设置浏览器窗口的位置和/或大小  ex: chrome cdp=`Browser.setContentsSize` params=`{"windowId": "...", "width":800,"height":600}`
+// Target.createTarget  创建target  ex: chrome cdp=`Target.createTarget` params=`{"url":"https://example.com"}` to=tid
+// Target.activateTarget 激活target 聚焦指定页面  ex: chrome cdp=`Target.activateTarget` params=`{"targetId":""}`
+// Target.attachToTarget 聚焦目标页签返回sessionID ex: chrome cdp=`Target.attachToTarget` params=`{"targetId":""}` to=sid
+// Target.closeTarget 关闭指定target,如果目标是页面，则页面也会被关闭。 ex: chrome cdp=`Target.closeTarget` params=`{"targetId":""}`
+// Target.createBrowserContext 创建一个新的空浏览器上下文（它类似于浏览器的无痕模式） ex: chrome cdp=`Target.createBrowserContext`
+// Target.detachFromTarget 分离掉指定sessionID  ex: chrome cdp=`Target.detachFromTarget` params=`{"sessionId":""}`
+// Target.disposeBrowserContext  删除 BrowserContext  ex: chrome cdp=`Target.disposeBrowserContext` params=`{"browserContextId":""}`
+// Target.getBrowserContexts 返回创建的所有浏览器上下文  ex: chrome cdp=`Target.getBrowserContexts`
+// Target.getTargets  获取可用目标列表。  ex: chrome cdp=`Target.getTargets`
+// Target.getTargetInfo  返回目标的相关信息   ex: chrome cdp=`Target.getTargetInfo` params=`{"targetId":""}`
 func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
@@ -858,9 +857,90 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 		widthInt := gt.Any2Int(width)
 		heightInt := gt.Any2Int(height)
 		browser.CDPBrowserSetContentsSize(windowIdInt, widthInt, heightInt)
+
+	case "Target.createTarget":
+		urlStr, ok := paramsMap["url"].(string)
+		if !ok {
+			fmt.Println("未设置参数 url")
+			break
+		}
+		tid, err := browser.CDPTargetCreateTarget(urlStr)
+		if err != nil {
+			fmt.Println("打开页面失败,err:", err)
+			break
+		}
+		interp.Global().SetVar(to, tid)
+
+	case "Target.activateTarget":
+		targetId, ok := paramsMap["targetId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 targetId")
+			break
+		}
+		browser.CDPTargetActivateTarget(targetId)
+
+	case "Target.attachToTarget":
+		targetId, ok := paramsMap["targetId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 targetId")
+			break
+		}
+		sid, err := browser.CDPTargetAttachToTarget(targetId)
+		if err != nil {
+			fmt.Println("聚焦目标页签失败,err:", err)
+			break
+		}
+		interp.Global().SetVar(to, sid)
+
+	case "Target.closeTarget":
+		targetId, ok := paramsMap["targetId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 targetId")
+			break
+		}
+		browser.CDPTargetCloseTarget(targetId)
+
+	case "Target.createBrowserContext":
+		browser.CDPTargetCreateBrowserContext()
+
+	case "Target.detachFromTarget":
+		sessionId, ok := paramsMap["sessionId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 sessionId")
+			break
+		}
+		browser.CDPTargetDetachFromTarget(sessionId)
+
+	case "Target.disposeBrowserContext":
+		browserContextId, ok := paramsMap["browserContextId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 browserContextId")
+			break
+		}
+		browser.CDPTargetDisposeBrowserContext(browserContextId)
+
+	case "Target.getBrowserContexts":
+		browser.CDPTargetGetBrowserContexts()
+
+	case "Target.getTargets":
+		browser.CDPTargetGetTargets()
+
+	case "Target.getTargetInfo":
+		targetId, ok := paramsMap["targetId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 targetId")
+			break
+		}
+		browser.CDPTargetGetTargetInfo(targetId)
+
 	}
 }
 
+// GetMainWindowID 获取主窗口ID ex: chrome cdpfn=GetMainWindowID to=wid
+// GetCurrentWindowInfo 获取当前活动窗口的信息  ex: chrome cdpfn=GetMainWindowID to=wid
+// CDPBrowserSetContentsSize设置浏览器内容区域尺寸  ex: chrome cdpfn=CDPBrowserSetContentsSize params=`{"windowId":123, "width":900, "height":600, "keepPosition":false, "includeChrome":false}`
+// 参数说明: keepPosition:是否保持当前位置(可选),includeChrome:是否包括浏览器边框(可选),windowState(可选):窗口状态(normal:正常窗口, minimized:最小化, maximized:最大化, fullscreen:全屏)left(可选):指定X坐标, top(可选):指定Y坐标
+// NewTab 新建页签并返回sessionId，改方法会默认切换到这个新的页签  ex: chrome cdpfn=NewTab params=`{"url":""}` to=sid
 func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) {
 
 	fmt.Println("cdp = ", cdpfn)
@@ -919,6 +999,20 @@ func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) 
 		widthInt := gt.Any2Int(width)
 		heightInt := gt.Any2Int(height)
 		browser.CDPBrowserSetContentsSizeFn(windowIdInt, widthInt, heightInt)
+
+	case "NewTab":
+		urlStr, ok := paramsMap["url"].(string)
+		if !ok {
+			fmt.Println("未设置参数 url")
+			break
+		}
+		_, err := browser.NewTab()
+		if err != nil {
+			fmt.Println("打开页面失败,err:", err)
+			break
+		}
+		browser.OpenUrl(urlStr)
+		interp.Global().SetVar(to, browser.GetNowTabSession())
 
 	}
 

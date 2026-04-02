@@ -255,12 +255,12 @@ func CDPTargetCreateTarget(url string, options ...CreateTargetOption) (string, e
 
 	// 默认配置
 	config := &CreateTargetConfig{
-		URL:                     url,
-		Width:                   800,
-		Height:                  600,
-		EnableBeginFrameControl: false,
-		NewWindow:               true,
-		Background:              false,
+		URL: url,
+		//Width:                   800,
+		//Height:                  600,
+		EnableBeginFrameControl: false, // 可选，是否启用帧控制
+		NewWindow:               false, // 可选，是否在新窗口中打开（默认 true）
+		Background:              false, // 可选，是否在后台打开
 	}
 
 	// 应用选项
@@ -277,13 +277,10 @@ func CDPTargetCreateTarget(url string, options ...CreateTargetOption) (string, e
 		"method": "Target.createTarget",
 		"params": {
 			"url": "%s",
-			"width": %d,
-			"height": %d,
 			"enableBeginFrameControl": %t,
 			"newWindow": %t,
 			"background": %t`,
-		reqID, config.URL, config.Width, config.Height,
-		config.EnableBeginFrameControl, config.NewWindow, config.Background)
+		reqID, config.URL, config.EnableBeginFrameControl, config.NewWindow, config.Background)
 
 	// 可选参数
 	if config.BrowserContextId != "" {

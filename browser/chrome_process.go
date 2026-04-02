@@ -51,6 +51,10 @@ func GetChromeInstance() *ChromeProcess {
 	return chromeInstance
 }
 
+func GetNowTabSession() string {
+	return chromeInstance.NowTabSession
+}
+
 func getAvailablePort() int {
 	listener, err := net.Listen("tcp", "0.0.0.0:0") // 关键：绑定0.0.0.0确保外部可访问
 	if err != nil {

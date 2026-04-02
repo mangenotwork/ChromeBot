@@ -578,10 +578,10 @@
     [ok] Target.createBrowserContext  创建一个新的空浏览器上下文。它类似于（浏览器的）无痕模式，但你可以同时拥有多个。
                                     举个通俗的例子：普通的浏览器就像你只有一台电脑，所有人用同一个账号登录。而使用 BrowserContext，
                                     就像是你瞬间变出了 10 台全新的、互不干扰的电脑，每台电脑都可以独立登录不同的账号，互不影响。
-    [ok] Target.createTarget  创建target (常用于创建页面)
-    [ok] Target.detachFromTarget Target.detachFromTarget  分离掉指定sessionID
-    [ok] Target.disposeBrowserContext  删除 BrowserContext。所有属于该 BrowserContext 的页面都将被关闭，而不会调用它们的 beforeunload 钩子函数
-    [ok] Target.getBrowserContexts   返回创建的所有浏览器上下文
+    [ok] Target.createTarget 创建target (常用于创建页面)
+    [ok] Target.detachFromTarget 分离掉指定sessionID
+    [ok] Target.disposeBrowserContext 删除 BrowserContext。所有属于该 BrowserContext 的页面都将被关闭，而不会调用它们的 beforeunload 钩子函数
+    [ok] Target.getBrowserContexts 返回创建的所有浏览器上下文
     [ok] Target.getTargets  获取可用目标列表。
     [待定] Target.setAutoAttach  <待定>  控制是否自动附加到与当前目标直接相关的新目标（例如 iframe 或 worker）。
     [待定] Target.setDiscoverTargets <待定> 控制是否发现可用目标并通过 targetCreated/targetInfoChanged/targetDestroyed事件通知
@@ -602,7 +602,7 @@
 
 - [] 改测试的bug和优化
     [ok] chrome Browser 测试
-    [] chrome Target 测试
+    [ok] chrome Target 测试
     [] chrome DOMSnapshot 测试
     [] chrome DOMStorage 测试
 - [] bug和优化验收
