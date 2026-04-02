@@ -96,44 +96,30 @@ func SessionStorageId(origin string) DOMStorageId {
 	}
 }
 
-/*
-
-// 示例1: 清除指定源的localStorage
-func exampleClearLocalStorage() {
-	// 要清除的网站源
-	origin := "https://example.com"
-
-	// 创建localStorage ID
+// ClearLocalStorage 清除指定源的localStorage
+func ClearLocalStorage(origin string) {
 	storageId := LocalStorageId(origin)
-
-	log.Printf("正在清除 %s 的localStorage...", origin)
+	fmt.Printf("正在清除 %s 的localStorage...", origin)
 	response, err := CDPDOMStorageClear(storageId)
 	if err != nil {
 		log.Printf("清除localStorage失败: %v", err)
 		return
 	}
-
-	log.Printf("localStorage清除成功: %s", response)
+	fmt.Printf("localStorage清除成功: %s", response)
 }
 
-// 示例2: 清除指定源的sessionStorage
-func exampleClearSessionStorage() {
-	origin := "https://example.com"
-
+// ClearSessionStorage 清除指定源的sessionStorage
+func ClearSessionStorage(origin string) {
 	// 创建sessionStorage ID
 	storageId := SessionStorageId(origin)
-
-	log.Printf("正在清除 %s 的sessionStorage...", origin)
+	fmt.Printf("正在清除 %s 的sessionStorage...", origin)
 	response, err := CDPDOMStorageClear(storageId)
 	if err != nil {
 		log.Printf("清除sessionStorage失败: %v", err)
 		return
 	}
-
-	log.Printf("sessionStorage清除成功: %s", response)
+	fmt.Printf("sessionStorage清除成功: %s", response)
 }
-
-*/
 
 // CDPDOMStorageDisable 禁用DOMStorage域
 func CDPDOMStorageDisable() (string, error) {
@@ -399,6 +385,8 @@ func CDPDOMStorageSetDOMStorageItem(storageId DOMStorageId, key, value string) (
 }
 
 /*
+
+将下面示例写成cbs脚本的示例
 
 // 示例2: 设置测试数据
 func exampleSetTestData() {

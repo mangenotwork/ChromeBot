@@ -600,13 +600,13 @@
     [ok] DOMStorage.removeDOMStorageItem  <深入了解>
     [ok] DOMStorage.setDOMStorageItem   <深入了解>
 
-- [] 改测试的bug和优化
+- [ok] 改测试的bug和优化
     [ok] chrome Browser 测试
     [ok] chrome Target 测试
     [ok] chrome DOMSnapshot 测试
-    [] chrome DOMStorage 测试
-- [] bug和优化验收
-- [] 更新文档  // 0401 End
+    [ok] chrome DOMStorage 测试
+- [ok] bug和优化验收
+- [ok] 更新文档 
 
 #### v0.0.7
 - [ok] host 方法扩展   系统文件相关交互方法   注意: path要求绝对路径，用相对路径会指定当前脚本工作目录为根

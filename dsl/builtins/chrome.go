@@ -751,6 +751,12 @@ func processArgs(interp *interpreter.Interpreter, args []string) []string {
 // DOMSnapshot.captureSnapshot 返回文档快照，其中包含根节点的完整 DOM 树   ex: chrome cdp=`DOMSnapshot.captureSnapshot`
 // DOMSnapshot.disable 禁用给定页面的 DOM 快照  ex: chrome cdp=`DOMSnapshot.disable`
 // DOMSnapshot.enable  启用 DOM 快照   ex: chrome cdp=`DOMSnapshot.enable`
+// DOMStorage.clear 清除指定存储区域的所有数据  ex: chrome cdp=`DOMStorage.clear` params=`{"securityOrigin":"https://example.com","isLocalStorage":true}`   securityOrigin:存储源 isLocalStorage(bool):是否是localStorage
+// DOMStorage.disable 禁用存储跟踪    ex: chrome cdp=`DOMStorage.disable`
+// DOMStorage.enable 启用存储跟踪功能  ex: chrome cdp=`DOMStorage.enable`
+// DOMStorage.getDOMStorageItems  获取指定存储区域的所有项目   ex: chrome cdp=`DOMStorage.getDOMStorageItems` params=`{"securityOrigin":"https://example.com","isLocalStorage":true}`
+// DOMStorage.removeDOMStorageItem  删除指定存储区域的特定项目  ex: chrome cdp=`DOMStorage.removeDOMStorageItem` params=`{"securityOrigin":"https://example.com","isLocalStorage":true, "key":""}`
+// DOMStorage.setDOMStorageItem  在指定存储区域中设置项目  ex: chrome cdp=`DOMStorage.removeDOMStorageItem` params=`{"securityOrigin":"https://example.com","isLocalStorage":true, "key":"", value:""}`
 func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
@@ -945,6 +951,91 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 	case "DOMSnapshot.enable":
 		browser.CDPDOMSnapshotEnable()
 
+	case "DOMStorage.clear":
+		securityOrigin, ok := paramsMap["sessionId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 securityOrigin")
+			break
+		}
+		isLocalStorage, ok := paramsMap["isLocalStorage"].(bool)
+		if !ok {
+			fmt.Println("未设置参数 isLocalStorage")
+			break
+		}
+		browser.CDPDOMStorageClear(browser.DOMStorageId{
+			SecurityOrigin: securityOrigin,
+			IsLocalStorage: isLocalStorage,
+		})
+
+	case "DOMStorage.disable":
+		browser.CDPDOMStorageDisable()
+
+	case "DOMStorage.enable":
+		browser.CDPDOMStorageEnable()
+
+	case "DOMStorage.getDOMStorageItems":
+		securityOrigin, ok := paramsMap["sessionId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 securityOrigin")
+			break
+		}
+		isLocalStorage, ok := paramsMap["isLocalStorage"].(bool)
+		if !ok {
+			fmt.Println("未设置参数 isLocalStorage")
+			break
+		}
+		browser.CDPDOMStorageGetDOMStorageItems(browser.DOMStorageId{
+			SecurityOrigin: securityOrigin,
+			IsLocalStorage: isLocalStorage,
+		})
+
+	case "DOMStorage.removeDOMStorageItem":
+		securityOrigin, ok := paramsMap["sessionId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 securityOrigin")
+			break
+		}
+		isLocalStorage, ok := paramsMap["isLocalStorage"].(bool)
+		if !ok {
+			fmt.Println("未设置参数 isLocalStorage")
+			break
+		}
+		key, ok := paramsMap["key"].(string)
+		if !ok {
+			fmt.Println("未设置参数 key")
+			break
+		}
+		browser.CDPDOMStorageRemoveDOMStorageItem(browser.DOMStorageId{
+			SecurityOrigin: securityOrigin,
+			IsLocalStorage: isLocalStorage,
+		}, key)
+
+	case "DOMStorage.setDOMStorageItem":
+		securityOrigin, ok := paramsMap["sessionId"].(string)
+		if !ok {
+			fmt.Println("未设置参数 securityOrigin")
+			break
+		}
+		isLocalStorage, ok := paramsMap["isLocalStorage"].(bool)
+		if !ok {
+			fmt.Println("未设置参数 isLocalStorage")
+			break
+		}
+		key, ok := paramsMap["key"].(string)
+		if !ok {
+			fmt.Println("未设置参数 key")
+			break
+		}
+		value, ok := paramsMap["value"].(string)
+		if !ok {
+			fmt.Println("未设置参数 value")
+			break
+		}
+		browser.CDPDOMStorageSetDOMStorageItem(browser.DOMStorageId{
+			SecurityOrigin: securityOrigin,
+			IsLocalStorage: isLocalStorage,
+		}, key, value)
+
 	}
 }
 
@@ -955,6 +1046,8 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 // NewTab 新建页签并返回sessionId，改方法会默认切换到这个新的页签  ex: chrome cdpfn=NewTab params=`{"url":""}` to=sid
 // DOMStructureAnalysis DOM结构分析工具  ex: chrome cdpfn=DOMStructureAnalysis
 // PageComparisonAtTime 指定时间页面对比分析   ex:  chrome cdpfn=PageComparisonAtTime  params=`{"second":5}`
+// ClearLocalStorage 清除指定源的localStorage  ex: chrome cdpfn=ClearLocalStorage  params=`{"origin":"https://example.com"}`
+// ClearSessionStorage 清除指定源的sessionStorage  ex: chrome cdpfn=ClearSessionStorage  params=`{"origin":"https://example.com"}`
 func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) {
 
 	fmt.Println("cdp = ", cdpfn)
@@ -1038,6 +1131,22 @@ func runCDPFN(interp *interpreter.Interpreter, cdpfn string, params, to string) 
 			break
 		}
 		browser.PageComparisonAtTime(gt.Any2Int(second))
+
+	case "ClearLocalStorage":
+		origin, ok := paramsMap["origin"].(string)
+		if !ok {
+			fmt.Println("未设置参数 origin")
+			break
+		}
+		browser.ClearLocalStorage(origin)
+
+	case "ClearSessionStorage":
+		origin, ok := paramsMap["origin"].(string)
+		if !ok {
+			fmt.Println("未设置参数 origin")
+			break
+		}
+		browser.ClearSessionStorage(origin)
 
 	}
 
