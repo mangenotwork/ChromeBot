@@ -280,6 +280,13 @@
     []Preload.enable  
 
 - [] 改测试的bug和优化
+    []  测试和完善
+    []  测试和完善
+    []  测试和完善
+    []  测试和完善
+    []  测试和完善
+    []  测试和完善
+    []  测试和完善
 - [] bug和优化验收
 - [] 更新文档   // 0405 End
 
@@ -361,13 +368,13 @@
 - [] 更新文档   // 0404 End
 
 #### v0.0.10
-- []chrome  BackgroundService ：  定义后台 Web 平台功能的事件。
+- []chrome BackgroundService ：  定义后台 Web 平台功能的事件。
     []BackgroundService.clearEvents  清除该服务的所有已存储数据。
     []BackgroundService.setRecording  设置服务的录制状态。
     []BackgroundService.startObserving  启用服务的事件更新。
     []BackgroundService.stopObserving  禁用该服务的事件更新。
 
-- []chrome  Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
+- []chrome Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
     []Fetch.continueRequest  继续发送请求，并可选择修改其某些参数。
     []Fetch.continueWithAuth  在 authRequired 事件发生后，继续提供 authChallengeResponse 的请求。
     []Fetch.disable  禁用 fetch 域。
@@ -377,10 +384,10 @@
     []Fetch.getResponseBody  使服务器接收响应正文并将其作为单个字符串返回。
     []Fetch.takeResponseBodyAsStream  返回指向表示响应体的流的句柄。
 
-- []chrome  FileSystem : 文件系统域
+- []chrome FileSystem : 文件系统域
     []FileSystem.getDirectory 获取目录
 
-- []chrome  DOM : 此域公开 DOM 读/写操作。   // 0331 End
+- []chrome DOM : 此域公开 DOM 读/写操作。   // 0331 End
     []DOM.describeNode 根据节点 ID 描述节点，无需启用域。不会开始跟踪任何对象，可用于自动化。
     []DOM.disable 禁用指定页面的 DOM 代理。
     []DOM.enable 启用 DOM 代理。
@@ -409,7 +416,7 @@
     []DOM.setNodeValue  设置具有给定 id 的节点的节点值。
     []DOM.setOuterHTML  设置节点 HTML 标记，返回新的节点 ID。
 
-- []chrome  DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+- []chrome DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
     []DOMDebugger.getEventListeners  返回给定对象的事件监听器。
     []DOMDebugger.removeDOMBreakpoint  移除使用 . 设置的 DOM 断点setDOMBreakpoint。
     []DOMDebugger.removeEventListenerBreakpoint  移除特定 DOM 事件上的断点。
@@ -418,7 +425,7 @@
     []DOMDebugger.setEventListenerBreakpoint  在特定 DOM 事件上设置断点
     []DOMDebugger.setXHRBreakpoint  在 XMLHttpRequest 上设置断点。
 
-- [] chrome  IndexedDB : IndexedDB相关的域
+- [] chrome IndexedDB : IndexedDB相关的域
     []IndexedDB.clearObjectStore  清除对象存储中的所有条目。
     []IndexedDB.deleteDatabase  删除数据库。
     []IndexedDB.deleteObjectStoreEntries  从对象存储库中删除一系列条目
@@ -429,7 +436,7 @@
     []IndexedDB.requestDatabase  请求具有给定名称的数据库到给定框架。
     []IndexedDB.requestDatabaseNames  请求给定安全源的数据库名称。
 
-- []chrome  Input ： 输入域
+- []chrome Input ： 输入域
     []Input.cancelDragging  取消页面上所有正在进行的拖动操作。
     []Input.dispatchKeyEvent  向页面发送关键事件。
     []Input.dispatchMouseEvent  向页面发送鼠标事件。
@@ -442,6 +449,13 @@
     []Input.setInterceptDrags  阻止默认的拖放行为，而是发出Input.dragIntercepted事件。
     
 - [] 改测试的bug和优化
+    [] chrome BackgroundService 测试和完善
+    [] chrome Fetch 测试和完善
+    [] chrome FileSystem 测试和完善
+    [] chrome DOM 测试和完善
+    [] chrome DOMDebugger 测试和完善
+    [] chrome IndexedDB 测试和完善
+    [] chrome Input 测试和完善
 - [] bug和优化验收
 - [] 更新文档   // 0403 End
 
@@ -519,37 +533,37 @@
   [ok] Emulation.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。 userAgentMetadata必须设置此项才能发送客户端提示标头。
 
 - chrome EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
-  [] EventBreakpoints.disable  移除所有断点
-  [] EventBreakpoints.removeInstrumentationBreakpoint 移除特定原生事件上的断点。
-  [] EventBreakpoints.setInstrumentationBreakpoint  在特定原生事件上设置断点。
+  [ok] EventBreakpoints.disable  移除所有断点
+  [ok] EventBreakpoints.removeInstrumentationBreakpoint 移除特定原生事件上的断点。
+  [ok] EventBreakpoints.setInstrumentationBreakpoint  在特定原生事件上设置断点。
 
 - chrome CacheStorage ： 缓存存储域
-  [] CacheStorage.deleteCache 清除缓存。
-  [] CacheStorage.deleteEntry 删除缓存条目。
-  [] CacheStorage.requestCachedResponse 获取缓存条目。
-  [] CacheStorage.requestCacheNames 请求缓存名称。
-  [] CacheStorage.requestEntries 从缓存中请求数据。
+  [ok] CacheStorage.deleteCache 清除缓存。
+  [ok] CacheStorage.deleteEntry 删除缓存条目。
+  [ok] CacheStorage.requestCachedResponse 获取缓存条目。
+  [ok] CacheStorage.requestCacheNames 请求缓存名称。
+  [ok] CacheStorage.requestEntries 从缓存中请求数据。
 
 - chrome Extensions : 定义浏览器扩展的命令和事件。
-  [] Extensions.clearStorageItems 清除给定扩展存储中的数据storageArea。
-  [] Extensions.getExtensions  获取所有已解压扩展的列表。
-  [] Extensions.getStorageItems 从指定位置的扩展存储中获取数据storageArea。
-  [] Extensions.loadUnpacked 从文件系统安装已解压的扩展，类似于 `--load-extension` 命令行标志。扩展安装完成后返回扩展 ID。
+  [ok] Extensions.clearStorageItems 清除给定扩展存储中的数据storageArea。
+  [ok] Extensions.getExtensions  获取所有已解压扩展的列表。
+  [ok] Extensions.getStorageItems 从指定位置的扩展存储中获取数据storageArea。
+  [ok] Extensions.loadUnpacked 从文件系统安装已解压的扩展，类似于 `--load-extension` 命令行标志。扩展安装完成后返回扩展 ID。
                              仅当客户端使用 `--remote-debugging-pipe` 标志连接且设置了 `--enable-unsafe-extension-debugging` 标志时才可用。
-  [] Extensions.removeStorageItems  keys从给定的扩展存储中移除storageArea
-  [] Extensions.setStorageItems  values在给定的扩展存储中设置storageArea。提供的值values 将与存储区域中的现有值合并。
-  [] Extensions.triggerAction  运行扩展程序的默认操作。仅当客户端使用 `--remote-debugging-pipe` 标志连接且设置了 `--enable-unsafe-extension-debugging` 标志时才可用。
-  [] Extensions.uninstall  从配置文件中卸载已解压的扩展程序（不支持其他扩展程序）。仅当客户端使用 `--remote-debugging-pipe` 
+  [ok] Extensions.removeStorageItems  keys从给定的扩展存储中移除storageArea
+  [ok] Extensions.setStorageItems  values在给定的扩展存储中设置storageArea。提供的值values 将与存储区域中的现有值合并。
+  [ok] Extensions.triggerAction  运行扩展程序的默认操作。仅当客户端使用 `--remote-debugging-pipe` 标志连接且设置了 `--enable-unsafe-extension-debugging` 标志时才可用。
+  [ok] Extensions.uninstall  从配置文件中卸载已解压的扩展程序（不支持其他扩展程序）。仅当客户端使用 `--remote-debugging-pipe` 
                             标志和 `--enable-unsafe-extension-debugging` 标志连接时才可用。
 
 - chrome FedCm : 该域允许与 FedCM 对话框进行交互。  
-  [] FedCm.clickDialogButton 点击对话框按钮
-  [] FedCm.disable  禁用FedCm
-  [] FedCm.dismissDialog dismiss对话框
-  [] FedCm.enable  启用FedCm
-  [] FedCm.openUrl  访问一个URL并打开FedCm对话框
-  [] FedCm.resetCooldown 重置冷却时间（如果有），以允许下一次 FedCM 调用显示对话框，即使用户最近关闭了某个对话框。
-  [] FedCm.selectAccount 选择账户
+  [ok] FedCm.clickDialogButton 点击对话框按钮
+  [ok] FedCm.disable  禁用FedCm
+  [ok] FedCm.dismissDialog dismiss对话框
+  [ok] FedCm.enable  启用FedCm
+  [ok] FedCm.openUrl  访问一个URL并打开FedCm对话框
+  [ok] FedCm.resetCooldown 重置冷却时间（如果有），以允许下一次 FedCM 调用显示对话框，即使用户最近关闭了某个对话框。
+  [ok] FedCm.selectAccount 选择账户
 
 - [] 改测试的bug和优化
     [] chrome CSS 测试和完善
