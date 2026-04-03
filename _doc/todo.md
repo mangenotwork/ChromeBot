@@ -368,21 +368,21 @@
 - [] 更新文档   // 0404 End
 
 #### v0.0.10
-- []chrome BackgroundService ：  定义后台 Web 平台功能的事件。
-    []BackgroundService.clearEvents  清除该服务的所有已存储数据。
-    []BackgroundService.setRecording  设置服务的录制状态。
-    []BackgroundService.startObserving  启用服务的事件更新。
-    []BackgroundService.stopObserving  禁用该服务的事件更新。
+- [ok]chrome BackgroundService ：  定义后台 Web 平台功能的事件。
+    [ok]BackgroundService.clearEvents  清除该服务的所有已存储数据。
+    [ok]BackgroundService.setRecording  设置服务的录制状态。
+    [ok]BackgroundService.startObserving  启用服务的事件更新。
+    [ok]BackgroundService.stopObserving  禁用该服务的事件更新。
 
-- []chrome Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
-    []Fetch.continueRequest  继续发送请求，并可选择修改其某些参数。
-    []Fetch.continueWithAuth  在 authRequired 事件发生后，继续提供 authChallengeResponse 的请求。
-    []Fetch.disable  禁用 fetch 域。
-    []Fetch.enable  启用 requestPaused 事件的触发。请求将被暂停，直到客户端调用 failRequest、fulfillRequest 或 continueRequest/continueWithAuth 中的一个。
-    []Fetch.failRequest 使请求因指定原因失败。
-    []Fetch.fulfillRequest  对请求做出响应。
-    []Fetch.getResponseBody  使服务器接收响应正文并将其作为单个字符串返回。
-    []Fetch.takeResponseBodyAsStream  返回指向表示响应体的流的句柄。
+- [ok]chrome Fetch : 允许客户端使用客户端代码替换浏览器网络层的域。
+    [ok]Fetch.continueRequest  继续发送请求，并可选择修改其某些参数。
+    [ok]Fetch.continueWithAuth  在 authRequired 事件发生后，继续提供 authChallengeResponse 的请求。
+    [ok]Fetch.disable  禁用 fetch 域。
+    [ok]Fetch.enable  启用 requestPaused 事件的触发。请求将被暂停，直到客户端调用 failRequest、fulfillRequest 或 continueRequest/continueWithAuth 中的一个。
+    [ok]Fetch.failRequest 使请求因指定原因失败。
+    [ok]Fetch.fulfillRequest  对请求做出响应。
+    [ok]Fetch.getResponseBody  使服务器接收响应正文并将其作为单个字符串返回。
+    [ok]Fetch.takeResponseBodyAsStream  返回指向表示响应体的流的句柄。
 
 - []chrome FileSystem : 文件系统域
     []FileSystem.getDirectory 获取目录
