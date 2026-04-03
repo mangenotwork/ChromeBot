@@ -502,21 +502,21 @@
   [ok] Debugger.getStackTrace  返回给定堆栈跟踪的stackTraceId.
 
 - chrome Emulation : 该域名模拟了页面的不同环境。
-  [] Emulation.clearDeviceMetricsOverride  清除已覆盖的设备指标。
-  [] Emulation.clearGeolocationOverride  清除已覆盖的地理位置位置和错误。
-  [] Emulation.clearIdleOverride  清除空闲状态覆盖。
-  [] Emulation.setCPUThrottlingRate  启用 CPU 降频功能以模拟低速 CPU。
-  [] Emulation.setDefaultBackgroundColorOverride  设置或清除框架默认背景颜色的覆盖值。如果内容未指定背景颜色，则使用此覆盖值。
-  [] Emulation.setDeviceMetricsOverride  覆盖设备屏幕尺寸的值（window.screen.width、window.screen.height、window.innerWidth、window.innerHeight）。
-  [] Emulation.setEmulatedMedia 模拟 CSS 媒体查询中给定的媒体类型或媒体特性。
-  [] Emulation.setEmulatedOSTextScale  模拟给定操作系统的文本缩放比例。
-  [] Emulation.setEmulatedVisionDeficiency   模拟给定的视力缺陷。
-  [] Emulation.setGeolocationOverride  覆盖地理位置位置或误差。省略纬度、经度或精度将模拟位置不可用。
-  [] Emulation.setIdleOverride 覆盖空闲状态。
-  [] Emulation.setScriptExecutionDisabled  切换页面中的脚本执行方式。
-  [] Emulation.setTimezoneOverride  使用指定的时区覆盖主机系统的默认时区。
-  [] Emulation.setTouchEmulationEnabled  在不支持触控功能的平台上启用触控功能。
-  [] Emulation.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。 userAgentMetadata必须设置此项才能发送客户端提示标头。
+  [ok] Emulation.clearDeviceMetricsOverride  清除已覆盖的设备指标。
+  [ok] Emulation.clearGeolocationOverride  清除已覆盖的地理位置位置和错误。
+  [ok] Emulation.clearIdleOverride  清除空闲状态覆盖。
+  [ok] Emulation.setCPUThrottlingRate  启用 CPU 降频功能以模拟低速 CPU。
+  [ok] Emulation.setDefaultBackgroundColorOverride  设置或清除框架默认背景颜色的覆盖值。如果内容未指定背景颜色，则使用此覆盖值。
+  [ok] Emulation.setDeviceMetricsOverride  覆盖设备屏幕尺寸的值（window.screen.width、window.screen.height、window.innerWidth、window.innerHeight）。
+  [ok] Emulation.setEmulatedMedia 模拟 CSS 媒体查询中给定的媒体类型或媒体特性。
+  [ok] Emulation.setEmulatedOSTextScale  模拟给定操作系统的文本缩放比例。
+  [ok] Emulation.setEmulatedVisionDeficiency   模拟给定的视力缺陷。
+  [ok] Emulation.setGeolocationOverride  覆盖地理位置位置或误差。省略纬度、经度或精度将模拟位置不可用。
+  [ok] Emulation.setIdleOverride 覆盖空闲状态。
+  [ok] Emulation.setScriptExecutionDisabled  切换页面中的脚本执行方式。
+  [ok] Emulation.setTimezoneOverride  使用指定的时区覆盖主机系统的默认时区。
+  [ok] Emulation.setTouchEmulationEnabled  在不支持触控功能的平台上启用触控功能。
+  [ok] Emulation.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。 userAgentMetadata必须设置此项才能发送客户端提示标头。
 
 - chrome EventBreakpoints : 事件断点域 允许在 JavaScript 调用的原生代码中发生的操作和事件上设置 JavaScript 断点。  // 0329 End
   [] EventBreakpoints.disable  移除所有断点
