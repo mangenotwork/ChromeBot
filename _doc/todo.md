@@ -384,8 +384,8 @@
     [ok]Fetch.getResponseBody  使服务器接收响应正文并将其作为单个字符串返回。
     [ok]Fetch.takeResponseBodyAsStream  返回指向表示响应体的流的句柄。
 
-- []chrome FileSystem : 文件系统域
-    []FileSystem.getDirectory 获取目录
+- [ok]chrome FileSystem : 文件系统域
+    [ok]FileSystem.getDirectory 获取目录
 
 - []chrome DOM : 此域公开 DOM 读/写操作。   // 0331 End
     []DOM.describeNode 根据节点 ID 描述节点，无需启用域。不会开始跟踪任何对象，可用于自动化。
