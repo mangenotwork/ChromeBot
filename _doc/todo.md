@@ -476,30 +476,30 @@
   [ok] CSS.setContainerQueryText  修改容器查询的表达式。
 
 - chrome Debugger ： 调试器域公开了 JavaScript 调试功能。
-  [] Debugger.continueToLocation  持续执行直至到达指定断点位置。
-  [] Debugger.disable  禁用指定页面的调试器
-  [] Debugger.enable  启用指定页面的调试器
-  [] Debugger.evaluateOnCallFrame  对给定调用帧求表达式的值。
-  [] Debugger.getPossibleBreakpoints 返回断点的可能位置。起始位置和结束位置的 scriptId 必须相同。
-  [] Debugger.getScriptSource  返回指定脚本的源代码。
-  [] Debugger.pause 执行到下一条 JavaScript 语句时停止。
-  [] Debugger.restartFrame 从头开始重新启动特定的调用帧。
-  [] Debugger.resume  恢复 JavaScript 运行。
-  [] Debugger.searchInContent  在指定脚本中搜索字符串。
-  [] Debugger.setAsyncCallStackDepth 启用或禁用异步调用堆栈跟踪。
-  [] Debugger.setBreakpoint 在指定位置设置 JavaScript 断点。
-  [] Debugger.setBreakpointByUrl 在指定位置（通过 URL 或 URL 正则表达式指定）设置 JavaScript 断点。
-  [] Debugger.setBreakpointsActive  激活/停用页面上的所有断点。
-  [] Debugger.setInstrumentationBreakpoint  设置检测断点。
-  [] Debugger.setPauseOnExceptions  定义异常暂停状态。可以设置为在所有异常、未捕获的异常或已捕获的异常（无异常）时停止。异常暂停状态的初始值为none。
-  [] Debugger.setScriptSource  实时编辑 JavaScript 源代码。 
-  [] Debugger.setSkipAllPauses  使页面在任何暂停时（断点、异常、DOM 异常等）都不会中断。
-  [] Debugger.setVariableValue  更改调用帧中变量的值。不支持基于对象的作用域，必须手动修改。
-  [] Debugger.stepInto  进入函数调用。
-  [] Debugger.stepOut  退出当前函数。
-  [] Debugger.stepOver  跳过当前函数。
-  [] Debugger.disassembleWasmModule  反汇编 Wasm 模块
-  [] Debugger.getStackTrace  返回给定堆栈跟踪的stackTraceId.
+  [ok] Debugger.continueToLocation  持续执行直至到达指定断点位置。
+  [ok] Debugger.disable  禁用指定页面的调试器
+  [ok] Debugger.enable  启用指定页面的调试器
+  [ok] Debugger.evaluateOnCallFrame  对给定调用帧求表达式的值。
+  [ok] Debugger.getPossibleBreakpoints 返回断点的可能位置。起始位置和结束位置的 scriptId 必须相同。
+  [ok] Debugger.getScriptSource  返回指定脚本的源代码。
+  [ok] Debugger.pause 执行到下一条 JavaScript 语句时停止。
+  [ok] Debugger.restartFrame 从头开始重新启动特定的调用帧。
+  [ok] Debugger.resume  恢复 JavaScript 运行。
+  [ok] Debugger.searchInContent  在指定脚本中搜索字符串。
+  [ok] Debugger.setAsyncCallStackDepth 启用或禁用异步调用堆栈跟踪。
+  [ok] Debugger.setBreakpoint 在指定位置设置 JavaScript 断点。
+  [ok] Debugger.setBreakpointByUrl 在指定位置（通过 URL 或 URL 正则表达式指定）设置 JavaScript 断点。
+  [ok] Debugger.setBreakpointsActive  激活/停用页面上的所有断点。
+  [ok] Debugger.setInstrumentationBreakpoint  设置检测断点。
+  [ok] Debugger.setPauseOnExceptions  定义异常暂停状态。可以设置为在所有异常、未捕获的异常或已捕获的异常（无异常）时停止。异常暂停状态的初始值为none。
+  [ok] Debugger.setScriptSource  实时编辑 JavaScript 源代码。 
+  [ok] Debugger.setSkipAllPauses  使页面在任何暂停时（断点、异常、DOM 异常等）都不会中断。
+  [ok] Debugger.setVariableValue  更改调用帧中变量的值。不支持基于对象的作用域，必须手动修改。
+  [ok] Debugger.stepInto  进入函数调用。
+  [ok] Debugger.stepOut  退出当前函数。
+  [ok] Debugger.stepOver  跳过当前函数。
+  [ok] Debugger.disassembleWasmModule  反汇编 Wasm 模块
+  [ok] Debugger.getStackTrace  返回给定堆栈跟踪的stackTraceId.
 
 - chrome Emulation : 该域名模拟了页面的不同环境。
   [] Emulation.clearDeviceMetricsOverride  清除已覆盖的设备指标。
