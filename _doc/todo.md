@@ -425,28 +425,28 @@
     [ok]DOMDebugger.setEventListenerBreakpoint  在特定 DOM 事件上设置断点
     [ok]DOMDebugger.setXHRBreakpoint  在 XMLHttpRequest 上设置断点。
 
-- [] chrome IndexedDB : IndexedDB相关的域
-    []IndexedDB.clearObjectStore  清除对象存储中的所有条目。
-    []IndexedDB.deleteDatabase  删除数据库。
-    []IndexedDB.deleteObjectStoreEntries  从对象存储库中删除一系列条目
-    []IndexedDB.disable  禁用后端事件。
-    []IndexedDB.enable  启用来自后端的事件。
-    []IndexedDB.getMetadata  获取对象存储的元数据。
-    []IndexedDB.requestData  从对象存储或索引中请求数据。
-    []IndexedDB.requestDatabase  请求具有给定名称的数据库到给定框架。
-    []IndexedDB.requestDatabaseNames  请求给定安全源的数据库名称。
+- [ok] chrome IndexedDB : IndexedDB相关的域
+    [ok]IndexedDB.clearObjectStore  清除对象存储中的所有条目。
+    [ok]IndexedDB.deleteDatabase  删除数据库。
+    [ok]IndexedDB.deleteObjectStoreEntries  从对象存储库中删除一系列条目
+    [ok]IndexedDB.disable  禁用后端事件。
+    [ok]IndexedDB.enable  启用来自后端的事件。
+    [ok]IndexedDB.getMetadata  获取对象存储的元数据。
+    [ok]IndexedDB.requestData  从对象存储或索引中请求数据。
+    [ok]IndexedDB.requestDatabase  请求具有给定名称的数据库到给定框架。
+    [ok]IndexedDB.requestDatabaseNames  请求给定安全源的数据库名称。
 
-- []chrome Input ： 输入域
-    []Input.cancelDragging  取消页面上所有正在进行的拖动操作。
-    []Input.dispatchKeyEvent  向页面发送关键事件。
-    []Input.dispatchMouseEvent  向页面发送鼠标事件。
-    []Input.dispatchTouchEvent  向页面发送触摸事件。
-    []Input.setIgnoreInputEvents  忽略输入事件
-    []Input.dispatchDragEvent  将拖拽事件发送到页面中。
-    []Input.emulateTouchFromMouseEvent 根据鼠标事件参数模拟触摸事件。
-    []Input.imeSetComposition  此方法设置输入法编辑器 (IME) 的当前候选文本。使用 `imeCommitComposition` 提交最终文本。
-    []Input.insertText  这种方法模拟插入非按键输入的文本，例如表情符号键盘或输入法编辑器。
-    []Input.setInterceptDrags  阻止默认的拖放行为，而是发出Input.dragIntercepted事件。
+- [ok]chrome Input ： 输入域
+    [ok]Input.cancelDragging  取消页面上所有正在进行的拖动操作。
+    [ok]Input.dispatchKeyEvent  向页面发送关键事件。
+    [ok]Input.dispatchMouseEvent  向页面发送鼠标事件。
+    [ok]Input.dispatchTouchEvent  向页面发送触摸事件。
+    [ok]Input.setIgnoreInputEvents  忽略输入事件
+    [ok]Input.dispatchDragEvent  将拖拽事件发送到页面中。
+    [ok]Input.emulateTouchFromMouseEvent 根据鼠标事件参数模拟触摸事件。
+    [ok]Input.imeSetComposition  此方法设置输入法编辑器 (IME) 的当前候选文本。使用 `imeCommitComposition` 提交最终文本。
+    [ok]Input.insertText  这种方法模拟插入非按键输入的文本，例如表情符号键盘或输入法编辑器。
+    [ok]Input.setInterceptDrags  阻止默认的拖放行为，而是发出Input.dragIntercepted事件。
     
 - [] 改测试的bug和优化
     [] chrome BackgroundService 测试和完善

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -375,4 +376,38 @@ func IsValidOrigin(origin string) bool {
 	}
 
 	return true
+}
+
+// MapToJson 将map转换为JSON字符串
+// 处理嵌套结构，确保生成的JSON格式正确
+func MapToJson(data map[string]interface{}) string {
+	// 如果map为空，返回空对象
+	if data == nil {
+		return "{}"
+	}
+
+	// 使用json.Marshal转换为JSON
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		// 如果转换失败，返回空对象
+		log.Printf("[ERROR] MapToJson转换失败: %v", err)
+		return "{}"
+	}
+
+	return string(jsonBytes)
+}
+
+// MapToJsonPretty 将map转换为格式化的JSON字符串（用于调试）
+func MapToJsonPretty(data map[string]interface{}) string {
+	if data == nil {
+		return "{}"
+	}
+
+	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		log.Printf("[ERROR] MapToJsonPretty转换失败: %v", err)
+		return "{}"
+	}
+
+	return string(jsonBytes)
 }
