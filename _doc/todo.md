@@ -387,43 +387,43 @@
 - [ok]chrome FileSystem : 文件系统域
     [ok]FileSystem.getDirectory 获取目录
 
-- []chrome DOM : 此域公开 DOM 读/写操作。   // 0331 End
-    []DOM.describeNode 根据节点 ID 描述节点，无需启用域。不会开始跟踪任何对象，可用于自动化。
-    []DOM.disable 禁用指定页面的 DOM 代理。
-    []DOM.enable 启用 DOM 代理。
-    []DOM.focus 聚焦指定元素。
-    []DOM.getAttributes 返回指定节点的属性。
-    []DOM.getBoxModel 返回给定节点的盒子。
-    []DOM.getDocument  返回根 DOM 节点（以及可选的子树）给调用者。隐式启用当前目标的 DOM 域事件。
-    []DOM.getNodeForLocation  返回指定位置的节点 ID。是否返回 nodeId 取决于 DOM 域是否启用。
-    []DOM.getOuterHTML  返回节点的 HTML 标记。
-    []DOM.hideHighlight  隐藏所有高亮显示。
-    []DOM.highlightNode  高亮显示 DOM 节点。
-    []DOM.highlightRect  高亮显示给定的矩形。
-    []DOM.moveTo  将节点移动到新容器中，并将其放置在给定锚点之前。
-    []DOM.querySelector  querySelector在指定节点上执行。
-    []DOM.querySelectorAll  querySelectorAll在指定节点上执行。
-    []DOM.removeAttribute  从具有给定 id 的元素中移除具有给定名称的属性。
-    []DOM.removeNode  删除具有给定 id 的节点。
-    []DOM.requestChildNodes  请求将给定 id 的节点的子节点以事件的形式返回给调用者， setChildNodes其中不仅检索直接子节点，而且检索到指定深度的所有子节点。
-    []DOM.requestNode  根据 JavaScript 节点对象引用，请求将节点发送给调用者。
-    []DOM.resolveNode  解析给定 NodeId 或 BackendNodeId 的 JavaScript 节点对象。
-    []DOM.scrollIntoViewIfNeeded  如果指定节点的指定矩形区域尚未可见，则将其滚动到视图中。
-    []DOM.setAttributesAsText  设置具有给定 ID 的元素的属性。
-    []DOM.setAttributeValue  设置具有给定 id 的元素的属性。
-    []DOM.setFileInputFiles  为给定的文件输入元素设置文件。
-    []DOM.setNodeName  设置具有给定 id 的节点的节点名称。
-    []DOM.setNodeValue  设置具有给定 id 的节点的节点值。
-    []DOM.setOuterHTML  设置节点 HTML 标记，返回新的节点 ID。
+- [ok]chrome DOM : 此域公开 DOM 读/写操作。   // 0331 End
+    [ok]DOM.describeNode 根据节点 ID 描述节点，无需启用域。不会开始跟踪任何对象，可用于自动化。
+    [ok]DOM.disable 禁用指定页面的 DOM 代理。
+    [ok]DOM.enable 启用 DOM 代理。
+    [ok]DOM.focus 聚焦指定元素。
+    [ok]DOM.getAttributes 返回指定节点的属性。
+    [ok]DOM.getBoxModel 返回给定节点的盒子。
+    [ok]DOM.getDocument  返回根 DOM 节点（以及可选的子树）给调用者。隐式启用当前目标的 DOM 域事件。
+    [ok]DOM.getNodeForLocation  返回指定位置的节点 ID。是否返回 nodeId 取决于 DOM 域是否启用。
+    [ok]DOM.getOuterHTML  返回节点的 HTML 标记。
+    [ok]DOM.hideHighlight  隐藏所有高亮显示。
+    [ok]DOM.highlightNode  高亮显示 DOM 节点。
+    [ok]DOM.highlightRect  高亮显示给定的矩形。
+    [ok]DOM.moveTo  将节点移动到新容器中，并将其放置在给定锚点之前。
+    [ok]DOM.querySelector  querySelector在指定节点上执行。
+    [ok]DOM.querySelectorAll  querySelectorAll在指定节点上执行。
+    [ok]DOM.removeAttribute  从具有给定 id 的元素中移除具有给定名称的属性。
+    [ok]DOM.removeNode  删除具有给定 id 的节点。
+    [ok]DOM.requestChildNodes  请求将给定 id 的节点的子节点以事件的形式返回给调用者， setChildNodes其中不仅检索直接子节点，而且检索到指定深度的所有子节点。
+    [ok]DOM.requestNode  根据 JavaScript 节点对象引用，请求将节点发送给调用者。
+    [ok]DOM.resolveNode  解析给定 NodeId 或 BackendNodeId 的 JavaScript 节点对象。
+    [ok]DOM.scrollIntoViewIfNeeded  如果指定节点的指定矩形区域尚未可见，则将其滚动到视图中。
+    [ok]DOM.setAttributesAsText  设置具有给定 ID 的元素的属性。
+    [ok]DOM.setAttributeValue  设置具有给定 id 的元素的属性。
+    [ok]DOM.setFileInputFiles  为给定的文件输入元素设置文件。
+    [ok]DOM.setNodeName  设置具有给定 id 的节点的节点名称。
+    [ok]DOM.setNodeValue  设置具有给定 id 的节点的节点值。
+    [ok]DOM.setOuterHTML  设置节点 HTML 标记，返回新的节点 ID。
 
-- []chrome DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
-    []DOMDebugger.getEventListeners  返回给定对象的事件监听器。
-    []DOMDebugger.removeDOMBreakpoint  移除使用 . 设置的 DOM 断点setDOMBreakpoint。
-    []DOMDebugger.removeEventListenerBreakpoint  移除特定 DOM 事件上的断点。
-    []DOMDebugger.removeXHRBreakpoint  移除 XMLHttpRequest 中的断点。
-    []DOMDebugger.setDOMBreakpoint  在对 DOM 进行特定操作时设置断点。
-    []DOMDebugger.setEventListenerBreakpoint  在特定 DOM 事件上设置断点
-    []DOMDebugger.setXHRBreakpoint  在 XMLHttpRequest 上设置断点。
+- [ok]chrome DOMDebugger : DOM调试允许在特定的DOM操作和事件上设置断点。
+    [ok]DOMDebugger.getEventListeners  返回给定对象的事件监听器。
+    [ok]DOMDebugger.removeDOMBreakpoint  移除使用 . 设置的 DOM 断点setDOMBreakpoint。
+    [ok]DOMDebugger.removeEventListenerBreakpoint  移除特定 DOM 事件上的断点。
+    [ok]DOMDebugger.removeXHRBreakpoint  移除 XMLHttpRequest 中的断点。
+    [ok]DOMDebugger.setDOMBreakpoint  在对 DOM 进行特定操作时设置断点。
+    [ok]DOMDebugger.setEventListenerBreakpoint  在特定 DOM 事件上设置断点
+    [ok]DOMDebugger.setXHRBreakpoint  在 XMLHttpRequest 上设置断点。
 
 - [] chrome IndexedDB : IndexedDB相关的域
     []IndexedDB.clearObjectStore  清除对象存储中的所有条目。
