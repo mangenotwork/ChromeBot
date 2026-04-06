@@ -291,26 +291,26 @@
 - [] 更新文档   // 0405 End
 
 #### v0.0.11
-- []chrome  HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
-    []HeadlessExperimental.beginFrame  向目标发送 BeginFrame 消息，并在帧完成后返回。可选择捕获生成的帧的屏幕截图。要求创建目标时启用了 BeginFrameControl。设计用于与 `--run-all-compositor-stages-before-draw` 参数配合使用
+- [ok]chrome HeadlessExperimental : 此域提供仅在无头模式下支持的实验性命令。
+    [ok]HeadlessExperimental.beginFrame  向目标发送 BeginFrame 消息，并在帧完成后返回。可选择捕获生成的帧的屏幕截图。要求创建目标时启用了 BeginFrameControl。设计用于与 `--run-all-compositor-stages-before-draw` 参数配合使用
 
-- []chrome  HeapProfiler : 堆分析器域
-    []HeapProfiler.addInspectedHeapObject  允许控制台通过 $x 引用具有给定 id 的节点
-    []HeapProfiler.collectGarbage  垃圾回收
-    []HeapProfiler.disable  禁用堆分析器
-    []HeapProfiler.enable  启用堆分析器
-    []HeapProfiler.getHeapObjectId  返回给定对象在堆中的唯一标识符
-    []HeapProfiler.getObjectByHeapObjectId  返回给定对象在堆中的唯一标识符
-    []HeapProfiler.getSamplingProfile  获取采样配置文件
-    []HeapProfiler.startSampling  开始堆采样
-    []HeapProfiler.startTrackingHeapObjects  开始跟踪对象分配
-    []HeapProfiler.stopSampling   停止堆采样
-    []HeapProfiler.stopTrackingHeapObjects  停止跟踪对象分配
-    []HeapProfiler.takeHeapSnapshot   获取堆快照
+- [ok]chrome HeapProfiler : 堆分析器域
+    [ok]HeapProfiler.addInspectedHeapObject  允许控制台通过 $x 引用具有给定 id 的节点
+    [ok]HeapProfiler.collectGarbage  垃圾回收
+    [ok]HeapProfiler.disable  禁用堆分析器
+    [ok]HeapProfiler.enable  启用堆分析器
+    [ok]HeapProfiler.getHeapObjectId  返回给定对象在堆中的唯一标识符
+    [ok]HeapProfiler.getObjectByHeapObjectId  返回给定对象在堆中的唯一标识符
+    [ok]HeapProfiler.getSamplingProfile  获取采样配置文件
+    [ok]HeapProfiler.startSampling  开始堆采样
+    [ok]HeapProfiler.startTrackingHeapObjects  开始跟踪对象分配
+    [ok]HeapProfiler.stopSampling   停止堆采样
+    [ok]HeapProfiler.stopTrackingHeapObjects  停止跟踪对象分配
+    [ok]HeapProfiler.takeHeapSnapshot   获取堆快照
 
-- []chrome  Inspector ： 检查域
-    []Inspector.disable 禁用检查器域通知。
-    []Inspector.enable 启用检查器域通知。
+- [ok]chrome  Inspector ： 检查域
+    [ok]Inspector.disable 禁用检查器域通知。
+    [ok]Inspector.enable 启用检查器域通知。
 
 - []chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
     []IO.close  关闭数据流，丢弃所有临时备份存储。
@@ -364,6 +364,13 @@
     []Overlay.setShowWindowControlsOverlay  设置是否显示窗口控制栏。
 
 - [] 改测试的bug和优化
+    [] chrome HeadlessExperimental 测试和完善
+    [] chrome HeapProfiler 测试和完善
+    [] chrome Inspector 测试和完善
+    [] chrome IO 测试和完善
+    [] chrome LayerTree 测试和完善
+    [] chrome Log 测试和完善
+    [] chrome Overlay 测试和完善
 - [] bug和优化验收
 - [] 更新文档   // 0404 End
 
