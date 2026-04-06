@@ -164,22 +164,22 @@
 - [] 更新文档   // 0407 End
 
 #### v0.0.12
-- []chrome  Media ： 该域允许对媒体元素进行详细检查。
-    []Media.disable
-    []Media.enable
+- [ok]chrome  Media ： 该域允许对媒体元素进行详细检查。
+    [ok]Media.disable
+    [ok]Media.enable
 
-- []chrome  Memory ： 内存相关
-    []Memory.forciblyPurgeJavaScriptMemory  通过清除 V8 内存来模拟 OomIntervention。
-    []Memory.getAllTimeSamplingProfile  获取自渲染进程启动以来收集的本地内存分配概况。
-    []Memory.getBrowserSamplingProfile  获取自浏览器进程启动以来收集的本地内存分配概况。
-    []Memory.getDOMCounters  返回当前 DOM 对象计数器。
-    []Memory.getDOMCountersForLeakDetection 在准备渲染器进行泄漏检测后，返回 DOM 对象计数器。
-    []Memory.getSamplingProfile  检索自上次 startSampling调用以来收集的本地内存分配配置文件。
-    []Memory.prepareForLeakDetection  通过终止工作进程、停止拼写检查器、删除非必要的内部缓存、运行垃圾回收等方式，为泄漏检测做好准备。
-    []Memory.setPressureNotificationsSuppressed  启用/禁用所有进程中的内存压力通知抑制。
-    []Memory.simulatePressureNotification  模拟所有进程的内存压力通知。
-    []Memory.startSampling  开始收集本地内存配置文件。
-    []Memory.stopSampling  停止收集本地内存配置文件。
+- [ok]chrome  Memory ： 内存相关
+    [ok]Memory.forciblyPurgeJavaScriptMemory  通过清除 V8 内存来模拟 OomIntervention。
+    [ok]Memory.getAllTimeSamplingProfile  获取自渲染进程启动以来收集的本地内存分配概况。
+    [ok]Memory.getBrowserSamplingProfile  获取自浏览器进程启动以来收集的本地内存分配概况。
+    [ok]Memory.getDOMCounters  返回当前 DOM 对象计数器。
+    [ok]Memory.getDOMCountersForLeakDetection 在准备渲染器进行泄漏检测后，返回 DOM 对象计数器。
+    [ok]Memory.getSamplingProfile  检索自上次 startSampling调用以来收集的本地内存分配配置文件。
+    [ok]Memory.prepareForLeakDetection  通过终止工作进程、停止拼写检查器、删除非必要的内部缓存、运行垃圾回收等方式，为泄漏检测做好准备。
+    [ok]Memory.setPressureNotificationsSuppressed  启用/禁用所有进程中的内存压力通知抑制。
+    [ok]Memory.simulatePressureNotification  模拟所有进程的内存压力通知。
+    [ok]Memory.startSampling  开始收集本地内存配置文件。
+    [ok]Memory.stopSampling  停止收集本地内存配置文件。
 
 - []chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
     []Network.clearBrowserCache  清除浏览器缓存。
@@ -267,27 +267,20 @@
     []Page.stopScreencast  停止使用screencastFrame事件发送每一帧。
     []Page.waitForDebugger  暂停页面执行。可以使用通用的 Runtime.runIfWaitingForDebugger 恢复执行。
     
-- []chrome  Performance ： 性能域
-    []Performance.disable  禁用指标收集和报告功能。
-    []Performance.enable  启用指标收集和报告功能。
-    []Performance.getMetrics  获取运行时指标的当前值
+- [ok]chrome  Performance ： 性能域
+    [ok]Performance.disable  禁用指标收集和报告功能。
+    [ok]Performance.enable  启用指标收集和报告功能。
+    [ok]Performance.getMetrics  获取运行时指标的当前值
 
-- []chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
-    []PerformanceTimeline.enable  之前已缓冲的事件会在方法返回之前报告
+- [ok]chrome  PerformanceTimeline ： 按照https://w3c.github.io/performance-timeline/#dom-performanceobserver中的规定，报告性能时间线事件
+    [ok]PerformanceTimeline.enable  之前已缓冲的事件会在方法返回之前报告
 
-- []chrome  Preload ： 预加载域
-    []Preload.disable  
-    []Preload.enable  
+- [ok]chrome  Preload ： 预加载域
+    [ok]Preload.disable  
+    [ok]Preload.enable  
 
 - [] 改测试的bug和优化
-    []  测试和完善
-    []  测试和完善
-    []  测试和完善
-    []  测试和完善
-    []  测试和完善
-    []  测试和完善
-    []  测试和完善
-- [] bug和优化验收
+    
 - [] 更新文档   // 0405 End
 
 #### v0.0.11
