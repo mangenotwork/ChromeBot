@@ -312,56 +312,56 @@
     [ok]Inspector.disable 禁用检查器域通知。
     [ok]Inspector.enable 启用检查器域通知。
 
-- []chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
-    []IO.close  关闭数据流，丢弃所有临时备份存储。
-    []IO.read  阅读一段流媒体内容
+- [ok]chrome  IO ： 对 DevTools 生成的流进行输入/输出操作。  // 0402 End
+    [ok]IO.close  关闭数据流，丢弃所有临时备份存储。
+    [ok]IO.read  阅读一段流媒体内容
 
-- []chrome  LayerTree ： 层树
-    []LayerTree.compositingReasons  说明合成给定图层的原因。
-    []LayerTree.disable 禁用堆肥树检查。
-    []LayerTree.enable  启用堆肥树检查功能。
-    []LayerTree.loadSnapshot 返回快照标识符。
-    []LayerTree.makeSnapshot  返回图层快照标识符。
-    []LayerTree.profileSnapshot  获取堆肥树性能数据。
-    []LayerTree.releaseSnapshot  释放快照。
-    []LayerTree.replaySnapshot  重新播放后端捕获的层快照。
-    []LayerTree.snapshotCommandLog  返回指定快照的命令日志。
+- [ok]chrome  LayerTree ： 层树
+    [ok]LayerTree.compositingReasons  说明合成给定图层的原因。
+    [ok]LayerTree.disable 禁用堆肥树检查。
+    [ok]LayerTree.enable  启用堆肥树检查功能。
+    [ok]LayerTree.loadSnapshot 返回快照标识符。
+    [ok]LayerTree.makeSnapshot  返回图层快照标识符。
+    [ok]LayerTree.profileSnapshot  获取堆肥树性能数据。
+    [ok]LayerTree.releaseSnapshot  释放快照。
+    [ok]LayerTree.replaySnapshot  重新播放后端捕获的层快照。
+    [ok]LayerTree.snapshotCommandLog  返回指定快照的命令日志。
 
-- []chrome  Log ： 提供对日志条目的访问权限。
-    []Log.clear 清除日志。
-    []Log.disable 禁用日志。
-    []Log.enable 启用日志。
-    []Log.startViolationsReport 启动违规报告。
-    []Log.stopViolationsReport 停止违规报告。
+- [ok]chrome  Log ： 提供对日志条目的访问权限。
+    [ok]Log.clear 清除日志。
+    [ok]Log.disable 禁用日志。
+    [ok]Log.enable 启用日志。
+    [ok]Log.startViolationsReport 启动违规报告。
+    [ok]Log.stopViolationsReport 停止违规报告。
 
-- []chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
-    []Overlay.disable 禁用叠加。
-    []Overlay.enable 启用叠加。
-    []Overlay.getGridHighlightObjectsForTest 用于持久网格测试。
-    []Overlay.getHighlightObjectForTest 用于测试。
-    []Overlay.getSourceOrderHighlightObjectForTest  用于源顺序查看器测试。
-    []Overlay.hideHighlight 隐藏所有高亮显示。
-    []Overlay.highlightNode 高亮显示具有指定 ID 或指定 JavaScript 对象包装器的 DOM 节点。
-    []Overlay.highlightQuad 高亮显示给定四边形区域。坐标系是相对于主框架视口的绝对坐标。
-    []Overlay.highlightRect 高亮显示给定的矩形区域。坐标是相对于主框架视口的绝对坐标。
-    []Overlay.highlightSourceOrder 高亮显示具有给定 id 或给定 JavaScript 对象包装器的 DOM 节点的子节点的源顺序。
-    []Overlay.setInspectMode  进入“检查”模式。在此模式下，用户鼠标悬停的元素会高亮显示。
-    []Overlay.setPausedInDebuggerMessage  暂停 JavaScript 运行，并显示给定的消息。
-    []Overlay.setShowAdHighlights  设置是否显示广告高亮。
-    []Overlay.setShowContainerQueryOverlays  设置是否显示容器查询高亮。
-    []Overlay.setShowDebugBorders  设置是否显示调试边框。
-    []Overlay.setShowFlexOverlays  设置是否显示 Flex 高亮。
-    []Overlay.setShowFPSCounter  设置是否显示 FPS 计数器。
-    []Overlay.setShowGridOverlays  设置是否显示网格高亮。
-    []Overlay.setShowHinge  设置是否显示 3D 旋转轴。
-    []Overlay.setShowInspectedElementAnchor  设置是否显示被检查元素锚点。
-    []Overlay.setShowIsolatedElements  设置是否显示隔离元素。
-    []Overlay.setShowLayoutShiftRegions  设置是否显示布局偏移区域。
-    []Overlay.setShowPaintRects  设置是否显示绘制矩形。
-    []Overlay.setShowScrollBottleneckRects    设置是否显示滚动 bottleneck 矩形。
-    []Overlay.setShowScrollSnapOverlays  设置是否显示滚动 snap 覆盖。
-    []Overlay.setShowViewportSizeOnResize  设置是否显示视图大小。
-    []Overlay.setShowWindowControlsOverlay  设置是否显示窗口控制栏。
+- [ok]chrome  Overlay ： 叠加域 该域提供与在被检查页面上绘制图形相关的各种功能。
+    [ok]Overlay.disable 禁用叠加。
+    [ok]Overlay.enable 启用叠加。
+    [ok]Overlay.getGridHighlightObjectsForTest 用于持久网格测试。
+    [ok]Overlay.getHighlightObjectForTest 用于测试。
+    [ok]Overlay.getSourceOrderHighlightObjectForTest  用于源顺序查看器测试。
+    [ok]Overlay.hideHighlight 隐藏所有高亮显示。
+    [ok]Overlay.highlightNode 高亮显示具有指定 ID 或指定 JavaScript 对象包装器的 DOM 节点。
+    [ok]Overlay.highlightQuad 高亮显示给定四边形区域。坐标系是相对于主框架视口的绝对坐标。
+    [ok]Overlay.highlightRect 高亮显示给定的矩形区域。坐标是相对于主框架视口的绝对坐标。
+    [ok]Overlay.highlightSourceOrder 高亮显示具有给定 id 或给定 JavaScript 对象包装器的 DOM 节点的子节点的源顺序。
+    [ok]Overlay.setInspectMode  进入“检查”模式。在此模式下，用户鼠标悬停的元素会高亮显示。
+    [ok]Overlay.setPausedInDebuggerMessage  暂停 JavaScript 运行，并显示给定的消息。
+    [ok]Overlay.setShowAdHighlights  设置是否显示广告高亮。
+    [ok]Overlay.setShowContainerQueryOverlays  设置是否显示容器查询高亮。
+    [ok]Overlay.setShowDebugBorders  设置是否显示调试边框。
+    [ok]Overlay.setShowFlexOverlays  设置是否显示 Flex 高亮。
+    [ok]Overlay.setShowFPSCounter  设置是否显示 FPS 计数器。
+    [ok]Overlay.setShowGridOverlays  设置是否显示网格高亮。
+    [ok]Overlay.setShowHinge  设置是否显示 3D 旋转轴。
+    [ok]Overlay.setShowInspectedElementAnchor  设置是否显示被检查元素锚点。
+    [ok]Overlay.setShowIsolatedElements  设置是否显示隔离元素。
+    [ok]Overlay.setShowLayoutShiftRegions  设置是否显示布局偏移区域。
+    [ok]Overlay.setShowPaintRects  设置是否显示绘制矩形。
+    [ok]Overlay.setShowScrollBottleneckRects    设置是否显示滚动 bottleneck 矩形。
+    [ok]Overlay.setShowScrollSnapOverlays  设置是否显示滚动 snap 覆盖。
+    [ok]Overlay.setShowViewportSizeOnResize  设置是否显示视图大小。
+    [ok]Overlay.setShowWindowControlsOverlay  设置是否显示窗口控制栏。
 
 - [] 改测试的bug和优化
     [] chrome HeadlessExperimental 测试和完善
