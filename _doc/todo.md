@@ -181,40 +181,40 @@
     [ok]Memory.startSampling  开始收集本地内存配置文件。
     [ok]Memory.stopSampling  停止收集本地内存配置文件。
 
-- []chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
-    []Network.clearBrowserCache  清除浏览器缓存。
-    []Network.clearBrowserCookies  清除浏览器cookie。
-    []Network.deleteCookies  删除名称和 URL 或域/路径/分区密钥对匹配的浏览器 cookie。
-    []Network.disable  禁用网络域。
-    []Network.enable  启用网络域。
-    []Network.getCookies  返回当前 URL 的所有浏览器 Cookie。
-    []Network.getRequestPostData  返回请求中发送的 POST 数据。如果请求中未发送任何数据，则返回错误。
-    []Network.getResponseBody  返回针对给定请求提供的内容。
-    []Network.setBypassServiceWorker  切换是否忽略每个请求中的 Service Worker。
-    []Network.setCacheDisabled  切换是否忽略缓存。如果启用此选项true，则不会使用缓存。
-    []Network.setCookie  设置 Cookie。
-    []Network.setCookies  设置多个 Cookie。
-    []Network.setExtraHTTPHeaders  指定是否始终随此页面发出的请求发送额外的 HTTP 标头。
-    []Network.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。
-    []Network.clearAcceptedEncodingsOverride   清除 setAcceptedEncodings 设置的已接受编码
-    []Network.configureDurableMessages  配置将响应体存储在渲染器外部，以便跨进程导航时响应体仍然有效。
-    []Network.emulateNetworkConditionsByRule  使用 URL 匹配模式为单个请求启用网络条件模拟。
-    []Network.enableDeviceBoundSessions  设置跟踪设备绑定会话并获取初始会话集。
-    []Network.enableReportingApi  启用报表 API 的跟踪功能，报表 API 生成的事件现在将传递给客户端。
-    []Network.fetchSchemefulSite  获取特定来源的阴谋网站
-    []Network.getCertificate 返回 DER 编码的证书。
-    []Network.getResponseBodyForInterception  返回针对当前拦截的请求提供的内容。
-    []Network.getSecurityIsolationStatus  返回有关 COEP/COOP 隔离状态的信息。
-    []Network.loadNetworkResource  获取资源并返回其内容。
-    []Network.overrideNetworkState  覆盖 navigator.onLine 和 navigator.connection 的状态。
-    []Network.replayXHR  此方法会发送一个与原始 XMLHttpRequest 完全相同的新请求。
-    []Network.searchInResponseBody  在响应内容中搜索指定的字符串。
-    []Network.setAcceptedEncodings  设置可接受的内容编码列表。空列表表示不接受任何编码。
-    []Network.setAttachDebugStack  指定是否在请求中附加页面脚本堆栈 ID
-    []Network.setBlockedURLs 阻止URL加载。
-    []Network.setCookieControls  设置第三方 Cookie 访问控制。页面需要重新加载才能生效。
-    []Network.streamResourceContent 启用对给定请求 ID 的响应进行流式传输。如果启用，dataReceived 事件将包含在流式传输期间接收到的数据。
-    []Network.takeResponseBodyForInterceptionAsStream  返回指向表示响应体的流的句柄。
+- [ok]chrome  Network ： 网络域允许跟踪页面的网络活动。它公开有关 HTTP、文件、数据和其他请求和响应的信息，包括它们的标头、正文、时间等。
+    [ok]Network.clearBrowserCache  清除浏览器缓存。
+    [ok]Network.clearBrowserCookies  清除浏览器cookie。
+    [ok]Network.deleteCookies  删除名称和 URL 或域/路径/分区密钥对匹配的浏览器 cookie。
+    [ok]Network.disable  禁用网络域。
+    [ok]Network.enable  启用网络域。
+    [ok]Network.getCookies  返回当前 URL 的所有浏览器 Cookie。
+    [ok]Network.getRequestPostData  返回请求中发送的 POST 数据。如果请求中未发送任何数据，则返回错误。
+    [ok]Network.getResponseBody  返回针对给定请求提供的内容。
+    [ok]Network.setBypassServiceWorker  切换是否忽略每个请求中的 Service Worker。
+    [ok]Network.setCacheDisabled  切换是否忽略缓存。如果启用此选项true，则不会使用缓存。
+    [ok]Network.setCookie  设置 Cookie。
+    [ok]Network.setCookies  设置多个 Cookie。
+    [ok]Network.setExtraHTTPHeaders  指定是否始终随此页面发出的请求发送额外的 HTTP 标头。
+    [ok]Network.setUserAgentOverride  允许使用给定的字符串覆盖用户代理。
+    [ok]Network.clearAcceptedEncodingsOverride   清除 setAcceptedEncodings 设置的已接受编码
+    [ok]Network.configureDurableMessages  配置将响应体存储在渲染器外部，以便跨进程导航时响应体仍然有效。
+    [ok]Network.emulateNetworkConditionsByRule  使用 URL 匹配模式为单个请求启用网络条件模拟。
+    [ok]Network.enableDeviceBoundSessions  设置跟踪设备绑定会话并获取初始会话集。
+    [ok]Network.enableReportingApi  启用报表 API 的跟踪功能，报表 API 生成的事件现在将传递给客户端。
+    [ok]Network.fetchSchemefulSite  获取特定来源的阴谋网站
+    [ok]Network.getCertificate 返回 DER 编码的证书。
+    [ok]Network.getResponseBodyForInterception  返回针对当前拦截的请求提供的内容。
+    [ok]Network.getSecurityIsolationStatus  返回有关 COEP/COOP 隔离状态的信息。
+    [ok]Network.loadNetworkResource  获取资源并返回其内容。
+    [ok]Network.overrideNetworkState  覆盖 navigator.onLine 和 navigator.connection 的状态。
+    [ok]Network.replayXHR  此方法会发送一个与原始 XMLHttpRequest 完全相同的新请求。
+    [ok]Network.searchInResponseBody  在响应内容中搜索指定的字符串。
+    [ok]Network.setAcceptedEncodings  设置可接受的内容编码列表。空列表表示不接受任何编码。
+    [ok]Network.setAttachDebugStack  指定是否在请求中附加页面脚本堆栈 ID
+    [ok]Network.setBlockedURLs 阻止URL加载。
+    [ok]Network.setCookieControls  设置第三方 Cookie 访问控制。页面需要重新加载才能生效。
+    [ok]Network.streamResourceContent 启用对给定请求 ID 的响应进行流式传输。如果启用，dataReceived 事件将包含在流式传输期间接收到的数据。
+    [ok]Network.takeResponseBodyForInterceptionAsStream  返回指向表示响应体的流的句柄。
     
 - []chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
     []Page.addScriptToEvaluateOnNewDocument  在创建每一帧时（在加载帧的脚本之前），对给定的脚本进行评估。
