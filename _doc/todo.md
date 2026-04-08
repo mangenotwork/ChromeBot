@@ -58,16 +58,16 @@
 // 0409 End
 
 #### v0.0.13
-- []chrome  Profiler ： 分析器域
-    []Profiler.disable  禁用
-    []Profiler.enable  启用
-    []Profiler.getBestEffortCoverage  获取最佳效果覆盖
-    []Profiler.setSamplingInterval  设置采样间隔
-    []Profiler.start  
-    []Profiler.startPreciseCoverage  开始精确覆盖
-    []Profiler.stop  停止
-    []Profiler.stopPreciseCoverage  停止精确覆盖
-    []Profiler.takePreciseCoverage  获取精确覆盖
+- [ok]chrome  Profiler ： 分析器域
+    [ok]Profiler.disable  禁用
+    [ok]Profiler.enable  启用
+    [ok]Profiler.getBestEffortCoverage  获取最佳效果覆盖
+    [ok]Profiler.setSamplingInterval  设置采样间隔
+    [ok]Profiler.start  
+    [ok]Profiler.startPreciseCoverage  开始精确覆盖
+    [ok]Profiler.stop  停止
+    [ok]Profiler.stopPreciseCoverage  停止精确覆盖
+    [ok]Profiler.takePreciseCoverage  获取精确覆盖
 
 - []chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
     []PWA.changeAppUserSettings  更改 PWA 用户设置
