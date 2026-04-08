@@ -216,56 +216,56 @@
     [ok]Network.streamResourceContent 启用对给定请求 ID 的响应进行流式传输。如果启用，dataReceived 事件将包含在流式传输期间接收到的数据。
     [ok]Network.takeResponseBodyForInterceptionAsStream  返回指向表示响应体的流的句柄。
     
-- []chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
-    []Page.addScriptToEvaluateOnNewDocument  在创建每一帧时（在加载帧的脚本之前），对给定的脚本进行评估。
-    []Page.bringToFront  将页面置于最前面（激活选项卡）。
-    []Page.captureScreenshot  截取页面屏幕截图。
-    []Page.close  关闭当前页面。
-    []Page.createIsolatedWorld  创建一个新的 isolatedWorld 并返回其 ID。
-    []Page.disable  禁用性能域。
-    []Page.enable  启用性能域。
-    []Page.getAppManifest  获取当前文档的已处理清单。此 API 始终等待清单加载完成。
-    []Page.getFrameTree   返回当前帧树结构。
-    []Page.getLayoutMetrics  返回与页面布局相关的指标，例如视口边界/缩放比例。
-    []Page.getNavigationHistory  返回当前页面的导航历史记录。
-    []Page.handleJavaScriptDialog 接受或关闭 JavaScript 发起的对话框（alert、confirm、prompt 或 onbeforeunload）。
-    []Page.navigate 将当前页面导航到指定的URL。
-    []Page.navigateToHistoryEntry  将当前页面导航到指定的历史记录条目。
-    []Page.printToPDF  以PDF格式打印页面。
-    []Page.reload   重新加载指定页面，可选择忽略缓存。
-    []Page.removeScriptToEvaluateOnNewDocument  从列表中移除指定的脚本。
-    []Page.resetNavigationHistory  重置当前页面的导航历史记录。
-    []Page.setBypassCSP 启用页面内容安全策略绕过功能。
-    []Page.setDocumentContent  将给定的标记设置为文档的 HTML。
-    []Page.setInterceptFileChooserDialog 拦截文件选择器请求并将控制权转移给协议客户端。
-    []Page.setLifecycleEventsEnabled 控制页面是否会发出生命周期事件。
-    []Page.stopLoading  页面停止加载
-    []Page.addCompilationCache  为给定的 URL 创建编译缓存。编译缓存不会在跨进程导航后保留。
-    []Page.captureSnapshot  返回页面快照的字符串形式。对于 MHTML 格式，序列化内容包括 iframe、Shadow DOM、外部资源和元素内联样式。
-    []Page.clearCompilationCache  清除已初始化的编译缓存。
-    []Page.crash  IO线程上的渲染器崩溃，生成小型转储文件。
-    []Page.generateTestReport 生成测试报告。
-    []Page.getAdScriptAncestry  获取广告脚本的祖先。
-    []Page.getAnnotatedPageContent 获取主框架的带注释页面内容。这是一个实验性命令，可能会有所更改。
-    []Page.getAppId   返回唯一的（PWA）应用 ID。仅当启用功能标志“WebAppEnableManifestId”时才返回值。
-    []Page.getInstallabilityErrors  获取当前页面的安装错误。
-    []Page.getOriginTrials 在给定帧上获取 Origin Trials。
-    []Page.getPermissionsPolicyState  获取给定帧的权限策略状态。
-    []Page.getResourceContent  返回给定资源的内容。
-    []Page.getResourceTree  返回当前帧/资源树结构。
-    []Page.produceCompilationCache  请求后端为指定的脚本生成编译缓存。
-    []Page.screencastFrameAck  确认前端已收到屏幕录制帧。
-    []Page.searchInResource  在资源内容中搜索给定的字符串。
-    []Page.setAdBlockingEnabled  在所有网站上启用 Chrome 的实验性广告过滤器。
-    []Page.setFontFamilies  设置通用字体系列。
-    []Page.setFontSizes  设置通用字体大小。
-    []Page.setPrerenderingAllowed  手动启用/禁用预渲染。 
-    []Page.setRPHRegistrationMode  自定义处理程序 API 的扩展
-    []Page.setSPCTransactionMode  设置安全支付确认交易模式。
-    []Page.setWebLifecycleState  尝试更新页面的 Web 生命周期状态。
-    []Page.startScreencast  开始使用screencastFrame事件发送每一帧。
-    []Page.stopScreencast  停止使用screencastFrame事件发送每一帧。
-    []Page.waitForDebugger  暂停页面执行。可以使用通用的 Runtime.runIfWaitingForDebugger 恢复执行。
+- [ok]chrome  Page ： 与被检查页面相关的操作和事件属于页面域。  // 0404 End
+    [ok]Page.addScriptToEvaluateOnNewDocument  在创建每一帧时（在加载帧的脚本之前），对给定的脚本进行评估。
+    [ok]Page.bringToFront  将页面置于最前面（激活选项卡）。
+    [ok]Page.captureScreenshot  截取页面屏幕截图。
+    [ok]Page.close  关闭当前页面。
+    [ok]Page.createIsolatedWorld  创建一个新的 isolatedWorld 并返回其 ID。
+    [ok]Page.disable  禁用性能域。
+    [ok]Page.enable  启用性能域。
+    [ok]Page.getAppManifest  获取当前文档的已处理清单。此 API 始终等待清单加载完成。
+    [ok]Page.getFrameTree   返回当前帧树结构。
+    [ok]Page.getLayoutMetrics  返回与页面布局相关的指标，例如视口边界/缩放比例。
+    [ok]Page.getNavigationHistory  返回当前页面的导航历史记录。
+    [ok]Page.handleJavaScriptDialog 接受或关闭 JavaScript 发起的对话框（alert、confirm、prompt 或 onbeforeunload）。
+    [ok]Page.navigate 将当前页面导航到指定的URL。
+    [ok]Page.navigateToHistoryEntry  将当前页面导航到指定的历史记录条目。
+    [ok]Page.printToPDF  以PDF格式打印页面。
+    [ok]Page.reload   重新加载指定页面，可选择忽略缓存。
+    [ok]Page.removeScriptToEvaluateOnNewDocument  从列表中移除指定的脚本。
+    [ok]Page.resetNavigationHistory  重置当前页面的导航历史记录。
+    [ok]Page.setBypassCSP 启用页面内容安全策略绕过功能。
+    [ok]Page.setDocumentContent  将给定的标记设置为文档的 HTML。
+    [ok]Page.setInterceptFileChooserDialog 拦截文件选择器请求并将控制权转移给协议客户端。
+    [ok]Page.setLifecycleEventsEnabled 控制页面是否会发出生命周期事件。
+    [ok]Page.stopLoading  页面停止加载
+    [ok]Page.addCompilationCache  为给定的 URL 创建编译缓存。编译缓存不会在跨进程导航后保留。
+    [ok]Page.captureSnapshot  返回页面快照的字符串形式。对于 MHTML 格式，序列化内容包括 iframe、Shadow DOM、外部资源和元素内联样式。
+    [ok]Page.clearCompilationCache  清除已初始化的编译缓存。
+    [ok]Page.crash  IO线程上的渲染器崩溃，生成小型转储文件。
+    [ok]Page.generateTestReport 生成测试报告。
+    [ok]Page.getAdScriptAncestry  获取广告脚本的祖先。
+    [ok]Page.getAnnotatedPageContent 获取主框架的带注释页面内容。这是一个实验性命令，可能会有所更改。
+    [ok]Page.getAppId   返回唯一的（PWA）应用 ID。仅当启用功能标志“WebAppEnableManifestId”时才返回值。
+    [ok]Page.getInstallabilityErrors  获取当前页面的安装错误。
+    [ok]Page.getOriginTrials 在给定帧上获取 Origin Trials。
+    [ok]Page.getPermissionsPolicyState  获取给定帧的权限策略状态。
+    [ok]Page.getResourceContent  返回给定资源的内容。
+    [ok]Page.getResourceTree  返回当前帧/资源树结构。
+    [ok]Page.produceCompilationCache  请求后端为指定的脚本生成编译缓存。
+    [ok]Page.screencastFrameAck  确认前端已收到屏幕录制帧。
+    [ok]Page.searchInResource  在资源内容中搜索给定的字符串。
+    [ok]Page.setAdBlockingEnabled  在所有网站上启用 Chrome 的实验性广告过滤器。
+    [ok]Page.setFontFamilies  设置通用字体系列。
+    [ok]Page.setFontSizes  设置通用字体大小。
+    [ok]Page.setPrerenderingAllowed  手动启用/禁用预渲染。 
+    [ok]Page.setRPHRegistrationMode  自定义处理程序 API 的扩展
+    [ok]Page.setSPCTransactionMode  设置安全支付确认交易模式。
+    [ok]Page.setWebLifecycleState  尝试更新页面的 Web 生命周期状态。
+    [ok]Page.startScreencast  开始使用screencastFrame事件发送每一帧。
+    [ok]Page.stopScreencast  停止使用screencastFrame事件发送每一帧。
+    [ok]Page.waitForDebugger  暂停页面执行。可以使用通用的 Runtime.runIfWaitingForDebugger 恢复执行。
     
 - [ok]chrome  Performance ： 性能域
     [ok]Performance.disable  禁用指标收集和报告功能。
