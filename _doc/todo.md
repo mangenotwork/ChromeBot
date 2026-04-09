@@ -69,14 +69,14 @@
     [ok]Profiler.stopPreciseCoverage  停止精确覆盖
     [ok]Profiler.takePreciseCoverage  获取精确覆盖
 
-- []chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
-    []PWA.changeAppUserSettings  更改 PWA 用户设置
-    []PWA.getOsAppState  获取操作系统应用状态
-    []PWA.install  安装 PWA
-    []PWA.launch  启动 PWA
-    []PWA.launchFilesInApp   启动文件
-    []PWA.openCurrentPageInApp  在应用中打开当前页面
-    []PWA.uninstall  卸载 PWA
+- [ok]chrome  PWA ： 该域允许与浏览器交互以控制 PWA。
+    [ok]PWA.changeAppUserSettings  更改 PWA 用户设置
+    [ok]PWA.getOsAppState  获取操作系统应用状态
+    [ok]PWA.install  安装 PWA
+    [ok]PWA.launch  启动 PWA
+    [ok]PWA.launchFilesInApp   启动文件
+    [ok]PWA.openCurrentPageInApp  在应用中打开当前页面
+    [ok]PWA.uninstall  卸载 PWA
 
 - []chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
     []Runtime.addBinding 如果 executionContextId 为空，则会在所有被检查上下文的全局对象（包括之后创建的上下文）上添加具有给定名称的绑定，并且绑定在重新加载后仍然存在。
