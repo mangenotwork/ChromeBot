@@ -78,35 +78,35 @@
     [ok]PWA.openCurrentPageInApp  在应用中打开当前页面
     [ok]PWA.uninstall  卸载 PWA
 
-- []chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
-    []Runtime.addBinding 如果 executionContextId 为空，则会在所有被检查上下文的全局对象（包括之后创建的上下文）上添加具有给定名称的绑定，并且绑定在重新加载后仍然存在。
-    []Runtime.awaitPromise 使用给定的 Promise 对象 ID 向 Promise 添加处理程序。
-    []Runtime.callFunctionOn 调用给定对象上具有给定声明的函数。结果的对象组继承自目标对象。
-    []Runtime.compileScript 编译表达式。
-    []Runtime.disable 禁用执行上下文创建的报告。
-    []Runtime.discardConsoleEntries  丢弃收集到的异常和控制台 API 调用。
-    []Runtime.enable  启用事件报告功能，用于报告执行上下文的创建情况executionContextCreated。
-    []Runtime.evaluate  对全局对象求表达式的值。
-    []Runtime.getProperties  返回给定对象的属性。结果的对象组继承自目标对象。
-    []Runtime.globalLexicalScopeNames  返回全局作用域中的所有 let、const 和 class 变量。
-    []Runtime.queryObjects  返回指定对象组中的对象。
-    []Runtime.releaseObject  释放对象组中指定的对象。
-    []Runtime.releaseObjectGroup  释放对象组。
-    []Runtime.removeBinding  删除绑定。
-    []Runtime.runIfWaitingForDebugger  运行等待的调试器。
-    []Runtime.runScript  运行脚本。
-    []Runtime.setAsyncCallStackDepth  设置异步调用堆栈深度。
-    []Runtime.getExceptionDetails  获取异常详细信息。
-    []Runtime.getHeapUsage  获取堆使用情况。
-    []Runtime.getIsolateId  获取隔离 ID。
-    []Runtime.setCustomObjectFormatterEnabled  设置自定义对象格式化程序是否启用。
-    []Runtime.setMaxCallStackSizeToCapture  设置调用堆栈大小以捕获。
-    []Runtime.terminateExecution  终止执行。
+- [ok]chrome  Runtime ： 运行时域通过远程求值和镜像对象公开 JavaScript 运行时环境。
+    [ok]Runtime.addBinding 如果 executionContextId 为空，则会在所有被检查上下文的全局对象（包括之后创建的上下文）上添加具有给定名称的绑定，并且绑定在重新加载后仍然存在。
+    [ok]Runtime.awaitPromise 使用给定的 Promise 对象 ID 向 Promise 添加处理程序。
+    [ok]Runtime.callFunctionOn 调用给定对象上具有给定声明的函数。结果的对象组继承自目标对象。
+    [ok]Runtime.compileScript 编译表达式。
+    [ok]Runtime.disable 禁用执行上下文创建的报告。
+    [ok]Runtime.discardConsoleEntries  丢弃收集到的异常和控制台 API 调用。
+    [ok]Runtime.enable  启用事件报告功能，用于报告执行上下文的创建情况executionContextCreated。
+    [ok]Runtime.evaluate  对全局对象求表达式的值。
+    [ok]Runtime.getProperties  返回给定对象的属性。结果的对象组继承自目标对象。
+    [ok]Runtime.globalLexicalScopeNames  返回全局作用域中的所有 let、const 和 class 变量。
+    [ok]Runtime.queryObjects  返回指定对象组中的对象。
+    [ok]Runtime.releaseObject  释放对象组中指定的对象。
+    [ok]Runtime.releaseObjectGroup  释放对象组。
+    [ok]Runtime.removeBinding  删除绑定。
+    [ok]Runtime.runIfWaitingForDebugger  运行等待的调试器。
+    [ok]Runtime.runScript  运行脚本。
+    [ok]Runtime.setAsyncCallStackDepth  设置异步调用堆栈深度。
+    [ok]Runtime.getExceptionDetails  获取异常详细信息。
+    [ok]Runtime.getHeapUsage  获取堆使用情况。
+    [ok]Runtime.getIsolateId  获取隔离 ID。
+    [ok]Runtime.setCustomObjectFormatterEnabled  设置自定义对象格式化程序是否启用。
+    [ok]Runtime.setMaxCallStackSizeToCapture  设置调用堆栈大小以捕获。
+    [ok]Runtime.terminateExecution  终止执行。
 
-- []chrome  Security ： 安全域   // 0409 End
-    []Security.disable
-    []Security.enable
-    []Security.setIgnoreCertificateErrors  处理触发certificateError事件的证书错误。
+- [ok]chrome  Security ： 安全域   // 0409 End
+    [ok]Security.disable
+    [ok]Security.enable
+    [ok]Security.setIgnoreCertificateErrors  处理触发certificateError事件的证书错误。
 
 - []chrome  Storage ： 存储
     []Storage.clearCookies  清除所有 Cookie。
