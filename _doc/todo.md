@@ -108,56 +108,56 @@
     [ok]Security.enable
     [ok]Security.setIgnoreCertificateErrors  处理触发certificateError事件的证书错误。
 
-- []chrome  Storage ： 存储
-    []Storage.clearCookies  清除所有 Cookie。
-    []Storage.clearDataForOrigin  清除指定源的 Cookie。
-    []Storage.clearDataForStorageKey  清除指定 StorageKey 的 Cookie。
-    []Storage.getCookies  获取所有 Cookie。
-    []Storage.getUsageAndQuota  获取指定源的 Cookie 使用情况。
-    []Storage.setCookies  设置 Cookie。
-    []Storage.setProtectedAudienceKAnonymity  设置受保护的受众的 K-匿名。
-    []Storage.trackCacheStorageForOrigin  跟踪指定源的 CacheStorage。
-    []Storage.trackCacheStorageForStorageKey  跟踪指定 StorageKey 的 CacheStorage。
-    []Storage.trackIndexedDBForOrigin  跟踪指定源的 IndexedDB。
-    []Storage.trackIndexedDBForStorageKey  跟踪指定 StorageKey 的 IndexedDB。
-    []Storage.untrackCacheStorageForOrigin  停止跟踪指定源的 CacheStorage。
-    []Storage.untrackCacheStorageForStorageKey  停止跟踪指定 StorageKey 的 CacheStorage。
-    []Storage.untrackIndexedDBForOrigin  停止跟踪指定源的 IndexedDB。
-    []Storage.untrackIndexedDBForStorageKey  停止跟踪指定 StorageKey 的 IndexedDB。
-    []Storage.clearSharedStorageEntries  删除指定存储桶的共享存储条目。
-    []Storage.clearTrustTokens  删除所有共享存储令牌。
-    []Storage.deleteSharedStorageEntry  删除指定存储桶的共享存储条目。
-    []Storage.deleteStorageBucket  删除指定存储桶。
-    []Storage.getAffectedUrlsForThirdPartyCookieMetadata  获取指定源的受影响的 URL。
-    []Storage.getInterestGroupDetails  获取指定兴趣组详情。
-    []Storage.getRelatedWebsiteSets  获取相关网站集。
-    []Storage.getSharedStorageEntries  获取指定存储桶的共享存储条目。
-    []Storage.getSharedStorageMetadata  获取指定存储桶的共享存储元数据。
-    []Storage.getStorageKey   获取指定存储桶的存储密钥。
-    []Storage.getTrustTokens  获取所有共享存储令牌。
-    []Storage.overrideQuotaForOrigin  覆盖指定源的存储配额。
-    []Storage.resetSharedStorageBudget  重置共享存储的预算。
-    []Storage.runBounceTrackingMitigations  运行 Bunce Tracking 拦截。
-    []Storage.sendPendingAttributionReports  发送挂起的ATTRIBUTION报告。
-    []Storage.setAttributionReportingLocalTestingMode  设置ATTRIBUTION报告本地测试模式。
-    []Storage.setAttributionReportingTracking  设置ATTRIBUTION报告跟踪。
-    []Storage.setInterestGroupAuctionTracking  设置兴趣组拍卖跟踪。
-    []Storage.setInterestGroupTracking  设置兴趣组跟踪。
-    []Storage.setSharedStorageEntry  设置共享存储条目。
-    []Storage.setSharedStorageTracking  设置共享存储跟踪。
-    []Storage.setStorageBucketTracking  设置存储ucket跟踪。
+- [ok]chrome  Storage ： 存储
+    [ok]Storage.clearCookies  清除所有 Cookie。
+    [ok]Storage.clearDataForOrigin  清除指定源的 Cookie。
+    [ok]Storage.clearDataForStorageKey  清除指定 StorageKey 的 Cookie。
+    [ok]Storage.getCookies  获取所有 Cookie。
+    [ok]Storage.getUsageAndQuota  获取指定源的 Cookie 使用情况。
+    [ok]Storage.setCookies  设置 Cookie。
+    [ok]Storage.setProtectedAudienceKAnonymity  设置受保护的受众的 K-匿名。
+    [ok]Storage.trackCacheStorageForOrigin  跟踪指定源的 CacheStorage。
+    [ok]Storage.trackCacheStorageForStorageKey  跟踪指定 StorageKey 的 CacheStorage。
+    [ok]Storage.trackIndexedDBForOrigin  跟踪指定源的 IndexedDB。
+    [ok]Storage.trackIndexedDBForStorageKey  跟踪指定 StorageKey 的 IndexedDB。
+    [ok]Storage.untrackCacheStorageForOrigin  停止跟踪指定源的 CacheStorage。
+    [ok]Storage.untrackCacheStorageForStorageKey  停止跟踪指定 StorageKey 的 CacheStorage。
+    [ok]Storage.untrackIndexedDBForOrigin  停止跟踪指定源的 IndexedDB。
+    [ok]Storage.untrackIndexedDBForStorageKey  停止跟踪指定 StorageKey 的 IndexedDB。
+    [ok]Storage.clearSharedStorageEntries  删除指定存储桶的共享存储条目。
+    [ok]Storage.clearTrustTokens  删除所有共享存储令牌。
+    [ok]Storage.deleteSharedStorageEntry  删除指定存储桶的共享存储条目。
+    [ok]Storage.deleteStorageBucket  删除指定存储桶。
+    [ok]Storage.getAffectedUrlsForThirdPartyCookieMetadata  获取指定源的受影响的 URL。
+    [ok]Storage.getInterestGroupDetails  获取指定兴趣组详情。
+    [ok]Storage.getRelatedWebsiteSets  获取相关网站集。
+    [ok]Storage.getSharedStorageEntries  获取指定存储桶的共享存储条目。
+    [ok]Storage.getSharedStorageMetadata  获取指定存储桶的共享存储元数据。
+    [ok]Storage.getStorageKey   获取指定存储桶的存储密钥。
+    [ok]Storage.getTrustTokens  获取所有共享存储令牌。
+    [ok]Storage.overrideQuotaForOrigin  覆盖指定源的存储配额。
+    [ok]Storage.resetSharedStorageBudget  重置共享存储的预算。
+    [ok]Storage.runBounceTrackingMitigations  运行 Bunce Tracking 拦截。
+    [ok]Storage.sendPendingAttributionReports  发送挂起的ATTRIBUTION报告。
+    [ok]Storage.setAttributionReportingLocalTestingMode  设置ATTRIBUTION报告本地测试模式。
+    [ok]Storage.setAttributionReportingTracking  设置ATTRIBUTION报告跟踪。
+    [ok]Storage.setInterestGroupAuctionTracking  设置兴趣组拍卖跟踪。
+    [ok]Storage.setInterestGroupTracking  设置兴趣组跟踪。
+    [ok]Storage.setSharedStorageEntry  设置共享存储条目。
+    [ok]Storage.setSharedStorageTracking  设置共享存储跟踪。
+    [ok]Storage.setStorageBucketTracking  设置存储ucket跟踪。
 
-- []chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
-    []Tethering.bind
-    []Tethering.unbind
+- [ok]chrome  Tethering ： 域定义了浏览器端口绑定的方法和事件。
+    [ok]Tethering.bind
+    [ok]Tethering.unbind
 
-- []chrome  Tracing ： 追踪
-    []Tracing.end 
-    []Tracing.start
-    []Tracing.getCategories  获取可用的跟踪类别
-    []Tracing.getTrackEventDescriptor  获取跟踪事件描述符
-    []Tracing.recordClockSyncMarker  记录时钟同步标记
-    []Tracing.requestMemoryDump  请求内存转储
+- [ok]chrome  Tracing ： 追踪
+    [ok]Tracing.end 
+    [ok]Tracing.start
+    [ok]Tracing.getCategories  获取可用的跟踪类别
+    [ok]Tracing.getTrackEventDescriptor  获取跟踪事件描述符
+    [ok]Tracing.recordClockSyncMarker  记录时钟同步标记
+    [ok]Tracing.requestMemoryDump  请求内存转储
 
 - [] 改测试的bug和优化
 - [] bug和优化验收
