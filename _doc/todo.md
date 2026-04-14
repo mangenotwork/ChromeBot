@@ -11,39 +11,39 @@
 
 
 #### v0.0.14
-- []chrome  ServiceWorker ： 服务任务
-    []ServiceWorker.deliverPushMessage  推送消息
-    []ServiceWorker.disable  禁用
-    []ServiceWorker.dispatchPeriodicSyncEvent  定时同步
-    []ServiceWorker.dispatchSyncEvent  推送消息
-    []ServiceWorker.enable  启用
-    []ServiceWorker.setForceUpdateOnPageLoad  强制更新
-    []ServiceWorker.skipWaiting  跳过等待
-    []ServiceWorker.startWorker  启动工作
-    []ServiceWorker.stopAllWorkers  停止所有工作
-    []ServiceWorker.stopWorker  停止工作
-    []ServiceWorker.unregister  取消注册
-    []ServiceWorker.updateRegistration  更新注册
+- [ok]chrome  ServiceWorker ： 服务任务
+    [ok]ServiceWorker.deliverPushMessage  推送消息
+    [ok]ServiceWorker.disable  禁用
+    [ok]ServiceWorker.dispatchPeriodicSyncEvent  定时同步
+    [ok]ServiceWorker.dispatchSyncEvent  推送消息
+    [ok]ServiceWorker.enable  启用
+    [ok]ServiceWorker.setForceUpdateOnPageLoad  强制更新
+    [ok]ServiceWorker.skipWaiting  跳过等待
+    [ok]ServiceWorker.startWorker  启动工作
+    [ok]ServiceWorker.stopAllWorkers  停止所有工作
+    [ok]ServiceWorker.stopWorker  停止工作
+    [ok]ServiceWorker.unregister  取消注册
+    [ok]ServiceWorker.updateRegistration  更新注册
 
-- []chrome  WebAudio ： 此域名允许查看 Web Audio API。
-    []WebAudio.disable
-    []WebAudio.enable
-    []WebAudio.getRealtimeData   获取实时数据
+- [ok]chrome  WebAudio ： 此域名允许查看 Web Audio API。
+    [ok]WebAudio.disable
+    [ok]WebAudio.enable
+    [ok]WebAudio.getRealtimeData   获取实时数据
 
-- []chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 04010 End
-    []WebAuthn.addCredential  添加凭证
-    []WebAuthn.addVirtualAuthenticator  添加虚拟身份验证器
-    []WebAuthn.clearCredentials  清空凭证
-    []WebAuthn.disable  禁用
-    []WebAuthn.enable  启用
-    []WebAuthn.getCredential  获取凭证
-    []WebAuthn.getCredentials  获取凭证
-    []WebAuthn.removeCredential  删除凭证
-    []WebAuthn.removeVirtualAuthenticator  删除虚拟身份验证器
-    []WebAuthn.setAutomaticPresenceSimulation  设置自动存在模拟
-    []WebAuthn.setCredentialProperties  设置凭证属性
-    []WebAuthn.setResponseOverrideBits  设置响应覆盖位
-    []WebAuthn.setUserVerified  设置用户验证
+- [ok]chrome  WebAuthn ： 该域允许配置虚拟身份验证器来测试 WebAuthn API。   // 04010 End
+    [ok]WebAuthn.addCredential  添加凭证
+    [ok]WebAuthn.addVirtualAuthenticator  添加虚拟身份验证器
+    [ok]WebAuthn.clearCredentials  清空凭证
+    [ok]WebAuthn.disable  禁用
+    [ok]WebAuthn.enable  启用
+    [ok]WebAuthn.getCredential  获取凭证
+    [ok]WebAuthn.getCredentials  获取凭证
+    [ok]WebAuthn.removeCredential  删除凭证
+    [ok]WebAuthn.removeVirtualAuthenticator  删除虚拟身份验证器
+    [ok]WebAuthn.setAutomaticPresenceSimulation  设置自动存在模拟
+    [ok]WebAuthn.setCredentialProperties  设置凭证属性
+    [ok]WebAuthn.setResponseOverrideBits  设置响应覆盖位
+    [ok]WebAuthn.setUserVerified  设置用户验证
 
 - 执行js代码的能力
 - 更多示例
