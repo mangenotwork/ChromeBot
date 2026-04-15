@@ -45,7 +45,8 @@
     [ok]WebAuthn.setResponseOverrideBits  设置响应覆盖位
     [ok]WebAuthn.setUserVerified  设置用户验证
 
-- 执行js代码的能力
+- []执行js代码的能力
+- []提供直接下发cdp指令的能力
 - 更多示例
   1.
   2.
@@ -566,7 +567,7 @@
   [ok] FedCm.selectAccount 选择账户
 
 - [] 改测试的bug和优化
-    [] chrome CSS 测试和完善
+    [ok] chrome CSS 测试和完善
     [] chrome Debugger 测试和完善
     [] chrome Emulation 测试和完善
     [] chrome EventBreakpoints 测试和完善
@@ -837,6 +838,11 @@
 - 支持邮箱发送来实现通知的效果
 - Browser.close 关闭浏览器 在现有的关闭浏览器加这个方法，如果连接还在的时候就可以先用这个关闭浏览器
 - 页面DOM变化的监听函数，监听页面DOM变化，并执行回调函数（参考现有的DOMSnapshot.captureSnapshot）
+- 感叹号语法（可以参考市面上的使用场景加以采用）
+- 是否考虑引用命令行的 '>' 输出到文件, 如 cat "aa" > aa.txt   (出现在重定向符号（>）后的文件名其实就是路径名)
+- 是否考虑引用命令行的 '>>'  在 bash 的重定向符号中，双大于号（>>）表示追加输出
+- 是否考虑引用命令行的 '<'  用代表输入重定向的符号 < 从文件中读取数据
+- 希望尽可能提高脚本的可读性，以便于理解和日后维护。
 - 
 
 ----

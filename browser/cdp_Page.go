@@ -12,6 +12,36 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// 获取当前页面框架ID
+func GetCurrentFrameId() (string, error) {
+	// 通过Page域获取框架信息
+	response, err := CDPPageGetFrameTree()
+	if err != nil {
+		return "", fmt.Errorf("获取框架树失败: %w", err)
+	}
+
+	// 解析响应
+	var data struct {
+		Result struct {
+			FrameTree struct {
+				Frame struct {
+					ID string `json:"id"`
+				} `json:"frame"`
+			} `json:"frameTree"`
+		} `json:"result"`
+	}
+
+	if err := json.Unmarshal([]byte(response), &data); err != nil {
+		return "", fmt.Errorf("解析框架树失败: %w", err)
+	}
+
+	if data.Result.FrameTree.Frame.ID == "" {
+		return "", fmt.Errorf("未找到框架ID")
+	}
+
+	return data.Result.FrameTree.Frame.ID, nil
+}
+
 // -----------------------------------------------  Page.addScriptToEvaluateOnNewDocument  -----------------------------------------------
 // === 应用场景 ===
 // 1. 全局变量注入: 在页面加载前注入全局变量、工具函数
@@ -1114,8 +1144,8 @@ func ExampleGetAppManifest_PWAInstallCheck() {
 // 5. 页面安全检测: 检测页面嵌套的第三方iframe，排查安全风险
 // 6. 爬虫数据采集: 遍历框架树获取所有子页面内容
 
-// CDPPageGetFrameTreeAt 获取当前页面的完整框架树（主框架+所有iframe）
-func CDPPageGetFrameTreeAt() (string, error) {
+// CDPPageGetFrameTree 获取当前页面的完整框架树（主框架+所有iframe）
+func CDPPageGetFrameTree() (string, error) {
 	if !DefaultBrowserWS() {
 		return "", fmt.Errorf("CDP功能未启用")
 	}

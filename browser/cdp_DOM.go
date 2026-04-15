@@ -351,10 +351,10 @@ func ExampleCDPDOMDisable() {
 
 // CDPDOMEnable 启用DOM域
 func CDPDOMEnable() (string, error) {
-	if !DefaultBrowserWS() {
+	if !DefaultNowTab(false) {
 		return "", fmt.Errorf("CDP功能未启用")
 	}
-	if chromeInstance.BrowserWSConn == nil {
+	if chromeInstance.NowTabWSConn == nil {
 		return "", fmt.Errorf("浏览器WebSocket连接未建立")
 	}
 
@@ -368,7 +368,7 @@ func CDPDOMEnable() (string, error) {
     }`, reqID)
 
 	// 发送请求
-	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
+	err := chromeInstance.NowTabWSConn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		return "", fmt.Errorf("发送 DOM.enable 请求失败: %w", err)
 	}
