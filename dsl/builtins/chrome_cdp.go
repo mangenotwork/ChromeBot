@@ -62,6 +62,27 @@ import (
 // CSS.takeCoverageDelta 获取CSS规则使用跟踪结果 ex: chrome cdp=`CSS.takeCoverageDelta`
 // CSS.getEnvironmentVariables  获取环境变量 ex: chrome cdp=`CSS.getEnvironmentVariables`
 // CSS.setContainerQueryText 设置容器查询文本 ex: chrome cdp=`CSS.setContainerQueryText` params=`{"styleSheetId": "2:14","ruleIndex": 1,"containerQueryText": "(min-width: 400px)"}`
+// Debugger.continueToLocation 继续执行直到到达特定位置  ex: chrome cdp=`Debugger.continueToLocation` params=`{"scriptId":"scriptId","lineNumber":123,"columnNumber":123}`
+// Debugger.disable 禁用调试器  ex: chrome cdp=`Debugger.disable`
+// Debugger.enable 启用调试器  ex: chrome cdp=`Debugger.enable` params=`{"maxScriptsCacheSize": 1024}`
+// Debugger.evaluateOnCallFrame 在指定调用帧上求值表达式  ex: chrome cdp=`Debugger.evaluateOnCallFrame` params=`{"callFrameId": "0","expression": "1 + 2"}`
+// Debugger.restartFrame 恢复指定帧  ex: chrome cdp=`Debugger.restartFrame` params=`{"callFrameId": "0"}`
+// Debugger.resume 恢复执行 ex: chrome cdp=`Debugger.resume` params=`{"terminateOnResume": true}`
+// Debugger.searchInContent 在指定内容中搜索 ex: chrome cdp=`Debugger.searchInContent` params=`{"scriptId": "123","query": "userInfo","caseSensitive": false,"isRegex": false}`
+// Debugger.setAsyncCallStackDepth 设置异步调用堆栈深度 ex: chrome cdp=`Debugger.setAsyncCallStackDepth` params=`{"maxDepth": 10}`
+// Debugger.setBreakpoint 设置断点  ex: chrome cdp=`Debugger.setBreakpoint` params=`{"location": {"scriptId": "123","lineNumber": 123,"columnNumber": 123}}`
+// Debugger.setBreakpointByUrl 设置断点  ex: chrome cdp=`Debugger.setBreakpointByUrl` params=`{"url": "https://www.baidu.com","lineNumber": 123,"columnNumber": 123,"condition": "1 + 2"}`
+// Debugger.setBreakpointsActive 设置断点激活状态 ex: chrome cdp=`Debugger.setBreakpointsActive` params=`{"active": true}`
+// Debugger.setInstrumentationBreakpoint 设置调试器运行时执行时触发的运行时事件 ex: chrome cdp=`Debugger.setInstrumentationBreakpoint` params=`{"eventName": "beforeScriptExecution"}`
+// Debugger.setPauseOnExceptions 设置暂停异常 ex: chrome cdp=`Debugger.setPauseOnExceptions` params=`{"state": "none"}`
+// Debugger.setScriptSource 修改脚本源代码 ex: chrome cdp=`Debugger.setScriptSource` params=`{"scriptId": "123","scriptSource": "console.log('hello world')"}`
+// Debugger.setSkipAllPauses 跳过所有暂停点 ex: chrome cdp=`Debugger.setSkipAllPauses` params=`{"skip": true}`
+// Debugger.setVariableValue 修改变量值 ex: chrome cdp=`Debugger.setVariableValue` params=`{"scopeNumber": 0,"variableName": "name","newValue": {"type": "string","value": "hello world"},"callFrameId": "0"}`
+// Debugger.stepInto 步入 ex: chrome cdp=`Debugger.stepInto` params=`{"targetId": "123"}` （无参数，直接单步跳入）
+// Debugger.stepOut 步出 ex: chrome cdp=`Debugger.stepOut` （无参数，直接单步跳出）
+// Debugger.stepOver 步过 ex: chrome cdp=`Debugger.stepOver` （无参数，直接单步跳过）
+// Debugger.disassembleWasmModule 获取Wasm模块的 dissemble 信息 ex: chrome cdp=`Debugger.disassembleWasmModule` params=`{"scriptId": "123"}`
+// Debugger.getStackTrace 获取堆栈跟踪信息 ex: chrome cdp=`Debugger.getStackTrace` params=`{"stackTraceId": "123"}`
 func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
@@ -450,6 +471,79 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	case "CSS.setContainerQueryText":
 		browser.CDPCSSSetContainerQueryText(params)
+
+	case "Debugger.continueToLocation":
+		scriptId := paramsMap["scriptId"].(string)
+		lineNumber := paramsMap["lineNumber"].(int)
+		columnNumber := paramsMap["columnNumber"].(int)
+		browser.CDPDebuggerContinueToLocation(scriptId, lineNumber, columnNumber)
+
+	case "Debugger.disable":
+		browser.CDPDebuggerDisable()
+
+	case "Debugger.enable":
+		browser.CDPDebuggerEnable(paramsMap["maxScriptsCacheSize"].(int))
+
+	case "Debugger.evaluateOnCallFrame":
+		browser.CDPDebuggerEvaluateOnCallFrame(params)
+
+	case "Debugger.getPossibleBreakpoints":
+		browser.CDPDebuggerGetPossibleBreakpoints(params)
+
+	case "Debugger.restartFrame":
+		browser.CDPDebuggerGetPossibleBreakpoints(paramsMap["callFrameId"].(string))
+
+	case "Debugger.resume":
+		browser.CDPDebuggerResume(paramsMap["terminateOnResume"].(bool))
+
+	case "Debugger.searchInContent":
+		scriptId := paramsMap["scriptId"].(string)
+		query := paramsMap["query"].(string)
+		caseSensitive := paramsMap["caseSensitive"].(bool)
+		isRegex := paramsMap["isRegex"].(bool)
+		browser.CDPDebuggerSearchInContent(scriptId, query, caseSensitive, isRegex)
+
+	case "Debugger.setAsyncCallStackDepth":
+		browser.CDPDebuggerSetAsyncCallStackDepth(paramsMap["maxDepth"].(int))
+
+	case "Debugger.setBreakpoint":
+		browser.CDPDebuggerSetBreakpoint(params)
+
+	case "Debugger.setBreakpointByUrl":
+		browser.CDPDebuggerSetBreakpointByUrl(params)
+
+	case "Debugger.setBreakpointsActive":
+		browser.CDPDebuggerSetBreakpointsActive(paramsMap["active"].(bool))
+
+	case "Debugger.setInstrumentationBreakpoint":
+		browser.CDPDebuggerSetInstrumentationBreakpoint(params)
+
+	case "Debugger.setPauseOnExceptions":
+		browser.CDPDebuggerSetPauseOnExceptions(paramsMap["state"].(string))
+
+	case "Debugger.setScriptSource":
+		browser.CDPDebuggerSetScriptSource(params)
+
+	case "Debugger.setSkipAllPauses":
+		browser.CDPDebuggerSetSkipAllPauses(paramsMap["skip"].(bool))
+
+	case "Debugger.setVariableValue":
+		browser.CDPDebuggerSetVariableValue(params)
+
+	case "Debugger.stepInto":
+		browser.CDPDebuggerStepInto(params)
+
+	case "Debugger.stepOut":
+		browser.CDPDebuggerStepOut()
+
+	case "Debugger.stepOver":
+		browser.CDPDebuggerStepOver()
+
+	case "Debugger.disassembleWasmModule":
+		browser.CDPDebuggerDisassembleWasmModule(paramsMap["scriptId"].(string))
+
+	case "Debugger.getStackTrace":
+		browser.CDPDebuggerGetStackTrace(paramsMap["stackTraceId"].(string))
 
 	}
 }
