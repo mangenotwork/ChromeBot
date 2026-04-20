@@ -569,7 +569,7 @@
 - [] 改测试的bug和优化
     [ok] chrome CSS 测试和完善
     [ok] chrome Debugger 测试和完善
-    [] chrome Emulation 测试和完善
+    [ok] chrome Emulation 测试和完善
     [] chrome EventBreakpoints 测试和完善
     [] chrome CacheStorage 测试和完善
     [] chrome Extensions 测试和完善

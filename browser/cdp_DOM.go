@@ -3362,7 +3362,7 @@ func testCleanupWithoutHighlight(manager *HighlightManager) error {
 // CDPDOMHighlightNode 高亮显示指定的DOM节点
 // nodeID: 要高亮的节点ID
 // highlightConfig: 高亮配置
-func CDPDOMHighlightNode(nodeID int, highlightConfig *HighlightConfig) (string, error) {
+func CDPDOMHighlightNode(params string) (string, error) {
 	if !DefaultBrowserWS() {
 		return "", fmt.Errorf("CDP功能未启用")
 	}
@@ -3372,29 +3372,11 @@ func CDPDOMHighlightNode(nodeID int, highlightConfig *HighlightConfig) (string, 
 
 	chromeInstance.NextID++
 	reqID := chromeInstance.NextID
-
-	// 构建配置参数
-	var configJSON string
-	if highlightConfig != nil {
-		configBytes, err := json.Marshal(highlightConfig)
-		if err != nil {
-			return "", fmt.Errorf("序列化高亮配置失败: %w", err)
-		}
-		configJSON = string(configBytes)
-	} else {
-		// 使用默认配置
-		configJSON = `{}`
-	}
-
-	// 构建消息
 	message := fmt.Sprintf(`{
         "id": %d,
         "method": "DOM.highlightNode",
-        "params": {
-            "nodeId": %d,
-            "highlightConfig": %s
-        }
-    }`, reqID, nodeID, configJSON)
+        "params": %s
+    }`, reqID, params)
 
 	// 发送请求
 	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))
@@ -3437,79 +3419,6 @@ func CDPDOMHighlightNode(nodeID int, highlightConfig *HighlightConfig) (string, 
 			return "", fmt.Errorf("DOM.highlightNode 请求超时")
 		}
 	}
-}
-
-// HighlightConfig 高亮配置结构
-type HighlightConfig struct {
-	ShowInfo                     bool                          `json:"showInfo,omitempty"`
-	ShowStyles                   bool                          `json:"showStyles,omitempty"`
-	ShowRulers                   bool                          `json:"showRulers,omitempty"`
-	ShowExtensionLines           bool                          `json:"showExtensionLines,omitempty"`
-	ContentColor                 *RGBA                         `json:"contentColor,omitempty"`
-	PaddingColor                 *RGBA                         `json:"paddingColor,omitempty"`
-	BorderColor                  *RGBA                         `json:"borderColor,omitempty"`
-	MarginColor                  *RGBA                         `json:"marginColor,omitempty"`
-	EventTargetColor             *RGBA                         `json:"eventTargetColor,omitempty"`
-	ShapeColor                   *RGBA                         `json:"shapeColor,omitempty"`
-	ShapeMarginColor             *RGBA                         `json:"shapeMarginColor,omitempty"`
-	CSSGridColor                 *RGBA                         `json:"cssGridColor,omitempty"`
-	ColorFormat                  string                        `json:"colorFormat,omitempty"` // "rgb", "hsl", "hex"
-	GridHighlightConfig          *GridHighlightConfig          `json:"gridHighlightConfig,omitempty"`
-	FlexContainerHighlightConfig *FlexContainerHighlightConfig `json:"flexContainerHighlightConfig,omitempty"`
-	FlexItemHighlightConfig      *FlexItemHighlightConfig      `json:"flexItemHighlightConfig,omitempty"`
-	ContrastAlgorithm            string                        `json:"contrastAlgorithm,omitempty"` // "aa", "aaa", "apca"
-}
-
-// GridHighlightConfig 网格高亮配置
-type GridHighlightConfig struct {
-	GridBorderColor         *RGBA `json:"gridBorderColor,omitempty"`
-	GridBorderDash          bool  `json:"gridBorderDash,omitempty"`
-	RowLineColor            *RGBA `json:"rowLineColor,omitempty"`
-	ColumnLineColor         *RGBA `json:"columnLineColor,omitempty"`
-	RowGapColor             *RGBA `json:"rowGapColor,omitempty"`
-	ColumnGapColor          *RGBA `json:"columnGapColor,omitempty"`
-	RowHatchColor           *RGBA `json:"rowHatchColor,omitempty"`
-	ColumnHatchColor        *RGBA `json:"columnHatchColor,omitempty"`
-	RowLineDash             bool  `json:"rowLineDash,omitempty"`
-	ColumnLineDash          bool  `json:"columnLineDash,omitempty"`
-	ShowGridExtensionLines  bool  `json:"showGridExtensionLines,omitempty"`
-	ShowPositiveLineNumbers bool  `json:"showPositiveLineNumbers,omitempty"`
-	ShowNegativeLineNumbers bool  `json:"showNegativeLineNumbers,omitempty"`
-	ShowAreaNames           bool  `json:"showAreaNames,omitempty"`
-	ShowLineNames           bool  `json:"showLineNames,omitempty"`
-	ShowTrackSizes          bool  `json:"showTrackSizes,omitempty"`
-	GridBorderDashPattern   []int `json:"gridBorderDashPattern,omitempty"`
-}
-
-// FlexContainerHighlightConfig Flex容器高亮配置
-type FlexContainerHighlightConfig struct {
-	ContainerBorder       *LineStyle `json:"containerBorder,omitempty"`
-	LineSeparator         *LineStyle `json:"lineSeparator,omitempty"`
-	ItemSeparator         *LineStyle `json:"itemSeparator,omitempty"`
-	MainDistributedSpace  *BoxStyle  `json:"mainDistributedSpace,omitempty"`
-	CrossDistributedSpace *BoxStyle  `json:"crossDistributedSpace,omitempty"`
-	RowGapSpace           *BoxStyle  `json:"rowGapSpace,omitempty"`
-	ColumnGapSpace        *BoxStyle  `json:"columnGapSpace,omitempty"`
-	CrossAlignment        *LineStyle `json:"crossAlignment,omitempty"`
-}
-
-// FlexItemHighlightConfig Flex项高亮配置
-type FlexItemHighlightConfig struct {
-	BaseSizeBox      *BoxStyle  `json:"baseSizeBox,omitempty"`
-	BaseSizeBorder   *LineStyle `json:"baseSizeBorder,omitempty"`
-	FlexibilityArrow *LineStyle `json:"flexibilityArrow,omitempty"`
-}
-
-// LineStyle 线样式
-type LineStyle struct {
-	Color   *RGBA  `json:"color,omitempty"`
-	Pattern string `json:"pattern,omitempty"` // "solid", "dashed", "dotted"
-}
-
-// BoxStyle 框样式
-type BoxStyle struct {
-	FillColor  *RGBA `json:"fillColor,omitempty"`
-	HatchColor *RGBA `json:"hatchColor,omitempty"`
 }
 
 /*
@@ -3996,7 +3905,7 @@ func demonstrateHighlightScenarios() {
 // height: 区域高度
 // color: 高亮颜色配置
 // outlineColor: 轮廓颜色配置
-func CDPDOMHighlightRect(x, y, width, height int, color, outlineColor *RGBA) (string, error) {
+func CDPDOMHighlightRect(params string) (string, error) {
 	if !DefaultBrowserWS() {
 		return "", fmt.Errorf("CDP功能未启用")
 	}
@@ -4006,43 +3915,12 @@ func CDPDOMHighlightRect(x, y, width, height int, color, outlineColor *RGBA) (st
 
 	chromeInstance.NextID++
 	reqID := chromeInstance.NextID
-
-	// 构建颜色参数
-	var colorJSON, outlineColorJSON string
-
-	if color != nil {
-		colorBytes, err := json.Marshal(color)
-		if err != nil {
-			return "", fmt.Errorf("序列化颜色配置失败: %w", err)
-		}
-		colorJSON = string(colorBytes)
-	} else {
-		colorJSON = "null"
-	}
-
-	if outlineColor != nil {
-		outlineBytes, err := json.Marshal(outlineColor)
-		if err != nil {
-			return "", fmt.Errorf("序列化轮廓颜色失败: %w", err)
-		}
-		outlineColorJSON = string(outlineBytes)
-	} else {
-		outlineColorJSON = "null"
-	}
-
 	// 构建消息
 	message := fmt.Sprintf(`{
         "id": %d,
         "method": "DOM.highlightRect",
-        "params": {
-            "x": %d,
-            "y": %d,
-            "width": %d,
-            "height": %d,
-            "color": %s,
-            "outlineColor": %s
-        }
-    }`, reqID, x, y, width, height, colorJSON, outlineColorJSON)
+        "params": %s
+    }`, reqID, params)
 
 	// 发送请求
 	err := chromeInstance.BrowserWSConn.WriteMessage(websocket.TextMessage, []byte(message))

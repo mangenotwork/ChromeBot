@@ -83,6 +83,21 @@ import (
 // Debugger.stepOver 步过 ex: chrome cdp=`Debugger.stepOver` （无参数，直接单步跳过）
 // Debugger.disassembleWasmModule 获取Wasm模块的 dissemble 信息 ex: chrome cdp=`Debugger.disassembleWasmModule` params=`{"scriptId": "123"}`
 // Debugger.getStackTrace 获取堆栈跟踪信息 ex: chrome cdp=`Debugger.getStackTrace` params=`{"stackTraceId": "123"}`
+// Emulation.clearDeviceMetricsOverride 清除设备度量覆盖 ex: chrome cdp=`Emulation.clearDeviceMetricsOverride`
+// Emulation.clearGeolocationOverride 清除地理位置覆盖 ex: chrome cdp=`Emulation.clearGeolocationOverride`
+// Emulation.clearIdleOverride 清除空闲覆盖 ex: chrome cdp=`Emulation.clearIdleOverride`
+// Emulation.setCPUThrottlingRate 设置CPU节流率 ex: chrome cdp=`Emulation.setCPUThrottlingRate` params=`{"rate": 1}`
+// Emulation.setDefaultBackgroundColorOverride 设置默认背景色覆盖 ex: chrome cdp=`Emulation.setDefaultBackgroundColorOverride` params=`{"color": {"r": 255,"g": 255,"b": 255,"a": 1}}`
+// Emulation.setDeviceMetricsOverride 设置设备度量覆盖 ex: chrome cdp=`Emulation.setDeviceMetricsOverride` params=`{"width": 1920,"height": 1080,"deviceScaleFactor": 1,"mobile": true}`
+// Emulation.setEmulatedMedia 设置模拟媒体 ex: chrome cdp=`Emulation.setEmulatedMedia` params=`{"media": "screen"}`
+// Emulation.setEmulatedOSTextScale 设置模拟文本缩放 ex: chrome cdp=`Emulation.setEmulatedOSTextScale` params=`{"textScaleFactor": 1}`
+// Emulation.setEmulatedVisionDeficiency 设置模拟视觉缺陷 ex: chrome cdp=`Emulation.setEmulatedVisionDeficiency` params=`{"type": "none"}`
+// Emulation.setGeolocationOverride 设置地理位置覆盖 ex: chrome cdp=`Emulation.setGeolocationOverride` params=`{"latitude": 39.909, "longitude": 116.39742}`
+// Emulation.setIdleOverride 设置空闲覆盖 ex: chrome cdp=`Emulation.setIdleOverride` params=`{"isUserActive": true,"isScreenLocked": false}`
+// Emulation.setScriptExecutionDisabled 禁用脚本执行 ex: chrome cdp=`Emulation.setScriptExecutionDisabled` params=`{"value": true}`
+// Emulation.setTimezoneOverride 设置时区覆盖 ex: chrome cdp=`Emulation.setTimezoneOverride` params=`{"timezoneId": "Asia/Shanghai"}`
+// Emulation.setTouchEmulationEnabled 启用触摸模拟 ex: chrome cdp=`Emulation.setTouchEmulationEnabled` params=`{"enabled": true}`
+// Emulation.setUserAgentOverride 设置UA覆盖 ex: chrome cdp=`Emulation.setUserAgentOverride` params=`{"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"}`
 func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	fmt.Println("cdp = ", cdp)
@@ -544,6 +559,51 @@ func runCDP(interp *interpreter.Interpreter, cdp string, params, to string) {
 
 	case "Debugger.getStackTrace":
 		browser.CDPDebuggerGetStackTrace(paramsMap["stackTraceId"].(string))
+
+	case "Emulation.clearDeviceMetricsOverride":
+		browser.CDPEmulationClearDeviceMetricsOverride()
+
+	case "Emulation.clearGeolocationOverride":
+		browser.CDPEmulationClearGeolocationOverride()
+
+	case "Emulation.clearIdleOverride":
+		browser.CDPEmulationClearIdleOverride()
+
+	case "Emulation.setCPUThrottlingRate":
+		browser.CDPEmulationSetCPUThrottlingRate(paramsMap["rate"].(float64))
+
+	case "Emulation.setDefaultBackgroundColorOverride":
+		browser.CDPEmulationSetDefaultBackgroundColorOverride(params)
+
+	case "Emulation.setDeviceMetricsOverride":
+		browser.CDPEmulationSetDeviceMetricsOverride(params)
+
+	case "Emulation.setEmulatedMedia":
+		browser.CDPEmulationSetEmulatedMedia(params)
+
+	case "Emulation.setEmulatedOSTextScale":
+		browser.CDPEmulationSetEmulatedOSTextScale(params)
+
+	case "Emulation.setEmulatedVisionDeficiency":
+		browser.CDPEmulationSetEmulatedVisionDeficiency(params)
+
+	case "Emulation.setGeolocationOverride":
+		browser.CDPEmulationSetGeolocationOverride(params)
+
+	case "Emulation.setIdleOverride":
+		browser.CDPEmulationSetIdleOverride(params)
+
+	case "Emulation.setScriptExecutionDisabled":
+		browser.CDPEmulationSetScriptExecutionDisabled(params)
+
+	case "Emulation.setTimezoneOverride":
+		browser.CDPEmulationSetTimezoneOverride(params)
+
+	case "Emulation.setTouchEmulationEnabled":
+		browser.CDPEmulationSetTouchEmulationEnabled(params)
+
+	case "Emulation.setUserAgentOverride":
+		browser.CDPEmulationSetUserAgentOverride(params)
 
 	}
 }
